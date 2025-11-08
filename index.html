@@ -168,6 +168,7 @@
             align-items: center;
             gap: 0.5rem;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .admin-link:hover {
@@ -801,7 +802,7 @@
                     </a>
                 </li>
                 
-                <li><a href="admin.html" class="admin-link">
+                <li><a href="#" onclick="redirectToAdmin()" class="admin-link">
                     <i class="fas fa-user-shield"></i> <span data-i18n="nav.admin">Admin</span>
                 </a></li>
             </ul>
@@ -1435,6 +1436,49 @@
             }
         };
 
+        // ===== GESTIONNAIRE D'UTILISATEURS =====
+        const UserManager = {
+            getUsers: () => {
+                return JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+            },
+
+            saveUser: (user) => {
+                const users = UserManager.getUsers();
+                user.id = Date.now().toString();
+                user.createdAt = new Date().toISOString();
+                user.role = user.role || 'client';
+                users.push(user);
+                localStorage.setItem('lunagestio_users', JSON.stringify(users));
+                return user;
+            },
+
+            authenticate: (email, password, role) => {
+                const users = UserManager.getUsers();
+                return users.find(user => 
+                    user.email === email && 
+                    user.password === password && 
+                    user.role === role
+                );
+            },
+
+            emailExists: (email) => {
+                const users = UserManager.getUsers();
+                return users.some(user => user.email === email);
+            },
+
+            getCurrentUser: () => {
+                return JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            },
+
+            setCurrentUser: (user) => {
+                localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
+            },
+
+            logout: () => {
+                localStorage.removeItem('lunagestio_current_user');
+            }
+        };
+
         // ===== VARIABLES GLOBALES =====
         let currentDate = new Date();
         let selectedDate = null;
@@ -1457,6 +1501,19 @@
             4: ['10:00', '11:00', '12:00', '13:00', '14:00'], // Jueves
             5: ['10:00', '11:00', '12:00', '13:00', '14:00']  // Viernes
         };
+
+        // ===== FONCTION DE REDIRECTION ADMIN =====
+        function redirectToAdmin() {
+            // Vérifier si l'utilisateur est déjà connecté en tant qu'admin
+            const currentUser = UserManager.getCurrentUser();
+            
+            if (currentUser && currentUser.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                // Rediriger vers la page de login avec mode admin
+                window.location.href = 'login.html?role=admin';
+            }
+        }
 
         // ===== FUNCIONES DE TRADUCCIÓN =====
         function changeLanguage(lang) {
@@ -1784,6 +1841,9 @@
 
         // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', function() {
+            // Créer un compte admin par défaut
+            initializeDefaultAdmin();
+            
             // Inicializar calendario
             generateCalendar();
             
@@ -1883,6 +1943,22 @@
                 document.getElementById('blockDate').min = today;
             }
         });
+
+        function initializeDefaultAdmin() {
+            const users = UserManager.getUsers();
+            const adminExists = users.some(user => user.role === 'admin');
+            
+            if (!adminExists) {
+                UserManager.saveUser({
+                    email: 'admin@lunagestio.com',
+                    password: 'Admin123!',
+                    firstName: 'Administrateur',
+                    lastName: 'Lunagestio',
+                    role: 'admin',
+                    phone: '+34 972 30 43 09'
+                });
+            }
+        }
     </script>
 </body>
 </html>
