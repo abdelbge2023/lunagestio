@@ -19,6 +19,88 @@
             min-height: 100vh;
         }
 
+        /* Protection d'accès */
+        .admin-protection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .admin-login-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .admin-login-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .admin-login-form .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .admin-login-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .admin-login-form input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .admin-login-form button {
+            width: 100%;
+            padding: 1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .admin-login-form button:hover {
+            background: #2980b9;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Contenu admin */
         .admin-header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -358,122 +440,215 @@
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <nav class="admin-nav">
-            <div class="admin-logo">
-                <i class="fas fa-user-shield"></i> Panel de Administración - Lunagestio
-            </div>
-            <div class="admin-menu">
-                <a href="#citas" class="active"><i class="fas fa-calendar-alt"></i> Citas</a>
-                <a href="#calendario"><i class="fas fa-calendar-times"></i> Días No Laborables</a>
-                <a href="#configuracion"><i class="fas fa-cog"></i> Configuración</a>
-                <a href="index.html"><i class="fas fa-home"></i> Volver al Sitio</a>
-            </div>
-        </nav>
+    <!-- Protection d'accès -->
+    <div id="adminProtection" class="admin-protection">
+        <div class="admin-login-form">
+            <h2><i class="fas fa-shield-alt"></i> Accès Administrateur</h2>
+            <div id="adminAlert"></div>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminEmail">Email administrateur:</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@lunagestio.com">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Mot de passe:</label>
+                    <input type="password" id="adminPassword" required placeholder="Votre mot de passe">
+                </div>
+                <button type="submit">Se connecter</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem;">
+                <a href="index.html" style="color: #3498db;">Retour au site</a>
+            </p>
+        </div>
     </div>
 
-    <div class="admin-container">
-        <!-- Estadísticas -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalAppointments">0</div>
-                <div class="stat-label">Total Citas</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingAppointments">0</div>
-                <div class="stat-label">Pendientes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="confirmedAppointments">0</div>
-                <div class="stat-label">Confirmadas</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="customHolidays">0</div>
-                <div class="stat-label">Días No Laborables</div>
-            </div>
+    <!-- Contenu admin (caché par défaut) -->
+    <div id="adminContent" class="hidden">
+        <div class="admin-header">
+            <nav class="admin-nav">
+                <div class="admin-logo">
+                    <i class="fas fa-user-shield"></i> Panel de Administración - Lunagestio
+                </div>
+                <div class="admin-menu">
+                    <a href="#citas" class="active"><i class="fas fa-calendar-alt"></i> Citas</a>
+                    <a href="#calendario"><i class="fas fa-calendar-times"></i> Días No Laborables</a>
+                    <a href="#configuracion"><i class="fas fa-cog"></i> Configuración</a>
+                    <a href="index.html"><i class="fas fa-home"></i> Volver al Sitio</a>
+                    <a href="#" onclick="logoutAdmin()" style="background: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                </div>
+            </nav>
         </div>
 
-        <!-- Gestión de Citas -->
-        <div class="admin-card" id="citas">
-            <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Gestión de Citas</h2>
-                <div>
-                    <select id="filterStatus" class="btn">
-                        <option value="all">Todas las citas</option>
-                        <option value="pending">Pendientes</option>
-                        <option value="confirmed">Confirmadas</option>
-                        <option value="cancelled">Canceladas</option>
+        <div class="admin-container">
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAppointments">0</div>
+                    <div class="stat-label">Total Citas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingAppointments">0</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="confirmedAppointments">0</div>
+                    <div class="stat-label">Confirmadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="customHolidays">0</div>
+                    <div class="stat-label">Días No Laborables</div>
+                </div>
+            </div>
+
+            <!-- Gestión de Citas -->
+            <div class="admin-card" id="citas">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Gestión de Citas</h2>
+                    <div>
+                        <select id="filterStatus" class="btn">
+                            <option value="all">Todas las citas</option>
+                            <option value="pending">Pendientes</option>
+                            <option value="confirmed">Confirmadas</option>
+                            <option value="cancelled">Canceladas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="appointments-grid" id="appointmentsList">
+                    <!-- Las citas se cargan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Gestión del Calendario -->
+            <div class="admin-card" id="calendario">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-calendar-times"></i> Días No Laborables</h2>
+                </div>
+                <div class="calendar-management">
+                    <div>
+                        <h3 style="color: #2c3e50; margin-bottom: 1.5rem;"><i class="fas fa-plus-circle"></i> Añadir Día No Laborable</h3>
+                        <div class="form-group">
+                            <label for="holidayDate">Fecha:</label>
+                            <input type="date" id="holidayDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="holidayReason">Motivo (opcional):</label>
+                            <input type="text" id="holidayReason" placeholder="Ej: Vacaciones, Formación, Enfermedad...">
+                        </div>
+                        <button class="btn btn-danger" onclick="addCustomHoliday()">
+                            <i class="fas fa-ban"></i> Marcar como No Laborable
+                        </button>
+                    </div>
+                    <div>
+                        <h3 style="color: #2c3e50; margin-bottom: 1.5rem;"><i class="fas fa-list"></i> Días No Laborables Configurados</h3>
+                        <div class="holiday-list" id="customHolidaysList">
+                            <!-- Los días no laborables se cargan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloqueo de Horarios -->
+            <div class="admin-card" id="configuracion">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-clock"></i> Bloqueo de Horarios</h2>
+                </div>
+                <div class="form-group">
+                    <label for="blockDate">Fecha:</label>
+                    <input type="date" id="blockDate">
+                </div>
+                <div class="form-group">
+                    <label for="blockTime">Hora:</label>
+                    <select id="blockTime">
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
                     </select>
                 </div>
+                <button class="btn btn-danger" onclick="blockTimeSlot()">
+                    <i class="fas fa-lock"></i> Bloquear Horario
+                </button>
             </div>
-            <div class="appointments-grid" id="appointmentsList">
-                <!-- Las citas se cargan dinámicamente -->
-            </div>
-        </div>
-
-        <!-- Gestión del Calendario -->
-        <div class="admin-card" id="calendario">
-            <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-calendar-times"></i> Días No Laborables</h2>
-            </div>
-            <div class="calendar-management">
-                <div>
-                    <h3 style="color: #2c3e50; margin-bottom: 1.5rem;"><i class="fas fa-plus-circle"></i> Añadir Día No Laborable</h3>
-                    <div class="form-group">
-                        <label for="holidayDate">Fecha:</label>
-                        <input type="date" id="holidayDate">
-                    </div>
-                    <div class="form-group">
-                        <label for="holidayReason">Motivo (opcional):</label>
-                        <input type="text" id="holidayReason" placeholder="Ej: Vacaciones, Formación, Enfermedad...">
-                    </div>
-                    <button class="btn btn-danger" onclick="addCustomHoliday()">
-                        <i class="fas fa-ban"></i> Marcar como No Laborable
-                    </button>
-                </div>
-                <div>
-                    <h3 style="color: #2c3e50; margin-bottom: 1.5rem;"><i class="fas fa-list"></i> Días No Laborables Configurados</h3>
-                    <div class="holiday-list" id="customHolidaysList">
-                        <!-- Los días no laborables se cargan dinámicamente -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bloqueo de Horarios -->
-        <div class="admin-card" id="configuracion">
-            <div class="card-header">
-                <h2 class="card-title"><i class="fas fa-clock"></i> Bloqueo de Horarios</h2>
-            </div>
-            <div class="form-group">
-                <label for="blockDate">Fecha:</label>
-                <input type="date" id="blockDate">
-            </div>
-            <div class="form-group">
-                <label for="blockTime">Hora:</label>
-                <select id="blockTime">
-                    <option value="10:00">10:00</option>
-                    <option value="11:00">11:00</option>
-                    <option value="12:00">12:00</option>
-                    <option value="13:00">13:00</option>
-                    <option value="14:00">14:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="17:00">17:00</option>
-                    <option value="18:00">18:00</option>
-                </select>
-            </div>
-            <button class="btn btn-danger" onclick="blockTimeSlot()">
-                <i class="fas fa-lock"></i> Bloquear Horario
-            </button>
         </div>
     </div>
 
     <script>
+        // ===== PROTECTION D'ACCÈS ADMIN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminProtection = document.getElementById('adminProtection');
+            const adminContent = document.getElementById('adminContent');
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            
+            // Vérifier si l'utilisateur est connecté en tant qu'admin
+            const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            
+            if (currentUser && currentUser.role === 'admin') {
+                // Utilisateur admin connecté, afficher le contenu
+                adminProtection.style.display = 'none';
+                adminContent.classList.remove('hidden');
+                initializeAdminPanel();
+            } else {
+                // Afficher le formulaire de connexion admin
+                adminProtection.style.display = 'flex';
+                adminContent.classList.add('hidden');
+            }
+            
+            // Gestionnaire de connexion admin
+            adminLoginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+                
+                if (!email || !password) {
+                    showAdminAlert('Veuillez remplir tous les champs', 'error');
+                    return;
+                }
+                
+                // Vérifier les identifiants admin
+                const users = JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+                const adminUser = users.find(user => 
+                    user.email === email && 
+                    user.password === password && 
+                    user.role === 'admin'
+                );
+                
+                if (adminUser) {
+                    // Connexion réussie
+                    localStorage.setItem('lunagestio_current_user', JSON.stringify(adminUser));
+                    adminProtection.style.display = 'none';
+                    adminContent.classList.remove('hidden');
+                    initializeAdminPanel();
+                } else {
+                    showAdminAlert('Identifiants administrateur incorrects', 'error');
+                }
+            });
+        });
+
+        function showAdminAlert(message, type) {
+            const alertDiv = document.getElementById('adminAlert');
+            alertDiv.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('lunagestio_current_user');
+            window.location.reload();
+        }
+
         // ===== SISTEMA DE ADMINISTRACIÓN =====
         const AdminManager = {
             loadStats: () => {
-                const appointments = StorageManager.getAppointments();
-                const holidays = StorageManager.getCustomHolidays();
+                const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
+                const holidays = JSON.parse(localStorage.getItem('lunagestio_custom_holidays')) || [];
                 
                 document.getElementById('totalAppointments').textContent = appointments.length;
                 document.getElementById('pendingAppointments').textContent = 
@@ -484,7 +659,7 @@
             },
             
             loadAppointments: () => {
-                const appointments = StorageManager.getAppointments();
+                const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
                 const filter = document.getElementById('filterStatus').value;
                 const filteredAppointments = filter === 'all' ? 
                     appointments : appointments.filter(a => a.status === filter);
@@ -545,7 +720,7 @@
             },
             
             confirmAppointment: (id) => {
-                const appointments = StorageManager.getAppointments();
+                const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
                 const appointment = appointments.find(a => a.id === id);
                 if (appointment) {
                     appointment.status = 'confirmed';
@@ -557,7 +732,7 @@
             },
             
             cancelAppointment: (id) => {
-                const appointments = StorageManager.getAppointments();
+                const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
                 const appointment = appointments.find(a => a.id === id);
                 if (appointment) {
                     appointment.status = 'cancelled';
@@ -569,7 +744,7 @@
             },
             
             loadCustomHolidays: () => {
-                const holidays = StorageManager.getCustomHolidays();
+                const holidays = JSON.parse(localStorage.getItem('lunagestio_custom_holidays')) || [];
                 const holidaysList = document.getElementById('customHolidaysList');
                 
                 if (holidays.length === 0) {
@@ -611,7 +786,9 @@
             
             removeHoliday: (date) => {
                 if (confirm('¿Está seguro de que desea eliminar este día no laborable?')) {
-                    StorageManager.removeCustomHoliday(date);
+                    const holidays = JSON.parse(localStorage.getItem('lunagestio_custom_holidays')) || [];
+                    const updatedHolidays = holidays.filter(h => h !== date);
+                    localStorage.setItem('lunagestio_custom_holidays', JSON.stringify(updatedHolidays));
                     AdminManager.loadCustomHolidays();
                     AdminManager.loadStats();
                     alert('Día no laborable eliminado correctamente');
@@ -629,7 +806,12 @@
                 return;
             }
             
-            StorageManager.saveCustomHoliday(date);
+            const holidays = JSON.parse(localStorage.getItem('lunagestio_custom_holidays')) || [];
+            if (!holidays.includes(date)) {
+                holidays.push(date);
+                localStorage.setItem('lunagestio_custom_holidays', JSON.stringify(holidays));
+            }
+            
             AdminManager.loadCustomHolidays();
             AdminManager.loadStats();
             
@@ -648,7 +830,7 @@
                 return;
             }
             
-            const blockedSlots = StorageManager.getBlockedSlots();
+            const blockedSlots = JSON.parse(localStorage.getItem('lunagestio_blocked_slots')) || [];
             blockedSlots.push({ date, time });
             localStorage.setItem('lunagestio_blocked_slots', JSON.stringify(blockedSlots));
             
@@ -656,8 +838,7 @@
             alert('✅ Horario bloqueado correctamente');
         }
 
-        // ===== INICIALIZACIÓN DEL PANEL =====
-        document.addEventListener('DOMContentLoaded', () => {
+        function initializeAdminPanel() {
             AdminManager.loadStats();
             AdminManager.loadAppointments();
             AdminManager.loadCustomHolidays();
@@ -670,39 +851,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('holidayDate').min = today;
             document.getElementById('blockDate').min = today;
-        });
-
-        // Asegurarse de que StorageManager esté disponible
-        const StorageManager = {
-            getAppointments: () => {
-                const appointments = localStorage.getItem('lunagestio_appointments');
-                return appointments ? JSON.parse(appointments) : [];
-            },
-            
-            getCustomHolidays: () => {
-                const holidays = localStorage.getItem('lunagestio_custom_holidays');
-                return holidays ? JSON.parse(holidays) : [];
-            },
-            
-            saveCustomHoliday: (date) => {
-                const holidays = StorageManager.getCustomHolidays();
-                if (!holidays.includes(date)) {
-                    holidays.push(date);
-                    localStorage.setItem('lunagestio_custom_holidays', JSON.stringify(holidays));
-                }
-            },
-            
-            removeCustomHoliday: (date) => {
-                const holidays = StorageManager.getCustomHolidays();
-                const updatedHolidays = holidays.filter(h => h !== date);
-                localStorage.setItem('lunagestio_custom_holidays', JSON.stringify(updatedHolidays));
-            },
-            
-            getBlockedSlots: () => {
-                const slots = localStorage.getItem('lunagestio_blocked_slots');
-                return slots ? JSON.parse(slots) : [];
-            }
-        };
+        }
     </script>
 </body>
 </html>
