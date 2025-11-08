@@ -516,6 +516,54 @@
                 `;
                 appointmentForm.style.display = 'none';
             }
+<!-- Le code index.html reste le même que précédemment, mais avec cette correction dans le script -->
+
+<script>
+// Dans la fonction checkAppointmentAuth(), ajouter cette vérification pour l'admin
+function checkAppointmentAuth() {
+    const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
+    const authCheck = document.getElementById('appointmentAuthCheck');
+    const appointmentForm = document.getElementById('appointmentForm');
+
+    if (currentUser) {
+        // Vérifier si c'est un admin
+        if (currentUser.role === 'admin') {
+            authCheck.innerHTML = `
+                <div style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; text-align: center;">
+                    <i class="fas fa-info-circle"></i> Mode administrateur - Vous ne pouvez pas prendre de rendez-vous
+                </div>
+            `;
+            appointmentForm.style.display = 'none';
+        } else {
+            // Utilisateur client connecté
+            authCheck.innerHTML = `
+                <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; text-align: center;">
+                    <i class="fas fa-check-circle"></i> Connecté en tant que ${currentUser.firstName} ${currentUser.lastName}
+                </div>
+            `;
+            appointmentForm.style.display = 'block';
+        }
+    } else {
+        // Utilisateur non connecté
+        authCheck.innerHTML = `
+            <div class="login-required">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Connexion Requise</h3>
+                <p>Vous devez être connecté pour prendre rendez-vous.</p>
+                <div style="margin-top: 1rem;">
+                    <a href="login.html" class="btn-auth btn-login" style="display: inline-flex; margin: 0.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </a>
+                    <a href="register.html" class="btn-auth btn-register" style="display: inline-flex; margin: 0.5rem;">
+                        <i class="fas fa-user-plus"></i> Créer un compte
+                    </a>
+                </div>
+            </div>
+        `;
+        appointmentForm.style.display = 'none';
+    }
+}
+</script>
         }
 
         // Gestion du formulaire de rendez-vous
