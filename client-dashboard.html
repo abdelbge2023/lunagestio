@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,14 +15,12 @@
         body {
             font-family: 'Arial', sans-serif;
             background: #f8f9fa;
-            color: #333;
         }
 
         .dashboard-header {
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem;
         }
 
         .header-container {
@@ -31,723 +29,130 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: #3498db;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-        }
-
-        .btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 0.7rem 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .dashboard-nav {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 0;
-        }
-
-        .nav-links a {
-            color: #2c3e50;
-            text-decoration: none;
-            padding: 1rem 1.5rem;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background: #f8f9fa;
-            border-bottom-color: #3498db;
-            color: #3498db;
+            gap: 1rem;
         }
 
         .dashboard-container {
             max-width: 1200px;
             margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 2rem;
-        }
-
-        .main-content {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .sidebar {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            height: fit-content;
-        }
-
-        .section-title {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
+            padding: 0 1rem;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
+            background: white;
             padding: 1.5rem;
             border-radius: 10px;
             text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .appointments-list, .documents-list {
-            margin-top: 2rem;
-        }
-
-        .appointment-item, .document-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
+        .appointment-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
             margin-bottom: 1rem;
-            transition: all 0.3s;
-        }
-
-        .appointment-item:hover, .document-item:hover {
-            border-color: #3498db;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .appointment-info h4, .document-info h4 {
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .appointment-meta, .document-meta {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-confirmed { background: #d1ecf1; color: #0c5460; }
-        .status-completed { background: #d4edda; color: #155724; }
-
-        .upload-area {
-            border: 2px dashed #3498db;
-            border-radius: 10px;
-            padding: 2rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            background: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .upload-area:hover {
-            background: #e3f2fd;
-        }
-
-        .upload-area i {
-            font-size: 3rem;
-            color: #3498db;
-            margin-bottom: 1rem;
-        }
-
-        .document-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #3498db;
-            color: #3498db;
-        }
-
-        .btn-outline:hover {
-            background: #3498db;
-            color: white;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .profile-info {
-            margin-bottom: 2rem;
-        }
-
-        .profile-info p {
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links {
+            .header-container {
                 flex-direction: column;
-            }
-            
-            .appointment-item, .document-item {
-                flex-direction: column;
-                gap: 1rem;
                 text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- En-tête -->
     <header class="dashboard-header">
         <div class="header-container">
-            <div class="logo">
-                <i class="fas fa-user-circle"></i>
-                Lunagestio - Espace Client
-            </div>
-            <div class="user-menu">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <span id="userName">Utilisateur</span>
-                </div>
-                <a href="#" class="btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+            <h1><i class="fas fa-user-circle"></i> Espace Client</h1>
+            <div class="user-info">
+                <span id="userName">Utilisateur</span>
+                <a href="index.html" class="btn" style="color: white; text-decoration: none; padding: 0.5rem 1rem; background: #27ae60; border-radius: 5px;">
+                    <i class="fas fa-home"></i> Accueil
                 </a>
+                <button onclick="logout()" style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Navigation -->
-    <nav class="dashboard-nav">
-        <div class="nav-container">
-            <ul class="nav-links">
-                <li><a href="#" class="active" onclick="showTab('overview')">
-                    <i class="fas fa-home"></i> Tableau de bord
-                </a></li>
-                <li><a href="#" onclick="showTab('appointments')">
-                    <i class="fas fa-calendar-alt"></i> Mes rendez-vous
-                </a></li>
-                <li><a href="#" onclick="showTab('documents')">
-                    <i class="fas fa-file-alt"></i> Documents
-                </a></li>
-                <li><a href="#" onclick="showTab('profile')">
-                    <i class="fas fa-user-cog"></i> Mon profil
-                </a></li>
-                <li><a href="index.html">
-                    <i class="fas fa-external-link-alt"></i> Site principal
-                </a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Contenu principal -->
     <div class="dashboard-container">
-        <div class="dashboard-grid">
-            <!-- Contenu principal -->
-            <div class="main-content">
-                <!-- Vue d'ensemble -->
-                <div id="overview" class="tab-content active">
-                    <h2 class="section-title">
-                        <i class="fas fa-tachometer-alt"></i> Tableau de bord
-                    </h2>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number" id="totalAppointments">0</div>
-                            <div>Rendez-vous total</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="pendingAppointments">0</div>
-                            <div>En attente</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="documentsCount">0</div>
-                            <div>Documents</div>
-                        </div>
-                    </div>
-
-                    <div class="appointments-list">
-                        <h3 class="section-title">
-                            <i class="fas fa-clock"></i> Prochains rendez-vous
-                        </h3>
-                        <div id="upcomingAppointments">
-                            <!-- Rendez-vous à venir -->
-                        </div>
-                    </div>
-
-                    <div class="documents-list">
-                        <h3 class="section-title">
-                            <i class="fas fa-file-upload"></i> Derniers documents
-                        </h3>
-                        <div id="recentDocuments">
-                            <!-- Documents récents -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mes rendez-vous -->
-                <div id="appointments" class="tab-content">
-                    <h2 class="section-title">
-                        <i class="fas fa-calendar-alt"></i> Mes rendez-vous
-                    </h2>
-                    <div id="allAppointments">
-                        <!-- Tous les rendez-vous -->
-                    </div>
-                </div>
-
-                <!-- Documents -->
-                <div id="documents" class="tab-content">
-                    <h2 class="section-title">
-                        <i class="fas fa-file-alt"></i> Gestion des documents
-                    </h2>
-                    
-                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h3>Déposer des documents</h3>
-                        <p>Cliquez pour sélectionner des fichiers ou glissez-déposez</p>
-                        <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFileUpload(this.files)">
-                    </div>
-
-                    <div id="documentsList">
-                        <!-- Liste des documents -->
-                    </div>
-                </div>
-
-                <!-- Mon profil -->
-                <div id="profile" class="tab-content">
-                    <h2 class="section-title">
-                        <i class="fas fa-user-cog"></i> Mon profil
-                    </h2>
-                    
-                    <div class="profile-info">
-                        <p><strong><i class="fas fa-user"></i> Nom complet:</strong> <span id="profileName"></span></p>
-                        <p><strong><i class="fas fa-envelope"></i> Email:</strong> <span id="profileEmail"></span></p>
-                        <p><strong><i class="fas fa-phone"></i> Téléphone:</strong> <span id="profilePhone"></span></p>
-                        <p><strong><i class="fas fa-map-marker-alt"></i> Adresse:</strong> <span id="profileAddress"></span></p>
-                        <p><strong><i class="fas fa-calendar-plus"></i> Membre depuis:</strong> <span id="profileSince"></span></p>
-                    </div>
-
-                    <button class="btn btn-outline" onclick="editProfile()">
-                        <i class="fas fa-edit"></i> Modifier le profil
-                    </button>
-                </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalAppointments">0</h3>
+                <p>Rendez-vous</p>
             </div>
+        </div>
 
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <h3 class="section-title">
-                    <i class="fas fa-bell"></i> Notifications
-                </h3>
-                <div id="notifications">
-                    <!-- Notifications -->
-                </div>
-
-                <h3 class="section-title" style="margin-top: 2rem;">
-                    <i class="fas fa-question-circle"></i> Aide rapide
-                </h3>
-                <div style="color: #7f8c8d; font-size: 0.9rem;">
-                    <p>• Utilisez l'onglet "Documents" pour partager des fichiers avec nous</p>
-                    <p>• Consultez vos rendez-vous dans l'onglet dédié</p>
-                    <p>• Mettez à jour vos informations personnelles dans "Mon profil"</p>
-                </div>
-            </div>
+        <h2>Mes Rendez-vous</h2>
+        <div id="appointmentsList">
+            <!-- Rendez-vous chargés dynamiquement -->
         </div>
     </div>
 
     <script>
-        // Gestionnaire de documents
-        const DocumentManager = {
-            getDocuments: (userId) => {
-                const allDocuments = JSON.parse(localStorage.getItem('lunagestio_documents')) || [];
-                return allDocuments.filter(doc => doc.userId === userId);
-            },
-
-            saveDocument: (document) => {
-                const documents = JSON.parse(localStorage.getItem('lunagestio_documents')) || [];
-                document.id = Date.now().toString();
-                document.uploadedAt = new Date().toISOString();
-                documents.push(document);
-                localStorage.setItem('lunagestio_documents', JSON.stringify(documents));
-                return document;
-            },
-
-            deleteDocument: (documentId) => {
-                const documents = JSON.parse(localStorage.getItem('lunagestio_documents')) || [];
-                const updatedDocuments = documents.filter(doc => doc.id !== documentId);
-                localStorage.setItem('lunagestio_documents', JSON.stringify(updatedDocuments));
-            }
-        };
-
-        // Variables
-        let currentUser = null;
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vérifier la connexion
-            currentUser = UserManager.getCurrentUser();
+        function checkAuth() {
+            const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
             if (!currentUser) {
                 window.location.href = 'login.html';
+                return null;
+            }
+            return currentUser;
+        }
+
+        function loadDashboard() {
+            const user = checkAuth();
+            if (!user) return;
+
+            document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+
+            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
+            const userAppointments = appointments.filter(apt => apt.userId === user.id);
+
+            document.getElementById('totalAppointments').textContent = userAppointments.length;
+
+            const list = document.getElementById('appointmentsList');
+            if (userAppointments.length === 0) {
+                list.innerHTML = '<p>Aucun rendez-vous programmé</p>';
                 return;
             }
 
-            // Mettre à jour l'interface utilisateur
-            updateUserInterface();
-            
-            // Charger les données
-            loadDashboardData();
-            loadAppointments();
-            loadDocuments();
-            loadNotifications();
-        });
-
-        function updateUserInterface() {
-            // Avatar
-            const initials = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
-            document.getElementById('userAvatar').textContent = initials;
-            
-            // Nom utilisateur
-            document.getElementById('userName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-            
-            // Profil
-            document.getElementById('profileName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
-            document.getElementById('profileEmail').textContent = currentUser.email;
-            document.getElementById('profilePhone').textContent = currentUser.phone || 'Non renseigné';
-            document.getElementById('profileAddress').textContent = currentUser.address || 'Non renseignée';
-            document.getElementById('profileSince').textContent = new Date(currentUser.createdAt).toLocaleDateString('fr-FR');
-        }
-
-        function loadDashboardData() {
-            const appointments = StorageManager.getAppointments();
-            const userAppointments = appointments.filter(apt => apt.email === currentUser.email);
-            const documents = DocumentManager.getDocuments(currentUser.id);
-
-            document.getElementById('totalAppointments').textContent = userAppointments.length;
-            document.getElementById('pendingAppointments').textContent = userAppointments.filter(a => a.status === 'pending').length;
-            document.getElementById('documentsCount').textContent = documents.length;
-        }
-
-        function loadAppointments() {
-            const appointments = StorageManager.getAppointments();
-            const userAppointments = appointments
-                .filter(apt => apt.email === currentUser.email)
-                .sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
-
-            // Rendez-vous à venir
-            const upcoming = userAppointments.filter(apt => new Date(apt.date + ' ' + apt.time) > new Date());
-            const upcomingHtml = upcoming.slice(0, 3).map(apt => `
+            list.innerHTML = userAppointments.map(apt => `
                 <div class="appointment-item">
-                    <div class="appointment-info">
-                        <h4>${getServiceName(apt.service)}</h4>
-                        <div class="appointment-meta">
-                            <i class="fas fa-calendar"></i> ${formatDisplayDate(apt.date)}
-                            <i class="fas fa-clock"></i> ${apt.time}
-                        </div>
-                    </div>
-                    <div class="status-badge status-${apt.status}">
-                        ${apt.status === 'pending' ? 'En attente' : 'Confirmé'}
-                    </div>
-                </div>
-            `).join('') || '<p style="color: #7f8c8d; text-align: center;">Aucun rendez-vous à venir</p>';
-
-            document.getElementById('upcomingAppointments').innerHTML = upcomingHtml;
-
-            // Tous les rendez-vous
-            const allAppointmentsHtml = userAppointments.map(apt => {
-                const aptDate = new Date(apt.date + ' ' + apt.time);
-                const isPast = aptDate < new Date();
-                
-                return `
-                    <div class="appointment-item">
-                        <div class="appointment-info">
-                            <h4>${getServiceName(apt.service)}</h4>
-                            <div class="appointment-meta">
-                                <i class="fas fa-calendar"></i> ${formatDisplayDate(apt.date)}
-                                <i class="fas fa-clock"></i> ${apt.time}
-                                ${isPast ? '<i class="fas fa-history"></i> Terminé' : ''}
-                            </div>
-                            ${apt.message ? `<p style="margin-top: 0.5rem; color: #555;"><i class="fas fa-comment"></i> ${apt.message}</p>` : ''}
-                        </div>
-                        <div class="status-badge status-${isPast ? 'completed' : apt.status}">
-                            ${isPast ? 'Terminé' : (apt.status === 'pending' ? 'En attente' : 'Confirmé')}
-                        </div>
-                    </div>
-                `;
-            }).join('') || '<p style="color: #7f8c8d; text-align: center;">Aucun rendez-vous</p>';
-
-            document.getElementById('allAppointments').innerHTML = allAppointmentsHtml;
-        }
-
-        function loadDocuments() {
-            const documents = DocumentManager.getDocuments(currentUser.id)
-                .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-
-            // Documents récents
-            const recentHtml = documents.slice(0, 3).map(doc => `
-                <div class="document-item">
-                    <div class="document-info">
-                        <h4>${doc.name}</h4>
-                        <div class="document-meta">
-                            <i class="fas fa-calendar"></i> ${new Date(doc.uploadedAt).toLocaleDateString('fr-FR')}
-                            • ${formatFileSize(doc.size)}
-                        </div>
-                    </div>
-                    <div class="document-actions">
-                        <button class="btn btn-outline btn-sm" onclick="downloadDocument('${doc.id}')">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('') || '<p style="color: #7f8c8d; text-align: center;">Aucun document</p>';
-
-            document.getElementById('recentDocuments').innerHTML = recentHtml;
-
-            // Tous les documents
-            const allDocumentsHtml = documents.map(doc => `
-                <div class="document-item">
-                    <div class="document-info">
-                        <h4>${doc.name}</h4>
-                        <div class="document-meta">
-                            <i class="fas fa-calendar"></i> ${new Date(doc.uploadedAt).toLocaleDateString('fr-FR')}
-                            • ${formatFileSize(doc.size)}
-                            • ${doc.type}
-                        </div>
-                    </div>
-                    <div class="document-actions">
-                        <button class="btn btn-outline btn-sm" onclick="downloadDocument('${doc.id}')">
-                            <i class="fas fa-download"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteDocument('${doc.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('') || '<p style="color: #7f8c8d; text-align: center;">Aucun document uploadé</p>';
-
-            document.getElementById('documentsList').innerHTML = allDocumentsHtml;
-        }
-
-        function loadNotifications() {
-            const notifications = [
-                { message: 'Bienvenue dans votre espace client!', date: new Date().toISOString() }
-            ];
-            
-            const notificationsHtml = notifications.map(notif => `
-                <div style="padding: 1rem; border-left: 3px solid #3498db; background: #f8f9fa; margin-bottom: 0.5rem; border-radius: 5px;">
-                    <p style="margin: 0; font-size: 0.9rem;">${notif.message}</p>
-                    <small style="color: #7f8c8d;">${new Date(notif.date).toLocaleDateString('fr-FR')}</small>
+                    <h4>${apt.service}</h4>
+                    <p>Date: ${apt.date} à ${apt.time}</p>
+                    <p>Statut: ${apt.status}</p>
+                    ${apt.message ? `<p>Message: ${apt.message}</p>` : ''}
                 </div>
             `).join('');
-
-            document.getElementById('notifications').innerHTML = notificationsHtml;
-        }
-
-        function handleFileUpload(files) {
-            for (let file of files) {
-                const document = {
-                    userId: currentUser.id,
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    content: 'simulated_content' // Dans une vraie app, on utiliserait FileReader
-                };
-
-                DocumentManager.saveDocument(document);
-            }
-
-            loadDocuments();
-            loadDashboardData();
-            alert('Fichiers uploadés avec succès!');
-        }
-
-        function downloadDocument(documentId) {
-            alert('Téléchargement simulé - Dans une vraie application, le fichier serait téléchargé');
-        }
-
-        function deleteDocument(documentId) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce document?')) {
-                DocumentManager.deleteDocument(documentId);
-                loadDocuments();
-                loadDashboardData();
-            }
-        }
-
-        function showTab(tabName) {
-            // Masquer tous les onglets
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            // Désactiver tous les liens
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            // Activer l'onglet sélectionné
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-
-            // Recharger les données si nécessaire
-            if (tabName === 'appointments') loadAppointments();
-            if (tabName === 'documents') loadDocuments();
-        }
-
-        function editProfile() {
-            alert('Fonctionnalité de modification du profil à implémenter');
         }
 
         function logout() {
-            UserManager.logout();
+            localStorage.removeItem('lunagestio_current_user');
             window.location.href = 'login.html';
         }
 
-        // Fonctions utilitaires
-        function getServiceName(serviceKey) {
-            const services = {
-                'extranjeria': 'Extranjería',
-                'laboral': 'Laboral / Fiscal',
-                'seguros': 'Seguros', 
-                'vehiculos': 'Vehículos',
-                'otro': 'Otro servicio'
-            };
-            return services[serviceKey] || serviceKey;
-        }
-
-        function formatDisplayDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        // Gestionnaires (doivent être identiques à ceux de login.html)
-        const UserManager = {
-            getCurrentUser: () => {
-                return JSON.parse(localStorage.getItem('lunagestio_current_user'));
-            },
-            logout: () => {
-                localStorage.removeItem('lunagestio_current_user');
-            }
-        };
-
-        const StorageManager = {
-            getAppointments: () => {
-                return JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-            }
-        };
+        document.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
 </body>
 </html>
