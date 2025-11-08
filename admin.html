@@ -21,26 +21,28 @@
         .admin-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1rem;
         }
 
         .admin-header {
             background: white;
-            padding: 1rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .admin-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
         }
 
         .btn {
@@ -48,23 +50,97 @@
             color: white;
             border: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
         }
 
         .btn-danger {
             background: #e74c3c;
         }
 
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
         @media (max-width: 768px) {
             .admin-header {
                 flex-direction: column;
-                gap: 1rem;
                 text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -72,8 +148,8 @@
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1><i class="fas fa-user-shield"></i> Panel Administrateur</h1>
-            <div>
+            <h1><i class="fas fa-user-shield"></i> Panel Administrateur - Lunagestio</h1>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <a href="index.html" class="btn">
                     <i class="fas fa-home"></i> Site principal
                 </a>
@@ -83,10 +159,72 @@
             </div>
         </div>
 
+        <!-- Statistiques -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAppointments">0</div>
+                <div>Rendez-vous total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div>Clients inscrits</div>
+            </div>
+        </div>
+
+        <!-- Gestion des rendez-vous -->
         <div class="admin-card">
-            <h2>Gestion des Rendez-vous</h2>
+            <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
+                <i class="fas fa-calendar-alt"></i> Gestion des Rendez-vous
+            </h2>
             <div id="appointmentsList">
                 <!-- Liste des rendez-vous -->
+            </div>
+        </div>
+
+        <!-- Changement de mot de passe -->
+        <div class="admin-card">
+            <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
+                <i class="fas fa-key"></i> Changement de mot de passe
+            </h2>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Mot de passe actuel</label>
+                    <div class="password-toggle">
+                        <input type="password" id="currentPassword" required placeholder="Votre mot de passe actuel">
+                        <i class="fas fa-eye" onclick="togglePassword('currentPassword', this)"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newPassword">Nouveau mot de passe</label>
+                    <div class="password-toggle">
+                        <input type="password" id="newPassword" required placeholder="Nouveau mot de passe">
+                        <i class="fas fa-eye" onclick="togglePassword('newPassword', this)"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmer le nouveau mot de passe</label>
+                    <div class="password-toggle">
+                        <input type="password" id="confirmPassword" required placeholder="Confirmer le mot de passe">
+                        <i class="fas fa-eye" onclick="togglePassword('confirmPassword', this)"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Changer le mot de passe
+                </button>
+            </form>
+            <div id="passwordMessage" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Gestion des utilisateurs -->
+        <div class="admin-card">
+            <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
+                <i class="fas fa-users"></i> Gestion des Utilisateurs
+            </h2>
+            <div id="usersList">
+                <!-- Liste des utilisateurs -->
             </div>
         </div>
     </div>
@@ -103,26 +241,178 @@
             return true;
         }
 
-        function loadAppointments() {
-            if (!checkAdminAccess()) return;
+        // Basculer la visibilité du mot de passe
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            const type = input.type === 'password' ? 'text' : 'password';
+            input.type = type;
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        }
 
+        // Charger les statistiques
+        function loadStats() {
+            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
+            const users = JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+            const clients = users.filter(u => u.role === 'client');
+            
+            document.getElementById('totalAppointments').textContent = appointments.length;
+            document.getElementById('totalUsers').textContent = clients.length;
+        }
+
+        // Charger les rendez-vous
+        function loadAppointments() {
             const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
             const list = document.getElementById('appointmentsList');
             
             if (appointments.length === 0) {
-                list.innerHTML = '<p>Aucun rendez-vous</p>';
+                list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun rendez-vous programmé</p>';
                 return;
             }
 
+            // Trier par date
+            appointments.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+
             list.innerHTML = appointments.map(apt => `
-                <div style="border: 1px solid #ddd; padding: 1rem; margin: 0.5rem 0; border-radius: 5px;">
-                    <h4>${apt.userName} - ${apt.service}</h4>
-                    <p>Date: ${apt.date} à ${apt.time}</p>
-                    <p>Email: ${apt.userEmail}</p>
-                    <p>Téléphone: ${apt.userPhone}</p>
-                    <p>Statut: ${apt.status}</p>
+                <div class="appointment-item">
+                    <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${apt.userName} - ${getServiceName(apt.service)}</h4>
+                    <p><strong>Date:</strong> ${formatDate(apt.date)} à ${apt.time}</p>
+                    <p><strong>Email:</strong> ${apt.userEmail}</p>
+                    <p><strong>Téléphone:</strong> ${apt.userPhone || 'Non renseigné'}</p>
+                    <p><strong>Statut:</strong> <span style="color: ${apt.status === 'confirmed' ? '#27ae60' : '#f39c12'}">${apt.status === 'confirmed' ? 'Confirmé' : 'En attente'}</span></p>
+                    ${apt.message ? `<p><strong>Message:</strong> ${apt.message}</p>` : ''}
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        ${apt.status !== 'confirmed' ? `
+                            <button class="btn btn-success" onclick="confirmAppointment('${apt.id}')" style="padding: 0.5rem 1rem;">
+                                <i class="fas fa-check"></i> Confirmer
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-danger" onclick="cancelAppointment('${apt.id}')" style="padding: 0.5rem 1rem;">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        // Charger les utilisateurs
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+            const clients = users.filter(u => u.role === 'client');
+            const list = document.getElementById('usersList');
+            
+            if (clients.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun client inscrit</p>';
+                return;
+            }
+
+            list.innerHTML = clients.map(user => `
+                <div class="appointment-item">
+                    <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${user.firstName} ${user.lastName}</h4>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Téléphone:</strong> ${user.phone || 'Non renseigné'}</p>
+                    <p><strong>Inscrit le:</strong> ${formatDate(user.createdAt.split('T')[0])}</p>
+                </div>
+            `).join('');
+        }
+
+        // Gestion des rendez-vous
+        function confirmAppointment(appointmentId) {
+            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
+            const appointment = appointments.find(apt => apt.id === appointmentId);
+            if (appointment) {
+                appointment.status = 'confirmed';
+                localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
+                loadAppointments();
+                loadStats();
+                showMessage('Rendez-vous confirmé avec succès!', 'success');
+            }
+        }
+
+        function cancelAppointment(appointmentId) {
+            if (confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous?')) {
+                const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
+                const updatedAppointments = appointments.filter(apt => apt.id !== appointmentId);
+                localStorage.setItem('lunagestio_appointments', JSON.stringify(updatedAppointments));
+                loadAppointments();
+                loadStats();
+                showMessage('Rendez-vous annulé avec succès!', 'success');
+            }
+        }
+
+        // Changement de mot de passe
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (currentPassword !== currentUser.password) {
+                showMessage('Mot de passe actuel incorrect', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showMessage('Le nouveau mot de passe doit contenir au moins 6 caractères', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showMessage('Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+
+            // Mettre à jour le mot de passe
+            const success = UserManager.updateUserPassword(currentUser.id, newPassword);
+            
+            if (success) {
+                // Mettre à jour l'utilisateur connecté
+                currentUser.password = newPassword;
+                localStorage.setItem('lunagestio_current_user', JSON.stringify(currentUser));
+                
+                showMessage('Mot de passe changé avec succès!', 'success');
+                this.reset();
+            } else {
+                showMessage('Erreur lors du changement de mot de passe', 'error');
+            }
+        });
+
+        // Fonctions utilitaires
+        function getServiceName(serviceKey) {
+            const services = {
+                'extranjeria': 'Étrangérie',
+                'laboral': 'Fiscal / Comptable',
+                'seguros': 'Assurances',
+                'vehiculos': 'Véhicules'
+            };
+            return services[serviceKey] || serviceKey;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('passwordMessage');
+            messageDiv.innerHTML = `
+                <div style="padding: 1rem; border-radius: 8px; background: ${type === 'success' ? '#d4edda' : '#f8d7da'}; color: ${type === 'success' ? '#155724' : '#721c24'}; border: 1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'};">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
         }
 
         function logout() {
@@ -130,10 +420,35 @@
             window.location.href = 'login.html';
         }
 
+        // Gestionnaire d'utilisateurs (identique à login.html)
+        const UserManager = {
+            getUsers: () => {
+                const users = localStorage.getItem('lunagestio_users');
+                return users ? JSON.parse(users) : [];
+            },
+
+            saveUsers: (users) => {
+                localStorage.setItem('lunagestio_users', JSON.stringify(users));
+            },
+
+            updateUserPassword: (userId, newPassword) => {
+                const users = UserManager.getUsers();
+                const userIndex = users.findIndex(u => u.id === userId);
+                if (userIndex !== -1) {
+                    users[userIndex].password = newPassword;
+                    UserManager.saveUsers(users);
+                    return true;
+                }
+                return false;
+            }
+        };
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             if (checkAdminAccess()) {
+                loadStats();
                 loadAppointments();
+                loadUsers();
             }
         });
     </script>
