@@ -118,6 +118,25 @@
             border: 1px solid #f44336;
         }
 
+        .alert-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
         @media (max-width: 480px) {
             .login-container {
                 padding: 1.5rem;
@@ -144,9 +163,10 @@
                 <input type="email" id="email" required placeholder="votre@email.com">
             </div>
 
-            <div class="form-group">
+            <div class="form-group password-toggle">
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" required placeholder="Votre mot de passe">
+                <i class="fas fa-eye" id="togglePassword"></i>
             </div>
 
             <button type="submit" class="btn">Se connecter</button>
@@ -164,41 +184,68 @@
     </div>
 
     <script>
-        // Gestionnaire d'utilisateurs
+        // Gestionnaire d'utilisateurs COMPLET
         const UserManager = {
             getUsers: () => {
-                return JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+                const users = localStorage.getItem('lunagestio_users');
+                return users ? JSON.parse(users) : [];
+            },
+
+            saveUsers: (users) => {
+                localStorage.setItem('lunagestio_users', JSON.stringify(users));
             },
 
             authenticate: (email, password) => {
                 const users = UserManager.getUsers();
-                const user = users.find(u => u.email === email && u.password === password);
-                return user;
+                return users.find(u => u.email === email && u.password === password);
             },
 
             setCurrentUser: (user) => {
                 localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
+            },
+
+            updateUserPassword: (userId, newPassword) => {
+                const users = UserManager.getUsers();
+                const userIndex = users.findIndex(u => u.id === userId);
+                if (userIndex !== -1) {
+                    users[userIndex].password = newPassword;
+                    UserManager.saveUsers(users);
+                    return true;
+                }
+                return false;
             }
         };
 
-        // Initialisation admin par défaut
+        // Initialisation admin par défaut - CORRIGÉE
         function initializeDefaultAdmin() {
             const users = UserManager.getUsers();
             const adminExists = users.some(user => user.role === 'admin');
             
             if (!adminExists) {
-                users.push({
-                    id: 'admin',
+                const adminUser = {
+                    id: 'admin_' + Date.now(),
                     email: 'admin@lunagestio.com',
-                    password: 'admin123',
-                    firstName: 'Admin',
+                    password: 'Admin123!',
+                    firstName: 'Administrateur',
                     lastName: 'Lunagestio',
                     role: 'admin',
+                    phone: '+34 972 30 43 09',
                     createdAt: new Date().toISOString()
-                });
-                localStorage.setItem('lunagestio_users', JSON.stringify(users));
+                };
+                users.push(adminUser);
+                UserManager.saveUsers(users);
+                console.log('Compte admin créé:', adminUser.email, adminUser.password);
             }
         }
+
+        // Basculer la visibilité du mot de passe
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
 
         // Gestionnaire de connexion
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -232,8 +279,9 @@
 
         function showAdminLogin() {
             document.getElementById('email').value = 'admin@lunagestio.com';
-            document.getElementById('password').value = 'admin123';
-            document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            document.getElementById('password').value = 'Admin123!';
+            // Ne pas soumettre automatiquement, laisser l'utilisateur le faire
+            showAlert('Identifiants admin pré-remplis. Cliquez sur "Se connecter"', 'success');
         }
 
         function showAlert(message, type) {
