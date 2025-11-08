@@ -460,35 +460,6 @@
             border: 2px solid #e74c3c;
         }
 
-        /* ===== INDICATEUR DE SYNCHRO ===== */
-        .sync-indicator {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            background: #3498db;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .sync-indicator.syncing {
-            background: #f39c12;
-        }
-
-        .sync-indicator.error {
-            background: #e74c3c;
-        }
-
-        .sync-indicator.success {
-            background: #27ae60;
-        }
-
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .nav-container {
@@ -525,13 +496,6 @@
 
             .contact-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .sync-indicator {
-                top: 60px;
-                right: 10px;
-                left: 10px;
-                text-align: center;
             }
         }
 
@@ -622,12 +586,6 @@
             </ul>
         </nav>
     </header>
-
-    <!-- Indicateur de synchronisation -->
-    <div id="syncIndicator" class="sync-indicator hidden">
-        <i class="fas fa-sync"></i>
-        <span id="syncMessage">Synchronisation...</span>
-    </div>
 
     <!-- Hero Section -->
     <section class="hero" id="inicio">
@@ -827,91 +785,6 @@
     </footer>
 
     <script>
-        // ===== GESTIONNAIRE DE SYNCHRONISATION =====
-        const SyncManager = {
-            deviceId: localStorage.getItem('lunagestio_device_id') || this.generateDeviceId(),
-            
-            generateDeviceId: function() {
-                const id = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('lunagestio_device_id', id);
-                return id;
-            },
-            
-            // Afficher l'indicateur de synchronisation
-            showSyncIndicator: function(message, type = 'syncing') {
-                const indicator = document.getElementById('syncIndicator');
-                const messageEl = document.getElementById('syncMessage');
-                
-                indicator.className = 'sync-indicator ' + type;
-                messageEl.textContent = message;
-                indicator.classList.remove('hidden');
-                
-                if (type === 'success') {
-                    setTimeout(() => {
-                        indicator.classList.add('hidden');
-                    }, 3000);
-                }
-            },
-            
-            // Cacher l'indicateur
-            hideSyncIndicator: function() {
-                document.getElementById('syncIndicator').classList.add('hidden');
-            },
-            
-            // Synchroniser les données
-            syncData: async function() {
-                if (!this.isOnline()) {
-                    this.showSyncIndicator('Hors ligne - Synchronisation différée', 'error');
-                    return false;
-                }
-                
-                this.showSyncIndicator('Synchronisation en cours...', 'syncing');
-                
-                try {
-                    // Simulation de synchronisation
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    
-                    // En production, ici vous enverriez les données à votre serveur
-                    // et récupéreriez les données fusionnées
-                    
-                    this.showSyncIndicator('Synchronisation réussie!', 'success');
-                    return true;
-                    
-                } catch (error) {
-                    this.showSyncIndicator('Erreur de synchronisation', 'error');
-                    return false;
-                }
-            },
-            
-            // Vérifier la connexion internet
-            isOnline: function() {
-                return navigator.onLine;
-            },
-            
-            // Initialiser la synchronisation automatique
-            initAutoSync: function() {
-                // Synchroniser au chargement
-                window.addEventListener('load', () => {
-                    if (this.isOnline()) {
-                        this.syncData();
-                    }
-                });
-                
-                // Synchroniser quand la connexion revient
-                window.addEventListener('online', () => {
-                    this.showSyncIndicator('Connexion rétablie - Synchronisation...', 'syncing');
-                    setTimeout(() => this.syncData(), 1000);
-                });
-                
-                // Synchroniser périodiquement
-                setInterval(() => {
-                    if (this.isOnline()) {
-                        this.syncData();
-                    }
-                }, 5 * 60 * 1000); // Toutes les 5 minutes
-            }
-        };
-
         // ===== GESTIONNAIRE D'UTILISATEURS =====
         const UserManager = {
             getUsers: () => {
@@ -925,6 +798,10 @@
 
             getCurrentUser: () => {
                 return JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            },
+
+            setCurrentUser: (user) => {
+                localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
             }
         };
 
@@ -940,14 +817,68 @@
                 appointment.id = Date.now().toString();
                 appointment.status = 'pending';
                 appointment.createdAt = new Date().toISOString();
-                appointment.deviceId = SyncManager.deviceId; // Ajouter l'ID de l'appareil
                 appointments.push(appointment);
                 localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
                 
-                // Synchroniser après l'ajout
-                SyncManager.syncData();
+                // Pour GitHub Pages, on simule l'envoi à un "serveur"
+                this.simulateServerSync(appointments);
                 
                 return appointment;
+            },
+
+            // Simulation de synchronisation pour GitHub
+            simulateServerSync: function(appointments) {
+                // Stocker dans un autre localStorage pour simuler le partage
+                // En réalité, ça reste local mais c'est pour la démo
+                localStorage.setItem('lunagestio_server_simulation', JSON.stringify({
+                    lastUpdate: new Date().toISOString(),
+                    appointments: appointments
+                }));
+                
+                console.log('📡 Simulation d\'envoi au serveur:', appointments.length + ' rendez-vous');
+            },
+
+            // Charger depuis la simulation serveur
+            loadFromServerSimulation: function() {
+                const serverData = localStorage.getItem('lunagestio_server_simulation');
+                if (serverData) {
+                    const data = JSON.parse(serverData);
+                    console.log('📥 Simulation de récupération serveur:', data.appointments.length + ' rendez-vous');
+                    return data.appointments;
+                }
+                return [];
+            },
+
+            // Synchroniser les données locales avec la simulation serveur
+            syncWithServerSimulation: function() {
+                const serverAppointments = this.loadFromServerSimulation();
+                const localAppointments = this.getAppointments();
+                
+                // Fusionner les rendez-vous (éviter les doublons)
+                const mergedAppointments = this.mergeAppointments(localAppointments, serverAppointments);
+                
+                // Sauvegarder la version fusionnée
+                localStorage.setItem('lunagestio_appointments', JSON.stringify(mergedAppointments));
+                
+                console.log('🔄 Synchronisation simulée:', mergedAppointments.length + ' rendez-vous');
+                return mergedAppointments;
+            },
+
+            // Fusionner les rendez-vous sans doublons
+            mergeAppointments: function(local, server) {
+                const allAppointments = [...local];
+                const localIds = new Set(local.map(apt => apt.id));
+                
+                server.forEach(serverApt => {
+                    if (!localIds.has(serverApt.id)) {
+                        allAppointments.push(serverApt);
+                    }
+                });
+                
+                // Trier par date
+                return allAppointments.sort((a, b) => 
+                    new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time)
+                );
             }
         };
 
@@ -1043,10 +974,11 @@
             // Sauvegarder le rendez-vous
             const appointment = StorageManager.saveAppointment(formData);
 
-            showMessage(`Rendez-vous confirmé ! Votre rendez-vous pour le ${formatDisplayDate(formData.date)} à ${formData.time} a été enregistré.`, 'success');
+            showMessage(`✅ Rendez-vous confirmé ! Votre rendez-vous pour le ${formatDisplayDate(formData.date)} à ${formData.time} a été enregistré.`, 'success');
             
             this.reset();
             
+            // Recharger l'affichage
             setTimeout(() => {
                 checkAppointmentAuth();
             }, 2000);
@@ -1060,8 +992,10 @@
                 return;
             }
             
-            const appointments = StorageManager.getAppointments();
-            const userAppointments = appointments.filter(apt => 
+            // Synchroniser d'abord avec la simulation serveur
+            const allAppointments = StorageManager.syncWithServerSimulation();
+            
+            const userAppointments = allAppointments.filter(apt => 
                 apt.userEmail.toLowerCase() === email.toLowerCase()
             ).sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
             
@@ -1195,8 +1129,8 @@
             // Initialiser le compte admin
             initializeDefaultAdmin();
             
-            // Initialiser la synchronisation
-            SyncManager.initAutoSync();
+            // Synchroniser avec la simulation serveur
+            StorageManager.syncWithServerSimulation();
             
             // Vérifier l'authentification
             checkAppointmentAuth();
@@ -1207,6 +1141,9 @@
             
             // Configurer les horaires
             configureTimeSlots();
+            
+            console.log('🚀 Site Lunagestio chargé - Version GitHub Pages');
+            console.log('📊 Rendez-vous enregistrés:', StorageManager.getAppointments().length);
         });
 
         function initializeDefaultAdmin() {
@@ -1226,6 +1163,7 @@
                 };
                 users.push(adminUser);
                 UserManager.saveUsers(users);
+                console.log('👤 Compte admin créé:', adminUser.email);
             }
         }
 
@@ -1262,6 +1200,12 @@
                 }
             });
         }
+
+        // Fonction manuelle pour forcer la synchronisation
+        window.forceSync = function() {
+            const appointments = StorageManager.syncWithServerSimulation();
+            showMessage(`Synchronisation forcée : ${appointments.length} rendez-vous chargés`, 'success');
+        };
     </script>
 </body>
 </html>
