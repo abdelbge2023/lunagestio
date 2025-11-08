@@ -49,6 +49,11 @@
             gap: 10px;
         }
 
+        .logo img {
+            height: 40px;
+            border-radius: 8px;
+        }
+
         .nav-links {
             display: flex;
             list-style: none;
@@ -154,6 +159,17 @@
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+            background: linear-gradient(135deg, #c0392b, #a93226);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #2980b9, #21618c);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
         }
 
         /* ===== SERVICES ===== */
@@ -168,6 +184,17 @@
             margin-bottom: 3rem;
             font-size: 2.2rem;
             color: #2c3e50;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            margin: 1rem auto;
+            border-radius: 2px;
         }
 
         .services-grid {
@@ -178,15 +205,68 @@
 
         .service-card {
             background: white;
-            padding: 2rem;
+            padding: 2.5rem 2rem;
             border-radius: 15px;
             text-align: center;
             transition: all 0.4s ease;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e8f4f8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
         }
 
         .service-card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .service-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .service-description {
+            margin-bottom: 1.5rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .service-features {
+            text-align: left;
+            margin-top: 1.5rem;
+            padding-left: 1rem;
+        }
+
+        .service-features li {
+            margin-bottom: 0.8rem;
+            color: #555;
+            position: relative;
+            padding-left: 0.5rem;
+        }
+
+        .service-features li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 0.8rem;
         }
 
         /* ===== SECTION RENDEZ-VOUS ===== */
@@ -227,6 +307,17 @@
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
         .login-required {
@@ -237,6 +328,136 @@
             border-radius: 8px;
             text-align: center;
             margin-bottom: 1.5rem;
+        }
+
+        .user-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== CONSULTATION DES RENDEZ-VOUS ===== */
+        .appointment-query-section {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        .appointment-result {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+        }
+
+        .appointment-result.today {
+            border-left-color: #e74c3c;
+            background: #fff8e1;
+        }
+
+        .appointment-result.past {
+            border-left-color: #95a5a6;
+            opacity: 0.8;
+        }
+
+        .no-appointments {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-info {
+            padding: 4rem 1rem;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .contact-card i {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .contact-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===== MESSAGES ===== */
+        .success-message {
+            background: #e8f5e8;
+            color: #27ae60;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            border: 2px solid #27ae60;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #e74c3c;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            border: 2px solid #e74c3c;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -272,6 +493,10 @@
             .appointment-form {
                 padding: 1.5rem;
             }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
@@ -291,6 +516,10 @@
 
             .hero-content h1 {
                 font-size: 1.8rem;
+            }
+
+            .service-card {
+                padding: 2rem 1rem;
             }
         }
 
@@ -331,6 +560,7 @@
     <header class="header">
         <nav class="nav-container">
             <div class="logo">
+                <img src="images/logo.png" alt="Lunagestio Logo" onerror="this.style.display='none'">
                 <span>Lunagestio</span>
             </div>
             
@@ -376,28 +606,71 @@
             <div class="service-card">
                 <div class="service-icon">🌍</div>
                 <h3>Étrangérie</h3>
-                <p>Gestion complète des démarches d'immigration pour les résidents internationaux.</p>
+                <p class="service-description">
+                    Gestion complète des démarches d'immigration pour les résidents internationaux. 
+                    Conseils spécialisés en permis de séjour, travail, nationalité espagnole, 
+                    regroupement familial et traductions assermentées.
+                </p>
+                <ul class="service-features">
+                    <li>Permis de séjour et travail</li>
+                    <li>Nationalité espagnole</li>
+                    <li>Regroupement familial</li>
+                    <li>Traductions assermentées</li>
+                    <li>Conseil juridique migratoire</li>
+                </ul>
             </div>
 
             <!-- Service Fiscal -->
             <div class="service-card">
                 <div class="service-icon">💼</div>
                 <h3>Fiscal / Comptable</h3>
-                <p>Solutions complètes pour entreprises et indépendants.</p>
+                <p class="service-description">
+                    Solutions complètes pour entreprises et indépendants. Nous gérons toute la 
+                    documentation, paies, contrats, inscriptions à la Sécurité Sociale, 
+                    ainsi que la déclaration d'impôts et obligations fiscales.
+                </p>
+                <ul class="service-features">
+                    <li>Gestion des paies et contrats</li>
+                    <li>Inscriptions Sécurité Sociale</li>
+                    <li>Déclarations d'impôts</li>
+                    <li>Conseil fiscal</li>
+                    <li>Comptabilité pour entreprises</li>
+                </ul>
             </div>
 
             <!-- Service d'Assurances -->
             <div class="service-card">
                 <div class="service-icon">🛡️</div>
                 <h3>Assurances</h3>
-                <p>Trouvez les meilleures couvertures d'assurance adaptées à vos besoins.</p>
+                <p class="service-description">
+                    Trouvez les meilleures couvertures d'assurance adaptées à vos besoins spécifiques. 
+                    Nous travaillons avec les principales compagnies pour vous offrir des assurances 
+                    habitation, santé, vie, automobile et responsabilité civile.
+                </p>
+                <ul class="service-features">
+                    <li>Assurances habitation</li>
+                    <li>Assurances santé et vie</li>
+                    <li>Assurances automobile</li>
+                    <li>Responsabilité civile</li>
+                    <li>Comparaison des compagnies</li>
+                </ul>
             </div>
 
             <!-- Service Véhicules -->
             <div class="service-card">
                 <div class="service-icon">🚗</div>
                 <h3>Véhicules</h3>
-                <p>Nous gérons toutes les démarches liées à votre véhicule.</p>
+                <p class="service-description">
+                    Nous gérons toutes les démarches liées à votre véhicule de manière rapide et efficace. 
+                    Des transferts et immatriculations au contrôle technique et permis de circulation.
+                </p>
+                <ul class="service-features">
+                    <li>Transferts de véhicules</li>
+                    <li>Immatriculations et CT</li>
+                    <li>Permis de circulation</li>
+                    <li>Radiation temporaire/définitive</li>
+                    <li>Gestion des amendes</li>
+                </ul>
             </div>
         </div>
     </section>
@@ -436,6 +709,8 @@
                         <option value="10:00">10:00</option>
                         <option value="11:00">11:00</option>
                         <option value="12:00">12:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
                         <option value="16:00">16:00</option>
                         <option value="17:00">17:00</option>
                         <option value="18:00">18:00</option>
@@ -444,7 +719,7 @@
                 
                 <div class="form-group">
                     <label for="message">Message (optionnel)</label>
-                    <textarea id="message" rows="4" placeholder="Informations supplémentaires..."></textarea>
+                    <textarea id="message" rows="4" placeholder="Informations supplémentaires sur votre consultation..."></textarea>
                 </div>
                 
                 <button type="submit" class="btn">
@@ -454,49 +729,136 @@
         </div>
     </section>
 
+    <!-- Consultation des Rendez-vous Section -->
+    <section class="appointment-query-section" id="consulta-citas">
+        <div class="appointment-form">
+            <h2>Consulter Vos Rendez-vous</h2>
+            <p>Vérifiez l'état de vos rendez-vous programmés</p>
+            
+            <div class="form-group">
+                <label for="queryEmail">Email *</label>
+                <input type="email" id="queryEmail" required placeholder="Entrez l'email utilisé pour la réservation">
+            </div>
+            
+            <button class="btn btn-secondary" onclick="queryAppointments()">
+                <i class="fas fa-search"></i> Consulter les Rendez-vous
+            </button>
+            
+            <div id="appointmentsResults" style="margin-top: 2rem;"></div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
-    <section class="services" id="contacto">
+    <section class="contact-info" id="contacto">
         <h2 class="section-title">Contact</h2>
-        <div class="services-grid">
-            <div class="service-card">
+        <div class="contact-grid">
+            <div class="contact-card">
                 <i class="fas fa-map-marker-alt"></i>
                 <h3>Adresse</h3>
                 <p>C/ Sant Marti 17<br>Palafrugell, Spain, 17200</p>
             </div>
-            <div class="service-card">
+            <div class="contact-card">
                 <i class="fas fa-phone"></i>
                 <h3>Téléphone</h3>
-                <p>+34 972 30 43 09</p>
+                <p>+34 972 30 43 09<br>640 56 48 54 / 678 13 94 21</p>
             </div>
-            <div class="service-card">
+            <div class="contact-card">
                 <i class="fas fa-envelope"></i>
                 <h3>Email</h3>
                 <p>info@lunagestio.com</p>
             </div>
+            <div class="contact-card">
+                <i class="fas fa-clock"></i>
+                <h3>Horaires</h3>
+                <p>Lun-Mar: 10h-13h et 16h-19h</p>
+                <p>Mer-Ven: 10h-15h</p>
+            </div>
         </div>
     </section>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 Lunagestio. Tous droits réservés.</p>
+        <p style="margin-top: 1rem; opacity: 0.8;">
+            <i class="fas fa-shield-alt"></i> Votre vie privée est importante pour nous
+        </p>
+    </footer>
+
     <script>
+        // ===== GESTIONNAIRE D'UTILISATEURS =====
+        const UserManager = {
+            getUsers: () => {
+                const users = localStorage.getItem('lunagestio_users');
+                return users ? JSON.parse(users) : [];
+            },
+
+            saveUsers: (users) => {
+                localStorage.setItem('lunagestio_users', JSON.stringify(users));
+            },
+
+            getCurrentUser: () => {
+                return JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            }
+        };
+
+        // ===== GESTIONNAIRE DE DONNÉES =====
+        const StorageManager = {
+            getAppointments: () => {
+                const appointments = localStorage.getItem('lunagestio_appointments');
+                return appointments ? JSON.parse(appointments) : [];
+            },
+
+            saveAppointment: (appointment) => {
+                const appointments = StorageManager.getAppointments();
+                appointment.id = Date.now().toString();
+                appointment.status = 'pending';
+                appointment.createdAt = new Date().toISOString();
+                appointments.push(appointment);
+                localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
+                return appointment;
+            }
+        };
+
+        // ===== FONCTIONS PRINCIPALES =====
+
         // Vérifier la connexion pour les rendez-vous
         function checkAppointmentAuth() {
-            const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            const currentUser = UserManager.getCurrentUser();
             const authCheck = document.getElementById('appointmentAuthCheck');
             const appointmentForm = document.getElementById('appointmentForm');
 
             if (currentUser) {
-                // Utilisateur connecté
-                authCheck.innerHTML = `
-                    <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; text-align: center;">
-                        <i class="fas fa-check-circle"></i> Connecté en tant que ${currentUser.firstName} ${currentUser.lastName}
-                    </div>
-                `;
-                appointmentForm.style.display = 'block';
-                
-                // Pré-remplir les informations utilisateur
-                document.getElementById('userName').value = `${currentUser.firstName} ${currentUser.lastName}`;
-                document.getElementById('userEmail').value = currentUser.email;
-                document.getElementById('userPhone').value = currentUser.phone || '';
-                
+                // Vérifier si c'est un admin
+                if (currentUser.role === 'admin') {
+                    authCheck.innerHTML = `
+                        <div class="admin-info">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>Mode Administrateur</h3>
+                            <p>Vous êtes connecté en tant qu'administrateur. Pour prendre un rendez-vous, veuillez utiliser un compte client.</p>
+                            <div style="margin-top: 1rem;">
+                                <a href="login.html" class="btn-auth btn-login" style="display: inline-flex; margin: 0.5rem;">
+                                    <i class="fas fa-sign-in-alt"></i> Changer de compte
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    appointmentForm.style.display = 'none';
+                } else {
+                    // Utilisateur client connecté
+                    authCheck.innerHTML = `
+                        <div class="user-info">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Connecté</h3>
+                            <p>Bonjour ${currentUser.firstName} ${currentUser.lastName} ! Vous pouvez maintenant prendre un rendez-vous.</p>
+                        </div>
+                    `;
+                    appointmentForm.style.display = 'block';
+                    
+                    // Pré-remplir les informations utilisateur
+                    document.getElementById('userName').value = `${currentUser.firstName} ${currentUser.lastName}`;
+                    document.getElementById('userEmail').value = currentUser.email;
+                    document.getElementById('userPhone').value = currentUser.phone || '';
+                }
             } else {
                 // Utilisateur non connecté
                 authCheck.innerHTML = `
@@ -516,63 +878,15 @@
                 `;
                 appointmentForm.style.display = 'none';
             }
-<!-- Le code index.html reste le même que précédemment, mais avec cette correction dans le script -->
-
-<script>
-// Dans la fonction checkAppointmentAuth(), ajouter cette vérification pour l'admin
-function checkAppointmentAuth() {
-    const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
-    const authCheck = document.getElementById('appointmentAuthCheck');
-    const appointmentForm = document.getElementById('appointmentForm');
-
-    if (currentUser) {
-        // Vérifier si c'est un admin
-        if (currentUser.role === 'admin') {
-            authCheck.innerHTML = `
-                <div style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; text-align: center;">
-                    <i class="fas fa-info-circle"></i> Mode administrateur - Vous ne pouvez pas prendre de rendez-vous
-                </div>
-            `;
-            appointmentForm.style.display = 'none';
-        } else {
-            // Utilisateur client connecté
-            authCheck.innerHTML = `
-                <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; text-align: center;">
-                    <i class="fas fa-check-circle"></i> Connecté en tant que ${currentUser.firstName} ${currentUser.lastName}
-                </div>
-            `;
-            appointmentForm.style.display = 'block';
-        }
-    } else {
-        // Utilisateur non connecté
-        authCheck.innerHTML = `
-            <div class="login-required">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Connexion Requise</h3>
-                <p>Vous devez être connecté pour prendre rendez-vous.</p>
-                <div style="margin-top: 1rem;">
-                    <a href="login.html" class="btn-auth btn-login" style="display: inline-flex; margin: 0.5rem;">
-                        <i class="fas fa-sign-in-alt"></i> Se connecter
-                    </a>
-                    <a href="register.html" class="btn-auth btn-register" style="display: inline-flex; margin: 0.5rem;">
-                        <i class="fas fa-user-plus"></i> Créer un compte
-                    </a>
-                </div>
-            </div>
-        `;
-        appointmentForm.style.display = 'none';
-    }
-}
-</script>
         }
 
         // Gestion du formulaire de rendez-vous
         document.getElementById('appointmentForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
-            if (!currentUser) {
-                alert('Veuillez vous connecter pour prendre rendez-vous');
+            const currentUser = UserManager.getCurrentUser();
+            if (!currentUser || currentUser.role === 'admin') {
+                showMessage('Veuillez vous connecter avec un compte client pour prendre rendez-vous', 'error');
                 return;
             }
 
@@ -584,40 +898,251 @@ function checkAppointmentAuth() {
                 service: document.getElementById('service').value,
                 date: document.getElementById('appointmentDate').value,
                 time: document.getElementById('appointmentTime').value,
-                message: document.getElementById('message').value,
-                status: 'pending'
+                message: document.getElementById('message').value
             };
 
+            // Validation
+            if (!formData.service || !formData.date || !formData.time) {
+                showMessage('Veuillez remplir tous les champs obligatoires', 'error');
+                return;
+            }
+
+            // Vérifier si la date est dans le futur
+            const selectedDate = new Date(formData.date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                showMessage('Veuillez sélectionner une date future', 'error');
+                return;
+            }
+
             // Sauvegarder le rendez-vous
-            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-            formData.id = Date.now().toString();
-            formData.createdAt = new Date().toISOString();
-            appointments.push(formData);
-            localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
+            const appointment = StorageManager.saveAppointment(formData);
 
-            alert('Rendez-vous enregistré avec succès!');
+            showMessage(`Rendez-vous confirmé ! Votre rendez-vous pour le ${formatDisplayDate(formData.date)} à ${formData.time} a été enregistré.`, 'success');
+            
             this.reset();
+            
+            // Recharger la vérification d'authentification
+            setTimeout(() => {
+                checkAppointmentAuth();
+            }, 2000);
         });
 
-        // Menu mobile
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            document.querySelector('.nav-links').classList.toggle('active');
-        });
+        // Consultation des rendez-vous
+        function queryAppointments() {
+            const email = document.getElementById('queryEmail').value.trim();
+            if (!email) {
+                showMessage('Veuillez entrer votre email', 'error');
+                return;
+            }
+            
+            const appointments = StorageManager.getAppointments();
+            const userAppointments = appointments.filter(apt => 
+                apt.userEmail.toLowerCase() === email.toLowerCase()
+            ).sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+            
+            const resultsDiv = document.getElementById('appointmentsResults');
+            
+            if (userAppointments.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="no-appointments">
+                        <i class="fas fa-calendar-times" style="font-size: 3rem; color: #95a5a6; margin-bottom: 1rem;"></i>
+                        <h3>Aucun rendez-vous trouvé</h3>
+                        <p>Aucun rendez-vous enregistré avec cet email.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = `<h3 style="color: #2c3e50; margin-bottom: 2rem;">Vos Rendez-vous Programmés</h3>`;
+            
+            userAppointments.forEach(appointment => {
+                const appointmentDate = new Date(appointment.date + ' ' + appointment.time);
+                const now = new Date();
+                const isPast = appointmentDate < now;
+                const isToday = appointmentDate.toDateString() === now.toDateString();
+                
+                html += `
+                    <div class="appointment-result ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}">
+                        <h4 style="color: #2c3e50; margin-bottom: 1rem;">${getServiceName(appointment.service)}</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <strong><i class="fas fa-calendar"></i> Date:</strong><br>
+                                ${formatDisplayDate(appointment.date)}
+                            </div>
+                            <div>
+                                <strong><i class="fas fa-clock"></i> Heure:</strong><br>
+                                ${appointment.time}
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <strong><i class="fas fa-user"></i> Nom:</strong><br>
+                                ${appointment.userName}
+                            </div>
+                            <div>
+                                <strong><i class="fas fa-phone"></i> Téléphone:</strong><br>
+                                ${appointment.userPhone || 'Non renseigné'}
+                            </div>
+                        </div>
+                        ${appointment.message ? `
+                            <div style="margin-bottom: 1rem;">
+                                <strong><i class="fas fa-comment"></i> Message:</strong><br>
+                                ${appointment.message}
+                            </div>
+                        ` : ''}
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+                            <span style="color: ${isPast ? '#95a5a6' : (appointment.status === 'confirmed' ? '#27ae60' : '#f39c12')}; font-weight: bold;">
+                                <i class="fas ${isPast ? 'fa-history' : (isToday ? 'fa-bell' : 'fa-clock')}"></i>
+                                ${isPast ? 'Terminé' : (appointment.status === 'confirmed' ? 'Confirmé' : 'En attente')}
+                            </span>
+                            <small style="color: #7f8c8d;">
+                                Réservé le ${formatDisplayDate(appointment.createdAt.split('T')[0])}
+                            </small>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
 
+        // ===== FONCTIONS UTILITAIRES =====
         function scrollToSection(sectionId) {
             document.getElementById(sectionId).scrollIntoView({ 
                 behavior: 'smooth' 
             });
         }
 
-        // Initialisation
+        function showMessage(message, type) {
+            // Supprimer les messages existants
+            const existingMessages = document.querySelectorAll('.success-message, .error-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            
+            const appointmentForm = document.getElementById('appointmentForm');
+            appointmentForm.parentNode.insertBefore(messageDiv, appointmentForm);
+            
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function getServiceName(serviceKey) {
+            const services = {
+                'extranjeria': 'Étrangérie',
+                'laboral': 'Fiscal / Comptable',
+                'seguros': 'Assurances',
+                'vehiculos': 'Véhicules'
+            };
+            return services[serviceKey] || serviceKey;
+        }
+
+        function formatDisplayDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Menu mobile
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Fermer le menu mobile quand on clique sur un lien
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('.nav-links').classList.remove('active');
+            });
+        });
+
+        // ===== INITIALISATION =====
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le compte admin par défaut
+            initializeDefaultAdmin();
+            
+            // Vérifier l'authentification pour les rendez-vous
             checkAppointmentAuth();
             
             // Configurer la date minimale pour aujourd'hui
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointmentDate').min = today;
+            
+            // Configurer les horaires disponibles selon les jours
+            configureTimeSlots();
         });
+
+        function initializeDefaultAdmin() {
+            const users = UserManager.getUsers();
+            const adminExists = users.some(user => user.role === 'admin');
+            
+            if (!adminExists) {
+                const adminUser = {
+                    id: 'admin_' + Date.now(),
+                    email: 'admin@lunagestio.com',
+                    password: 'Admin123!',
+                    firstName: 'Administrateur',
+                    lastName: 'Lunagestio',
+                    role: 'admin',
+                    phone: '+34 972 30 43 09',
+                    createdAt: new Date().toISOString()
+                };
+                users.push(adminUser);
+                UserManager.saveUsers(users);
+            }
+        }
+
+        function configureTimeSlots() {
+            const dateInput = document.getElementById('appointmentDate');
+            const timeSelect = document.getElementById('appointmentTime');
+            
+            dateInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const dayOfWeek = selectedDate.getDay(); // 0 = Dimanche, 1 = Lundi, etc.
+                
+                // Vider les options actuelles
+                timeSelect.innerHTML = '<option value="">Sélectionnez une heure</option>';
+                
+                // Définir les horaires selon le jour de la semaine
+                let availableSlots = [];
+                
+                if (dayOfWeek === 1 || dayOfWeek === 2) { // Lundi et Mardi
+                    availableSlots = ['10:00', '11:00', '12:00', '16:00', '17:00', '18:00'];
+                } else if (dayOfWeek >= 3 && dayOfWeek <= 5) { // Mercredi à Vendredi
+                    availableSlots = ['10:00', '11:00', '12:00', '13:00', '14:00'];
+                }
+                // Samedi (6) et Dimanche (0) - pas de créneaux
+                
+                // Ajouter les créneaux disponibles
+                availableSlots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSelect.appendChild(option);
+                });
+                
+                if (availableSlots.length === 0) {
+                    timeSelect.innerHTML = '<option value="">Fermé ce jour</option>';
+                    timeSelect.disabled = true;
+                } else {
+                    timeSelect.disabled = false;
+                }
+            });
+        }
     </script>
 </body>
 </html>
