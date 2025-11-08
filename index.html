@@ -460,6 +460,35 @@
             border: 2px solid #e74c3c;
         }
 
+        /* ===== INDICATEUR DE SYNCHRO ===== */
+        .sync-indicator {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .sync-indicator.syncing {
+            background: #f39c12;
+        }
+
+        .sync-indicator.error {
+            background: #e74c3c;
+        }
+
+        .sync-indicator.success {
+            background: #27ae60;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .nav-container {
@@ -496,6 +525,13 @@
 
             .contact-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .sync-indicator {
+                top: 60px;
+                right: 10px;
+                left: 10px;
+                text-align: center;
             }
         }
 
@@ -586,6 +622,12 @@
             </ul>
         </nav>
     </header>
+
+    <!-- Indicateur de synchronisation -->
+    <div id="syncIndicator" class="sync-indicator hidden">
+        <i class="fas fa-sync"></i>
+        <span id="syncMessage">Synchronisation...</span>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero" id="inicio">
@@ -785,6 +827,91 @@
     </footer>
 
     <script>
+        // ===== GESTIONNAIRE DE SYNCHRONISATION =====
+        const SyncManager = {
+            deviceId: localStorage.getItem('lunagestio_device_id') || this.generateDeviceId(),
+            
+            generateDeviceId: function() {
+                const id = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('lunagestio_device_id', id);
+                return id;
+            },
+            
+            // Afficher l'indicateur de synchronisation
+            showSyncIndicator: function(message, type = 'syncing') {
+                const indicator = document.getElementById('syncIndicator');
+                const messageEl = document.getElementById('syncMessage');
+                
+                indicator.className = 'sync-indicator ' + type;
+                messageEl.textContent = message;
+                indicator.classList.remove('hidden');
+                
+                if (type === 'success') {
+                    setTimeout(() => {
+                        indicator.classList.add('hidden');
+                    }, 3000);
+                }
+            },
+            
+            // Cacher l'indicateur
+            hideSyncIndicator: function() {
+                document.getElementById('syncIndicator').classList.add('hidden');
+            },
+            
+            // Synchroniser les données
+            syncData: async function() {
+                if (!this.isOnline()) {
+                    this.showSyncIndicator('Hors ligne - Synchronisation différée', 'error');
+                    return false;
+                }
+                
+                this.showSyncIndicator('Synchronisation en cours...', 'syncing');
+                
+                try {
+                    // Simulation de synchronisation
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    // En production, ici vous enverriez les données à votre serveur
+                    // et récupéreriez les données fusionnées
+                    
+                    this.showSyncIndicator('Synchronisation réussie!', 'success');
+                    return true;
+                    
+                } catch (error) {
+                    this.showSyncIndicator('Erreur de synchronisation', 'error');
+                    return false;
+                }
+            },
+            
+            // Vérifier la connexion internet
+            isOnline: function() {
+                return navigator.onLine;
+            },
+            
+            // Initialiser la synchronisation automatique
+            initAutoSync: function() {
+                // Synchroniser au chargement
+                window.addEventListener('load', () => {
+                    if (this.isOnline()) {
+                        this.syncData();
+                    }
+                });
+                
+                // Synchroniser quand la connexion revient
+                window.addEventListener('online', () => {
+                    this.showSyncIndicator('Connexion rétablie - Synchronisation...', 'syncing');
+                    setTimeout(() => this.syncData(), 1000);
+                });
+                
+                // Synchroniser périodiquement
+                setInterval(() => {
+                    if (this.isOnline()) {
+                        this.syncData();
+                    }
+                }, 5 * 60 * 1000); // Toutes les 5 minutes
+            }
+        };
+
         // ===== GESTIONNAIRE D'UTILISATEURS =====
         const UserManager = {
             getUsers: () => {
@@ -813,8 +940,13 @@
                 appointment.id = Date.now().toString();
                 appointment.status = 'pending';
                 appointment.createdAt = new Date().toISOString();
+                appointment.deviceId = SyncManager.deviceId; // Ajouter l'ID de l'appareil
                 appointments.push(appointment);
                 localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
+                
+                // Synchroniser après l'ajout
+                SyncManager.syncData();
+                
                 return appointment;
             }
         };
@@ -828,7 +960,6 @@
             const appointmentForm = document.getElementById('appointmentForm');
 
             if (currentUser) {
-                // Vérifier si c'est un admin
                 if (currentUser.role === 'admin') {
                     authCheck.innerHTML = `
                         <div class="admin-info">
@@ -844,7 +975,6 @@
                     `;
                     appointmentForm.style.display = 'none';
                 } else {
-                    // Utilisateur client connecté
                     authCheck.innerHTML = `
                         <div class="user-info">
                             <i class="fas fa-check-circle"></i>
@@ -853,14 +983,8 @@
                         </div>
                     `;
                     appointmentForm.style.display = 'block';
-                    
-                    // Pré-remplir les informations utilisateur
-                    document.getElementById('userName').value = `${currentUser.firstName} ${currentUser.lastName}`;
-                    document.getElementById('userEmail').value = currentUser.email;
-                    document.getElementById('userPhone').value = currentUser.phone || '';
                 }
             } else {
-                // Utilisateur non connecté
                 authCheck.innerHTML = `
                     <div class="login-required">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -907,7 +1031,6 @@
                 return;
             }
 
-            // Vérifier si la date est dans le futur
             const selectedDate = new Date(formData.date);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -924,7 +1047,6 @@
             
             this.reset();
             
-            // Recharger la vérification d'authentification
             setTimeout(() => {
                 checkAppointmentAuth();
             }, 2000);
@@ -1017,7 +1139,6 @@
         }
 
         function showMessage(message, type) {
-            // Supprimer les messages existants
             const existingMessages = document.querySelectorAll('.success-message, .error-message');
             existingMessages.forEach(msg => msg.remove());
             
@@ -1063,7 +1184,6 @@
             document.querySelector('.nav-links').classList.toggle('active');
         });
 
-        // Fermer le menu mobile quand on clique sur un lien
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', function() {
                 document.querySelector('.nav-links').classList.remove('active');
@@ -1072,17 +1192,20 @@
 
         // ===== INITIALISATION =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser le compte admin par défaut
+            // Initialiser le compte admin
             initializeDefaultAdmin();
             
-            // Vérifier l'authentification pour les rendez-vous
+            // Initialiser la synchronisation
+            SyncManager.initAutoSync();
+            
+            // Vérifier l'authentification
             checkAppointmentAuth();
             
-            // Configurer la date minimale pour aujourd'hui
+            // Configurer la date minimale
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointmentDate').min = today;
             
-            // Configurer les horaires disponibles selon les jours
+            // Configurer les horaires
             configureTimeSlots();
         });
 
@@ -1112,22 +1235,18 @@
             
             dateInput.addEventListener('change', function() {
                 const selectedDate = new Date(this.value);
-                const dayOfWeek = selectedDate.getDay(); // 0 = Dimanche, 1 = Lundi, etc.
+                const dayOfWeek = selectedDate.getDay();
                 
-                // Vider les options actuelles
                 timeSelect.innerHTML = '<option value="">Sélectionnez une heure</option>';
                 
-                // Définir les horaires selon le jour de la semaine
                 let availableSlots = [];
                 
-                if (dayOfWeek === 1 || dayOfWeek === 2) { // Lundi et Mardi
+                if (dayOfWeek === 1 || dayOfWeek === 2) {
                     availableSlots = ['10:00', '11:00', '12:00', '16:00', '17:00', '18:00'];
-                } else if (dayOfWeek >= 3 && dayOfWeek <= 5) { // Mercredi à Vendredi
+                } else if (dayOfWeek >= 3 && dayOfWeek <= 5) {
                     availableSlots = ['10:00', '11:00', '12:00', '13:00', '14:00'];
                 }
-                // Samedi (6) et Dimanche (0) - pas de créneaux
                 
-                // Ajouter les créneaux disponibles
                 availableSlots.forEach(slot => {
                     const option = document.createElement('option');
                     option.value = slot;
