@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Lunagestio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #3498db;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #27ae60, #219a52);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .strength-weak { color: #e74c3c; }
+        .strength-medium { color: #f39c12; }
+        .strength-strong { color: #27ae60; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo">
+            <h1>Lunagestio</h1>
+            <p>Créer votre compte client</p>
+        </div>
+
+        <div id="alertMessage"></div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">Prénom *</label>
+                    <input type="text" id="firstName" required placeholder="Votre prénom">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Nom *</label>
+                    <input type="text" id="lastName" required placeholder="Votre nom">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" required placeholder="votre@email.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Téléphone *</label>
+                <input type="tel" id="phone" required placeholder="+34 600 000 000">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Adresse</label>
+                <input type="text" id="address" placeholder="Votre adresse complète">
+            </div>
+
+            <div class="form-group password-toggle">
+                <label for="password">Mot de passe *</label>
+                <input type="password" id="password" required placeholder="Créez un mot de passe sécurisé">
+                <i class="fas fa-eye" id="togglePassword"></i>
+                <div id="passwordStrength" class="password-strength"></div>
+            </div>
+
+            <div class="form-group password-toggle">
+                <label for="confirmPassword">Confirmer le mot de passe *</label>
+                <input type="password" id="confirmPassword" required placeholder="Répétez votre mot de passe">
+                <i class="fas fa-eye" id="toggleConfirmPassword"></i>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="terms" required>
+                    J'accepte les <a href="#" style="color: #3498db;">conditions d'utilisation</a> et la <a href="#" style="color: #3498db;">politique de confidentialité</a> *
+                </label>
+            </div>
+
+            <button type="submit" class="btn">Créer mon compte</button>
+        </form>
+
+        <div class="links">
+            <a href="login.html">Déjà un compte? Se connecter</a> • 
+            <a href="index.html">Retour au site</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Basculer la visibilité des mots de passe
+            document.getElementById('togglePassword').addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+
+            document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+                const passwordInput = document.getElementById('confirmPassword');
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+
+            // Vérifier la force du mot de passe
+            document.getElementById('password').addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+
+            // Gestionnaire d'inscription
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    firstName: document.getElementById('firstName').value.trim(),
+                    lastName: document.getElementById('lastName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    password: document.getElementById('password').value,
+                    confirmPassword: document.getElementById('confirmPassword').value
+                };
+
+                // Validation
+                if (!validateForm(formData)) {
+                    return;
+                }
+
+                // Vérifier si l'email existe déjà
+                if (UserManager.emailExists(formData.email)) {
+                    showAlert('Cet email est déjà utilisé', 'error');
+                    return;
+                }
+
+                // Créer le compte
+                const user = UserManager.saveUser({
+                    ...formData,
+                    role: 'client'
+                });
+
+                showAlert('Compte créé avec succès! Redirection...', 'success');
+                
+                setTimeout(() => {
+                    UserManager.setCurrentUser(user);
+                    window.location.href = 'client-dashboard.html';
+                }, 1500);
+            });
+        });
+
+        function validateForm(data) {
+            if (!data.firstName || !data.lastName || !data.email || !data.phone || !data.password) {
+                showAlert('Veuillez remplir tous les champs obligatoires', 'error');
+                return false;
+            }
+
+            if (data.password !== data.confirmPassword) {
+                showAlert('Les mots de passe ne correspondent pas', 'error');
+                return false;
+            }
+
+            if (data.password.length < 6) {
+                showAlert('Le mot de passe doit contenir au moins 6 caractères', 'error');
+                return false;
+            }
+
+            if (!document.getElementById('terms').checked) {
+                showAlert('Veuillez accepter les conditions d\'utilisation', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+            let strength = '';
+            let className = '';
+
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
+                return;
+            }
+
+            if (password.length < 6) {
+                strength = 'Faible';
+                className = 'strength-weak';
+            } else if (password.length < 8) {
+                strength = 'Moyen';
+                className = 'strength-medium';
+            } else {
+                // Vérifier la complexité
+                const hasUpperCase = /[A-Z]/.test(password);
+                const hasLowerCase = /[a-z]/.test(password);
+                const hasNumbers = /\d/.test(password);
+                const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+                const complexity = [hasUpperCase, hasLowerCase, hasNumbers, hasSpecialChar].filter(Boolean).length;
+
+                if (complexity >= 3) {
+                    strength = 'Fort';
+                    className = 'strength-strong';
+                } else {
+                    strength = 'Moyen';
+                    className = 'strength-medium';
+                }
+            }
+
+            strengthDiv.textContent = `Force du mot de passe: ${strength}`;
+            strengthDiv.className = `password-strength ${className}`;
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+        }
+
+        // Gestionnaire d'utilisateurs (identique à login.html)
+        const UserManager = {
+            getUsers: () => {
+                return JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+            },
+            saveUser: (user) => {
+                const users = UserManager.getUsers();
+                user.id = Date.now().toString();
+                user.createdAt = new Date().toISOString();
+                user.role = user.role || 'client';
+                users.push(user);
+                localStorage.setItem('lunagestio_users', JSON.stringify(users));
+                return user;
+            },
+            emailExists: (email) => {
+                const users = UserManager.getUsers();
+                return users.some(user => user.email === email);
+            },
+            setCurrentUser: (user) => {
+                localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
+            }
+        };
+    </script>
+</body>
+</html>

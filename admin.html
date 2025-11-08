@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Lunagestio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #2c3e50;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .admin-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .admin-logo i {
+            color: #3498db;
+        }
+
+        .admin-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .admin-menu a {
+            color: #2c3e50;
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-menu a:hover, .admin-menu a.active {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #219a52);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .appointments-grid {
+            display: grid;
+            gap: 1.2rem;
+        }
+
+        .appointment-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1.5rem;
+            padding: 1.8rem;
+            border: 2px solid #f8f9fa;
+            border-radius: 15px;
+            align-items: center;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .appointment-item:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .appointment-info h4 {
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .appointment-meta {
+            display: flex;
+            gap: 2rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .appointment-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .calendar-management {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .holiday-list {
+            margin-top: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .holiday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .holiday-item:hover {
+            border-color: #3498db;
+            transform: translateX(5px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-management {
+                grid-template-columns: 1fr;
+            }
+            
+            .appointment-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .appointment-meta {
+                justify-content: center;
+            }
+            
+            .appointment-actions {
+                justify-content: center;
+            }
+            
+            .admin-menu {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <nav class="admin-nav">
+            <div class="admin-logo">
+                <i class="fas fa-user-shield"></i> Panel de Administración - Lunagestio
+            </div>
+            <div class="admin-menu">
+                <a href="#citas" class="active"><i class="fas fa-calendar-alt"></i> Citas</a>
+                <a href="#calendario"><i class="fas fa-calendar-times"></i> Días No Laborables</a>
+                <a href="#configuracion"><i class="fas fa-cog"></i> Configuración</a>
+                <a href="index.html"><i class="fas fa-home"></i> Volver al Sitio</a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="admin-container">
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAppointments">0</div>
+                <div class="stat-label">Total Citas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingAppointments">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="confirmedAppointments">0</div>
+                <div class="stat-label">Confirmadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="customHolidays">0</div>
+                <div class="stat-label">Días No Laborables</div>
+            </div>
+        </div>
+
+        <!-- Gestión de Citas -->
+        <div class="admin-card" id="citas">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Gestión de Citas</h2>
+                <div>
+                    <select id="filterStatus" class="btn">
+                        <option value="all">Todas las citas</option>
+                        <option value="pending">Pendientes</option>
+                        <option value="confirmed">Confirmadas</option>
+                        <option value="cancelled">Canceladas</option>
+                    </select>
+                </div>
+            </div>
+            <div class="appointments-grid" id="appointmentsList">
+                <!-- Las citas se cargan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Gestión del Calendario -->
+        <div class="admin-card" id="calendario">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-calendar-times"></i> Días No Laborables</h2>
+            </div>
+            <div class="calendar-management">
+                <div>
+                    <h3 style="color: #2c3e50; margin-bottom: 1.5rem;"><i class="fas fa-plus-circle"></i> Añadir Día No Laborable</h3>
+                    <div class="form-group">
+                        <label for="holidayDate">Fecha:</label>
+                        <input type="date" id="holidayDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="holidayReason">Motivo (opcional):</label>
+                        <input type="text" id="holidayReason" placeholder="Ej: Vacaciones, Formación, Enfermedad...">
+                    </div>
+                    <button class="btn btn-danger" onclick="addCustomHoliday()">
+                        <i class="fas fa-ban"></i> Marcar como No Laborable
+                    </button>
+                </div>
+                <div>
+                    <h3 style="color: #2c3e50; margin-bottom: 1.5rem;"><i class="fas fa-list"></i> Días No Laborables Configurados</h3>
+                    <div class="holiday-list" id="customHolidaysList">
+                        <!-- Los días no laborables se cargan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloqueo de Horarios -->
+        <div class="admin-card" id="configuracion">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-clock"></i> Bloqueo de Horarios</h2>
+            </div>
+            <div class="form-group">
+                <label for="blockDate">Fecha:</label>
+                <input type="date" id="blockDate">
+            </div>
+            <div class="form-group">
+                <label for="blockTime">Hora:</label>
+                <select id="blockTime">
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
+                </select>
+            </div>
+            <button class="btn btn-danger" onclick="blockTimeSlot()">
+                <i class="fas fa-lock"></i> Bloquear Horario
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ===== SISTEMA DE ADMINISTRACIÓN =====
+        const AdminManager = {
+            loadStats: () => {
+                const appointments = StorageManager.getAppointments();
+                const holidays = StorageManager.getCustomHolidays();
+                
+                document.getElementById('totalAppointments').textContent = appointments.length;
+                document.getElementById('pendingAppointments').textContent = 
+                    appointments.filter(a => a.status === 'pending').length;
+                document.getElementById('confirmedAppointments').textContent = 
+                    appointments.filter(a => a.status === 'confirmed').length;
+                document.getElementById('customHolidays').textContent = holidays.length;
+            },
+            
+            loadAppointments: () => {
+                const appointments = StorageManager.getAppointments();
+                const filter = document.getElementById('filterStatus').value;
+                const filteredAppointments = filter === 'all' ? 
+                    appointments : appointments.filter(a => a.status === filter);
+                
+                const appointmentsList = document.getElementById('appointmentsList');
+                
+                if (filteredAppointments.length === 0) {
+                    appointmentsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times"></i>
+                            <h3>No hay citas ${filter !== 'all' ? filter + 's' : ''}</h3>
+                            <p>No se encontraron citas con el filtro seleccionado.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                appointmentsList.innerHTML = '';
+                
+                filteredAppointments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .forEach(appointment => {
+                    const appointmentDate = new Date(appointment.date + ' ' + appointment.time);
+                    const isPast = appointmentDate < new Date();
+                    
+                    const appointmentElement = document.createElement('div');
+                    appointmentElement.className = 'appointment-item';
+                    appointmentElement.innerHTML = `
+                        <div class="appointment-info">
+                            <h4>${appointment.name}</h4>
+                            <div class="appointment-meta">
+                                <span><i class="fas fa-envelope"></i> ${appointment.email}</span>
+                                <span><i class="fas fa-phone"></i> ${appointment.phone}</span>
+                                <span><i class="fas fa-calendar"></i> ${appointment.date} ${appointment.time}</span>
+                                <span><i class="fas fa-briefcase"></i> ${appointment.service}</span>
+                                ${isPast ? '<span><i class="fas fa-history"></i> Cita pasada</span>' : ''}
+                            </div>
+                            ${appointment.message ? `<p style="margin-top: 0.8rem; color: #555; font-style: italic;"><i class="fas fa-comment"></i> "${appointment.message}"</p>` : ''}
+                        </div>
+                        <div class="status-badge status-${appointment.status}">
+                            ${appointment.status === 'pending' ? 'Pendiente' : 
+                              appointment.status === 'confirmed' ? 'Confirmada' : 'Cancelada'}
+                        </div>
+                        <div class="appointment-actions">
+                            ${appointment.status === 'pending' ? `
+                                <button class="btn btn-success btn-sm" onclick="AdminManager.confirmAppointment('${appointment.id}')">
+                                    <i class="fas fa-check"></i> Confirmar
+                                </button>
+                            ` : ''}
+                            ${appointment.status !== 'cancelled' ? `
+                                <button class="btn btn-danger btn-sm" onclick="AdminManager.cancelAppointment('${appointment.id}')">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                    appointmentsList.appendChild(appointmentElement);
+                });
+            },
+            
+            confirmAppointment: (id) => {
+                const appointments = StorageManager.getAppointments();
+                const appointment = appointments.find(a => a.id === id);
+                if (appointment) {
+                    appointment.status = 'confirmed';
+                    localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
+                    AdminManager.loadAppointments();
+                    AdminManager.loadStats();
+                    alert('✅ Cita confirmada correctamente');
+                }
+            },
+            
+            cancelAppointment: (id) => {
+                const appointments = StorageManager.getAppointments();
+                const appointment = appointments.find(a => a.id === id);
+                if (appointment) {
+                    appointment.status = 'cancelled';
+                    localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
+                    AdminManager.loadAppointments();
+                    AdminManager.loadStats();
+                    alert('❌ Cita cancelada correctamente');
+                }
+            },
+            
+            loadCustomHolidays: () => {
+                const holidays = StorageManager.getCustomHolidays();
+                const holidaysList = document.getElementById('customHolidaysList');
+                
+                if (holidays.length === 0) {
+                    holidaysList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-check"></i>
+                            <h3>No hay días no laborables</h3>
+                            <p>No se han configurado días no laborables personalizados.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                holidaysList.innerHTML = '';
+                
+                holidays.sort().forEach(holiday => {
+                    const date = new Date(holiday);
+                    const formattedDate = date.toLocaleDateString('es-ES', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const holidayElement = document.createElement('div');
+                    holidayElement.className = 'holiday-item';
+                    holidayElement.innerHTML = `
+                        <div>
+                            <strong>${formattedDate}</strong>
+                            <div style="color: #7f8c8d; font-size: 0.9rem; margin-top: 0.3rem;">${holiday}</div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="AdminManager.removeHoliday('${holiday}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    `;
+                    holidaysList.appendChild(holidayElement);
+                });
+            },
+            
+            removeHoliday: (date) => {
+                if (confirm('¿Está seguro de que desea eliminar este día no laborable?')) {
+                    StorageManager.removeCustomHoliday(date);
+                    AdminManager.loadCustomHolidays();
+                    AdminManager.loadStats();
+                    alert('Día no laborable eliminado correctamente');
+                }
+            }
+        };
+
+        // ===== FUNCIONES GLOBALES DEL PANEL =====
+        function addCustomHoliday() {
+            const date = document.getElementById('holidayDate').value;
+            const reason = document.getElementById('holidayReason').value;
+            
+            if (!date) {
+                alert('Por favor, seleccione una fecha');
+                return;
+            }
+            
+            StorageManager.saveCustomHoliday(date);
+            AdminManager.loadCustomHolidays();
+            AdminManager.loadStats();
+            
+            document.getElementById('holidayDate').value = '';
+            document.getElementById('holidayReason').value = '';
+            
+            alert('✅ Día no laborable añadido correctamente');
+        }
+
+        function blockTimeSlot() {
+            const date = document.getElementById('blockDate').value;
+            const time = document.getElementById('blockTime').value;
+            
+            if (!date) {
+                alert('Por favor, seleccione una fecha');
+                return;
+            }
+            
+            const blockedSlots = StorageManager.getBlockedSlots();
+            blockedSlots.push({ date, time });
+            localStorage.setItem('lunagestio_blocked_slots', JSON.stringify(blockedSlots));
+            
+            document.getElementById('blockDate').value = '';
+            alert('✅ Horario bloqueado correctamente');
+        }
+
+        // ===== INICIALIZACIÓN DEL PANEL =====
+        document.addEventListener('DOMContentLoaded', () => {
+            AdminManager.loadStats();
+            AdminManager.loadAppointments();
+            AdminManager.loadCustomHolidays();
+            
+            document.getElementById('filterStatus').addEventListener('change', () => {
+                AdminManager.loadAppointments();
+            });
+
+            // Configurar fecha mínima para los inputs de fecha
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('holidayDate').min = today;
+            document.getElementById('blockDate').min = today;
+        });
+
+        // Asegurarse de que StorageManager esté disponible
+        const StorageManager = {
+            getAppointments: () => {
+                const appointments = localStorage.getItem('lunagestio_appointments');
+                return appointments ? JSON.parse(appointments) : [];
+            },
+            
+            getCustomHolidays: () => {
+                const holidays = localStorage.getItem('lunagestio_custom_holidays');
+                return holidays ? JSON.parse(holidays) : [];
+            },
+            
+            saveCustomHoliday: (date) => {
+                const holidays = StorageManager.getCustomHolidays();
+                if (!holidays.includes(date)) {
+                    holidays.push(date);
+                    localStorage.setItem('lunagestio_custom_holidays', JSON.stringify(holidays));
+                }
+            },
+            
+            removeCustomHoliday: (date) => {
+                const holidays = StorageManager.getCustomHolidays();
+                const updatedHolidays = holidays.filter(h => h !== date);
+                localStorage.setItem('lunagestio_custom_holidays', JSON.stringify(updatedHolidays));
+            },
+            
+            getBlockedSlots: () => {
+                const slots = localStorage.getItem('lunagestio_blocked_slots');
+                return slots ? JSON.parse(slots) : [];
+            }
+        };
+    </script>
+</body>
+</html>

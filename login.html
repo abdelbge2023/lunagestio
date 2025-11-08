@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Lunagestio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+
+        .user-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-type-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f8f9fa;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .user-type-btn.active {
+            border-color: #3498db;
+            background: #3498db;
+            color: white;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>Lunagestio</h1>
+            <p>Accès à votre espace client</p>
+        </div>
+
+        <div id="alertMessage"></div>
+
+        <div class="user-type-selector">
+            <div class="user-type-btn active" data-type="client">Client</div>
+            <div class="user-type-btn" data-type="admin">Administrateur</div>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="votre@email.com">
+            </div>
+
+            <div class="form-group password-toggle">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" required placeholder="Votre mot de passe">
+                <i class="fas fa-eye" id="togglePassword"></i>
+            </div>
+
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+
+        <div class="links">
+            <a href="register.html">Créer un compte</a> • 
+            <a href="index.html">Retour au site</a> • 
+            <a href="#" onclick="showForgotPassword()">Mot de passe oublié?</a>
+        </div>
+    </div>
+
+    <script>
+        // Gestionnaire d'utilisateurs
+        const UserManager = {
+            // Récupérer tous les utilisateurs
+            getUsers: () => {
+                return JSON.parse(localStorage.getItem('lunagestio_users')) || [];
+            },
+
+            // Sauvegarder un utilisateur
+            saveUser: (user) => {
+                const users = UserManager.getUsers();
+                user.id = Date.now().toString();
+                user.createdAt = new Date().toISOString();
+                user.role = user.role || 'client';
+                users.push(user);
+                localStorage.setItem('lunagestio_users', JSON.stringify(users));
+                return user;
+            },
+
+            // Vérifier les identifiants
+            authenticate: (email, password, role) => {
+                const users = UserManager.getUsers();
+                return users.find(user => 
+                    user.email === email && 
+                    user.password === password && 
+                    user.role === role
+                );
+            },
+
+            // Vérifier si l'email existe
+            emailExists: (email) => {
+                const users = UserManager.getUsers();
+                return users.some(user => user.email === email);
+            },
+
+            // Récupérer l'utilisateur connecté
+            getCurrentUser: () => {
+                return JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            },
+
+            // Sauvegarder l'utilisateur connecté
+            setCurrentUser: (user) => {
+                localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
+            },
+
+            // Déconnexion
+            logout: () => {
+                localStorage.removeItem('lunagestio_current_user');
+            }
+        };
+
+        // Variables
+        let currentUserType = 'client';
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Créer un compte admin par défaut si nécessaire
+            initializeDefaultAdmin();
+
+            // Gestionnaire du type d'utilisateur
+            document.querySelectorAll('.user-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentUserType = this.getAttribute('data-type');
+                });
+            });
+
+            // Basculer la visibilité du mot de passe
+            document.getElementById('togglePassword').addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+
+            // Gestionnaire de connexion
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    showAlert('Veuillez remplir tous les champs', 'error');
+                    return;
+                }
+
+                const user = UserManager.authenticate(email, password, currentUserType);
+                
+                if (user) {
+                    UserManager.setCurrentUser(user);
+                    showAlert('Connexion réussie! Redirection...', 'success');
+                    
+                    setTimeout(() => {
+                        if (user.role === 'admin') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'client-dashboard.html';
+                        }
+                    }, 1000);
+                } else {
+                    showAlert('Email ou mot de passe incorrect', 'error');
+                }
+            });
+        });
+
+        function initializeDefaultAdmin() {
+            const users = UserManager.getUsers();
+            const adminExists = users.some(user => user.role === 'admin');
+            
+            if (!adminExists) {
+                UserManager.saveUser({
+                    email: 'admin@lunagestio.com',
+                    password: 'admin123',
+                    firstName: 'Administrateur',
+                    lastName: 'Lunagestio',
+                    role: 'admin'
+                });
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+        }
+
+        function showForgotPassword() {
+            const email = prompt('Veuillez entrer votre email:');
+            if (email) {
+                showAlert('Un email de réinitialisation a été envoyé (simulation)', 'success');
+            }
+        }
+    </script>
+</body>
+</html>
