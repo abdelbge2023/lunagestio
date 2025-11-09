@@ -1,4 +1,4 @@
-// firebase-config.js - Version corrigée avec Firebase v9+
+// firebase-config.js - Version Firebase v9 modulaire
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
@@ -27,10 +27,11 @@ try {
 // Test de connexion
 async function testConnection() {
   try {
-    await db.collection('test').doc('connection').set({
-      timestamp: new Date(),
+    const { doc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+    await setDoc(doc(db, "test", "connection"), {
+      timestamp: serverTimestamp(),
       status: 'connected',
-      deviceId: localStorage.getItem('lunagestio_device_id')
+      deviceId: localStorage.getItem('lunagestio_device_id') || 'unknown'
     });
     console.log('✅ Connexion Firestore réussie');
   } catch (error) {
@@ -38,6 +39,7 @@ async function testConnection() {
   }
 }
 
-testConnection();
+// Tester la connexion au chargement
+setTimeout(testConnection, 1000);
 
-export { db, auth };
+export { db, auth, app };
