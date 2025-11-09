@@ -5,10 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Lunagestio</title>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbzW8zQkUPH4JY9Qc-DAboH2XER_IJQjI",
+            authDomain: "luna-gestion.firebaseapp.com",
+            projectId: "luna-gestion",
+            storageBucket: "luna-gestion.firebasestorage.app",
+            messagingSenderId: "5549836438",
+            appId: "1:5549836438:web:be38e0d9a3a9b458635ab7"
+        };
+
+        // Initialiser Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            console.log('✅ Firebase initialisé avec succès');
+        } catch (error) {
+            console.error('❌ Erreur initialisation Firebase:', error);
+        }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -173,15 +193,16 @@
         </div>
     </div>
 
-    <!-- Script Firebase -->
-    <script src="firebase-config.js"></script>
+    <!-- Script de synchronisation -->
+    <script type="module" src="./sync-manager.js"></script>
 
     <script>
         // Gestionnaire d'utilisateurs Firebase
         const UserManager = {
             getUsers: async () => {
                 try {
-                    const snapshot = await db.collection('users').get();
+                    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    const snapshot = await getDocs(collection(window.db, 'users'));
                     const users = [];
                     snapshot.forEach(doc => {
                         users.push({
@@ -198,10 +219,15 @@
 
             authenticate: async (email, password) => {
                 try {
-                    const snapshot = await db.collection('users')
-                        .where('email', '==', email.toLowerCase())
-                        .where('password', '==', password)
-                        .get();
+                    const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const q = query(
+                        collection(window.db, 'users'),
+                        where('email', '==', email.toLowerCase()),
+                        where('password', '==', password)
+                    );
+                    
+                    const snapshot = await getDocs(q);
                     
                     if (!snapshot.empty) {
                         const userDoc = snapshot.docs[0];
@@ -219,6 +245,10 @@
 
             setCurrentUser: (user) => {
                 localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
+            },
+
+            logout: () => {
+                localStorage.removeItem('lunagestio_current_user');
             }
         };
 
@@ -240,7 +270,12 @@
                 };
                 
                 try {
-                    await db.collection('users').doc(adminUser.id).set(adminUser);
+                    const { doc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    await setDoc(doc(window.db, 'users', adminUser.id), {
+                        ...adminUser,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
                     console.log('✅ Compte admin créé:', adminUser.email);
                 } catch (error) {
                     console.error('❌ Erreur création admin:', error);
@@ -265,6 +300,11 @@
             if (user) {
                 UserManager.setCurrentUser(user);
                 showAlert('Connexion réussie! Redirection...', 'success');
+                
+                // Synchroniser avant redirection
+                if (window.SyncManager) {
+                    await window.SyncManager.quickSync();
+                }
                 
                 setTimeout(() => {
                     if (user.role === 'admin') {
@@ -294,9 +334,25 @@
             `;
         }
 
+        // Vérifier si l'utilisateur est déjà connecté
+        function checkExistingSession() {
+            const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
+            if (currentUser) {
+                showAlert(`Vous êtes déjà connecté en tant que ${currentUser.firstName}. Redirection...`, 'success');
+                setTimeout(() => {
+                    if (currentUser.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'client-dashboard.html';
+                    }
+                }, 2000);
+            }
+        }
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             initializeDefaultAdmin();
+            checkExistingSession();
         });
     </script>
 </body>
