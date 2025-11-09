@@ -29,7 +29,6 @@
     </script>
 
     <style>
-        /* Styles précédents conservés */
         * {
             margin: 0;
             padding: 0;
@@ -157,6 +156,10 @@
         .btn-notification {
             background: #e67e22;
             position: relative;
+        }
+
+        .btn-admin {
+            background: #8e44ad;
         }
 
         .btn-auth:hover {
@@ -319,12 +322,6 @@
             text-align: center;
             padding: 3rem;
             color: #7f8c8d;
-        }
-
-        .no-messages i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
         }
 
         .hero {
@@ -506,12 +503,6 @@
             padding: 2rem;
         }
 
-        .contact-card i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #3498db;
-        }
-
         .footer {
             background: #34495e;
             color: white;
@@ -535,6 +526,15 @@
             border-radius: 8px;
             margin-bottom: 1rem;
             border: 1px solid #f5c6cb;
+        }
+
+        .info-message {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #bee5eb;
         }
 
         .mobile-menu-btn {
@@ -634,6 +634,11 @@
             color: white;
         }
 
+        .btn-confirm {
+            background: #27ae60;
+            color: white;
+        }
+
         .btn-action:hover {
             opacity: 0.9;
             transform: translateY(-2px);
@@ -688,6 +693,100 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Styles pour le mode administrateur */
+        .admin-panel {
+            background: #8e44ad;
+            color: white;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .admin-section {
+            display: none;
+            padding: 2rem 1rem;
+            background: #f8f9fa;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 1rem;
+        }
+
+        .admin-nav-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #6c757d;
+            transition: all 0.3s;
+        }
+
+        .admin-nav-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .admin-table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .admin-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .admin-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Login Section */
+        .login-section {
+            padding: 6rem 1rem 4rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+
         @media (max-width: 768px) {
             .mobile-menu-btn {
                 display: block;
@@ -725,6 +824,14 @@
             .appointments-stats {
                 flex-direction: column;
             }
+
+            .admin-actions {
+                flex-direction: column;
+            }
+
+            .admin-nav {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -737,7 +844,7 @@
             </div>
             
             <button class="mobile-menu-btn">
-                <i class="fas fa-bars">☰</i>
+                ☰
             </button>
 
             <ul class="nav-links">
@@ -775,14 +882,143 @@
         </div>
     </div>
 
+    <!-- Panel Administrateur -->
+    <div id="adminPanel" class="admin-panel" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0;">🔧 Mode Administrateur</h3>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Connecté en tant qu'administrateur</p>
+            </div>
+            <div class="admin-actions">
+                <button class="btn-auth btn-admin" onclick="showAdminSection('appointments')">
+                    📋 Gérer les rendez-vous
+                </button>
+                <button class="btn-auth btn-admin" onclick="showAdminSection('users')">
+                    👥 Gérer les utilisateurs
+                </button>
+                <button class="btn-auth btn-logout" onclick="logout()">
+                    🚪 Quitter l'admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Administration des Rendez-vous -->
+    <section id="adminAppointments" class="admin-section">
+        <div class="appointment-form">
+            <h2>📋 Administration des Rendez-vous</h2>
+            
+            <div class="admin-nav">
+                <button class="admin-nav-btn active" onclick="showAdminTab('all-appointments')">
+                    Tous les rendez-vous
+                </button>
+                <button class="admin-nav-btn" onclick="showAdminTab('pending-appointments')">
+                    En attente
+                </button>
+                <button class="admin-nav-btn" onclick="showAdminTab('today-appointments')">
+                    Aujourd'hui
+                </button>
+            </div>
+
+            <div class="appointments-stats" id="adminStats">
+                <!-- Statistiques administratives -->
+            </div>
+
+            <div id="adminAppointmentsList" class="appointments-container">
+                <!-- Liste des rendez-vous administrateur -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Administration des Utilisateurs -->
+    <section id="adminUsers" class="admin-section">
+        <div class="appointment-form">
+            <h2>👥 Administration des Utilisateurs</h2>
+            
+            <div class="loading-spinner" id="usersLoading">
+                <div class="spinner"></div>
+                <p>Chargement des utilisateurs...</p>
+            </div>
+
+            <div id="adminUsersList" style="display: none;">
+                <!-- Liste des utilisateurs -->
+            </div>
+        </div>
+    </section>
+
     <!-- Secció Hero -->
     <section class="hero" id="inici">
         <div class="hero-content">
             <h1 data-i18n="hero.title">Lunagestio - El Vostre Soci de Confiança</h1>
             <p data-i18n="hero.subtitle">Serveis integrals de gestió: Estrangeria, Fiscalitat, Comptabilitat i més</p>
             <button class="btn" onclick="scrollToSection('cites')">
-                <i class="fas fa-calendar-check">📅</i> <span data-i18n="hero.cta">Sol·licitar Cita</span>
+                📅 <span data-i18n="hero.cta">Sol·licitar Cita</span>
             </button>
+        </div>
+    </section>
+
+    <!-- Secció de Connexion -->
+    <section class="login-section" id="login" style="display: none;">
+        <div class="login-form">
+            <h2 class="form-title" data-i18n="login.title">Iniciar Sessió</h2>
+            <div class="form-group">
+                <label for="loginEmail" data-i18n="login.email">Email</label>
+                <input type="email" id="loginEmail" required data-i18n="login.emailPlaceholder" placeholder="Introduïu el vostre email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword" data-i18n="login.password">Contrasenya</label>
+                <input type="password" id="loginPassword" required data-i18n="login.passwordPlaceholder" placeholder="Introduïu la vostra contrasenya">
+            </div>
+            <button class="btn" onclick="login()" id="loginBtn">
+                🔑 <span data-i18n="login.button">Iniciar Sessió</span>
+            </button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <span data-i18n="login.noAccount">No teniu un compte?</span>
+                <a href="#" onclick="showRegister()" data-i18n="login.register">Registreu-vos aquí</a>
+            </p>
+
+            <!-- Accès rapide pour test -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                <p style="text-align: center; margin-bottom: 1rem; font-weight: bold;">Accès rapide (Test):</p>
+                <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <button class="btn-action" style="background: #8e44ad;" onclick="quickLogin('admin@lunagestio.com', 'admin123')">
+                        Admin
+                    </button>
+                    <button class="btn-action" style="background: #3498db;" onclick="quickLogin('client@example.com', 'client123')">
+                        Client
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Secció de Registre -->
+    <section class="login-section" id="register" style="display: none;">
+        <div class="login-form">
+            <h2 class="form-title" data-i18n="register.title">Crear Compte</h2>
+            <div class="form-group">
+                <label for="registerFirstName" data-i18n="register.firstName">Nom</label>
+                <input type="text" id="registerFirstName" required data-i18n="register.firstNamePlaceholder" placeholder="Introduïu el vostre nom">
+            </div>
+            <div class="form-group">
+                <label for="registerLastName" data-i18n="register.lastName">Cognom</label>
+                <input type="text" id="registerLastName" required data-i18n="register.lastNamePlaceholder" placeholder="Introduïu el vostre cognom">
+            </div>
+            <div class="form-group">
+                <label for="registerEmail" data-i18n="register.email">Email</label>
+                <input type="email" id="registerEmail" required data-i18n="register.emailPlaceholder" placeholder="Introduïu el vostre email">
+            </div>
+            <div class="form-group">
+                <label for="registerPassword" data-i18n="register.password">Contrasenya</label>
+                <input type="password" id="registerPassword" required data-i18n="register.passwordPlaceholder" placeholder="Creeu una contrasenya">
+            </div>
+            <button class="btn" onclick="register()" id="registerBtn">
+                👥 <span data-i18n="register.button">Crear Compte</span>
+            </button>
+            <p style="text-align: center; margin-top: 1rem;">
+                <span data-i18n="register.haveAccount">Ja teniu un compte?</span>
+                <a href="#" onclick="showLogin()" data-i18n="register.login">Inicieu sessió aquí</a>
+            </p>
         </div>
     </section>
 
@@ -870,7 +1106,7 @@
         
         <div class="appointment-form">
             <div class="availability-info">
-                <h4><i class="fas fa-info-circle">ℹ️</i> <span data-i18n="availability.title">Horaris Disponibles</span></h4>
+                <h4>ℹ️ <span data-i18n="availability.title">Horaris Disponibles</span></h4>
                 <p data-i18n="availability.schedule">Dilluns-Dimarts: 10h-13h i 16h-19h | Dimecres-Divendres: 10h-15h</p>
                 <p data-i18n="availability.closed">Tancat: caps de setmana i festius</p>
             </div>
@@ -911,9 +1147,25 @@
                 </div>
                 
                 <button type="submit" class="btn" id="submitBtn">
-                    <i class="fas fa-paper-plane">✉️</i> <span data-i18n="form.submit">Confirmar la Cita</span>
+                    ✉️ <span data-i18n="form.submit">Confirmar la Cita</span>
                 </button>
             </form>
+        </div>
+    </section>
+
+    <!-- Secció de Gestió de Cites -->
+    <section class="appointment-query-section" id="my-appointments" style="display: none;">
+        <div class="appointment-form">
+            <h2 data-i18n="myAppointments.title">Les Meves Cites</h2>
+            <p data-i18n="myAppointments.subtitle">Gestioneu les vostres cites programades</p>
+            
+            <div class="appointments-stats" id="appointmentsStats">
+                <!-- Estadístiques de cites -->
+            </div>
+            
+            <div id="appointmentsList" class="appointments-container">
+                <!-- Llista de cites -->
+            </div>
         </div>
     </section>
 
@@ -929,7 +1181,7 @@
             </div>
             
             <button class="btn" onclick="queryAppointments()" id="queryBtn">
-                <i class="fas fa-search">🔍</i> <span data-i18n="query.button">Consultar Cites</span>
+                🔍 <span data-i18n="query.button">Consultar Cites</span>
             </button>
             
             <div id="appointmentsResults" style="margin-top: 2rem;"></div>
@@ -968,12 +1220,12 @@
     <footer class="footer">
         <p>&copy; 2024 Lunagestio. <span data-i18n="footer.rights">Tots els drets reservats.</span></p>
         <p style="margin-top: 1rem; opacity: 0.8;">
-            <i class="fas fa-shield-alt">🛡️</i> <span data-i18n="footer.privacy">La vostra privadesa és important per a nosaltres</span>
+            🛡️ <span data-i18n="footer.privacy">La vostra privadesa és important per a nosaltres</span>
         </p>
     </footer>
 
     <script>
-        // ===== SISTEMA DE TRADUCCIONS =====
+        // ===== SISTEMA DE TRADUCCIONS COMPLET =====
         const translations = {
             ca: {
                 "nav.logo": "Lunagestio",
@@ -988,10 +1240,35 @@
                 "auth.sync": "Sincronitzar",
                 "auth.welcome": "Hola",
                 "auth.notifications": "Notificacions",
+                "auth.adminMode": "Mode Administrador",
+                "auth.adminMessage": "Esteu connectat com a administrador. Per sol·licitar una cita, utilitzeu un compte de client.",
+                "auth.changeAccount": "Canviar de compte",
                 "auth.connected": "Connectat",
                 "auth.canBook": "Ara podeu sol·licitar una cita.",
                 "auth.loginRequired": "Connexió Requerida",
                 "auth.loginMessage": "Heu d'estar connectat per sol·licitar una cita.",
+                
+                "login.title": "Iniciar Sessió",
+                "login.email": "Email",
+                "login.emailPlaceholder": "Introduïu el vostre email",
+                "login.password": "Contrasenya",
+                "login.passwordPlaceholder": "Introduïu la vostra contrasenya",
+                "login.button": "Iniciar Sessió",
+                "login.noAccount": "No teniu un compte?",
+                "login.register": "Registreu-vos aquí",
+                
+                "register.title": "Crear Compte",
+                "register.firstName": "Nom",
+                "register.firstNamePlaceholder": "Introduïu el vostre nom",
+                "register.lastName": "Cognom",
+                "register.lastNamePlaceholder": "Introduïu el vostre cognom",
+                "register.email": "Email",
+                "register.emailPlaceholder": "Introduïu el vostre email",
+                "register.password": "Contrasenya",
+                "register.passwordPlaceholder": "Creeu una contrasenya",
+                "register.button": "Crear Compte",
+                "register.haveAccount": "Ja teniu un compte?",
+                "register.login": "Inicieu sessió aquí",
                 
                 "messages.title": "Missatges Rebuts",
                 "messages.noMessages": "No teniu cap missatge nou",
@@ -1058,6 +1335,20 @@
                 "form.other": "Altres",
                 "form.submit": "Confirmar la Cita",
                 
+                "myAppointments.title": "Les Meves Cites",
+                "myAppointments.subtitle": "Gestioneu les vostres cites programades",
+                "myAppointments.total": "Total",
+                "myAppointments.confirmed": "Confirmades",
+                "myAppointments.pending": "Pendents",
+                "myAppointments.cancelled": "Cancel·lades",
+                "myAppointments.noAppointments": "No teniu cap cita programada",
+                "myAppointments.service": "Servei",
+                "myAppointments.date": "Data",
+                "myAppointments.time": "Hora",
+                "myAppointments.status": "Estat",
+                "myAppointments.cancel": "Cancel·lar",
+                "myAppointments.reschedule": "Reprogramar",
+                
                 "query.title": "Consultar les Vostres Cites",
                 "query.subtitle": "Verifiqueu l'estat de les vostres cites programades",
                 "query.email": "Email *",
@@ -1090,10 +1381,35 @@
                 "auth.sync": "Sincronizar",
                 "auth.welcome": "Hola",
                 "auth.notifications": "Notificaciones",
+                "auth.adminMode": "Modo Administrador",
+                "auth.adminMessage": "Está conectado como administrador. Para solicitar una cita, utilice una cuenta de cliente.",
+                "auth.changeAccount": "Cambiar de cuenta",
                 "auth.connected": "Conectado",
                 "auth.canBook": "Ahora puede solicitar una cita.",
                 "auth.loginRequired": "Conexión Requerida",
                 "auth.loginMessage": "Debe estar conectado para solicitar una cita.",
+                
+                "login.title": "Iniciar Sesión",
+                "login.email": "Email",
+                "login.emailPlaceholder": "Introduzca su email",
+                "login.password": "Contraseña",
+                "login.passwordPlaceholder": "Introduzca su contraseña",
+                "login.button": "Iniciar Sesión",
+                "login.noAccount": "¿No tiene una cuenta?",
+                "login.register": "Regístrese aquí",
+                
+                "register.title": "Crear Cuenta",
+                "register.firstName": "Nombre",
+                "register.firstNamePlaceholder": "Introduzca su nombre",
+                "register.lastName": "Apellido",
+                "register.lastNamePlaceholder": "Introduzca su apellido",
+                "register.email": "Email",
+                "register.emailPlaceholder": "Introduzca su email",
+                "register.password": "Contraseña",
+                "register.passwordPlaceholder": "Cree una contraseña",
+                "register.button": "Crear Cuenta",
+                "register.haveAccount": "¿Ya tiene una cuenta?",
+                "register.login": "Inicie sesión aquí",
                 
                 "messages.title": "Mensajes Recibidos",
                 "messages.noMessages": "No tiene ningún mensaje nuevo",
@@ -1160,6 +1476,20 @@
                 "form.other": "Otros",
                 "form.submit": "Confirmar la Cita",
                 
+                "myAppointments.title": "Mis Citas",
+                "myAppointments.subtitle": "Gestione sus citas programadas",
+                "myAppointments.total": "Total",
+                "myAppointments.confirmed": "Confirmadas",
+                "myAppointments.pending": "Pendientes",
+                "myAppointments.cancelled": "Canceladas",
+                "myAppointments.noAppointments": "No tiene ninguna cita programada",
+                "myAppointments.service": "Servicio",
+                "myAppointments.date": "Fecha",
+                "myAppointments.time": "Hora",
+                "myAppointments.status": "Estado",
+                "myAppointments.cancel": "Cancelar",
+                "myAppointments.reschedule": "Reprogramar",
+                
                 "query.title": "Consultar sus Citas",
                 "query.subtitle": "Verifique el estado de sus citas programadas",
                 "query.email": "Email *",
@@ -1181,7 +1511,7 @@
             }
         };
 
-        // ===== GESTIONADOR FIREBASE AMÉLIORÉ =====
+        // ===== GESTIONADOR FIREBASE CORREGIDO =====
         const FirebaseManager = {
             // Guardar una cita
             saveAppointment: async function(appointment) {
@@ -1219,9 +1549,13 @@
                         const snapshot = await getDocs(q);
                         const appointments = [];
                         snapshot.forEach(doc => {
+                            const data = doc.data();
                             appointments.push({
                                 id: doc.id,
-                                ...doc.data()
+                                ...data,
+                                // Asegurar que la fecha esté en formato correcto
+                                date: data.date || '',
+                                time: data.time || ''
                             });
                         });
                         
@@ -1239,9 +1573,12 @@
                         const snapshot = await getDocs(q);
                         const appointments = [];
                         snapshot.forEach(doc => {
+                            const data = doc.data();
                             appointments.push({
                                 id: doc.id,
-                                ...doc.data()
+                                ...data,
+                                date: data.date || '',
+                                time: data.time || ''
                             });
                         });
                         
@@ -1257,7 +1594,8 @@
                     }
                 } catch (error) {
                     console.error('❌ Error recuperando de Firebase:', error);
-                    throw error;
+                    // Retornar array vacío en lugar de lanzar error
+                    return [];
                 }
             },
 
@@ -1305,8 +1643,8 @@
                         
                         // Ordenar manualmente por fecha
                         messages.sort((a, b) => {
-                            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-                            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+                            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
                             return dateB - dateA;
                         });
                         
@@ -1332,13 +1670,104 @@
                     console.error('❌ Error marcando mensaje como leído:', error);
                     return false;
                 }
+            },
+
+            // Obtener todos los appointments (para admin)
+            getAllAppointments: async function() {
+                try {
+                    const { collection, query, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const q = query(
+                        collection(window.db, 'appointments'),
+                        orderBy('createdAt', 'desc')
+                    );
+                    
+                    const snapshot = await getDocs(q);
+                    const appointments = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        appointments.push({
+                            id: doc.id,
+                            ...data,
+                            date: data.date || '',
+                            time: data.time || '',
+                            status: data.status || 'pending'
+                        });
+                    });
+                    
+                    console.log('📊 Todos los appointments recuperados:', appointments.length);
+                    return appointments;
+                } catch (error) {
+                    console.error('❌ Error recuperando todos los appointments:', error);
+                    return [];
+                }
+            },
+
+            // Obtener todos los usuarios (para admin)
+            getAllUsers: async function() {
+                try {
+                    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const snapshot = await getDocs(collection(window.db, 'users'));
+                    const users = [];
+                    snapshot.forEach(doc => {
+                        users.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    console.log('👥 Todos los usuarios recuperados:', users.length);
+                    return users;
+                } catch (error) {
+                    console.error('❌ Error recuperando usuarios:', error);
+                    return [];
+                }
+            },
+
+            // Actualizar estado de un appointment
+            updateAppointmentStatus: async function(appointmentId, newStatus) {
+                try {
+                    const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    await updateDoc(doc(window.db, 'appointments', appointmentId), {
+                        status: newStatus,
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    console.log(`✅ Appointment ${appointmentId} actualizado a: ${newStatus}`);
+                    return true;
+                } catch (error) {
+                    console.error('❌ Error actualizando appointment:', error);
+                    throw error;
+                }
+            },
+
+            // Crear un nuevo usuario
+            createUser: async function(userData) {
+                try {
+                    const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const docRef = await addDoc(collection(window.db, 'users'), {
+                        ...userData,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    console.log('✅ Usuario creado correctamente con ID:', docRef.id);
+                    return { ...userData, id: docRef.id };
+                } catch (error) {
+                    console.error('❌ Error creando usuario:', error);
+                    throw error;
+                }
             }
         };
 
         // ===== GESTIONADOR DE USUARIOS =====
         const UserManager = {
             getCurrentUser: () => {
-                return JSON.parse(localStorage.getItem('lunagestio_current_user'));
+                const user = localStorage.getItem('lunagestio_current_user');
+                return user ? JSON.parse(user) : null;
             },
 
             setCurrentUser: (user) => {
@@ -1347,6 +1776,68 @@
 
             logout: () => {
                 localStorage.removeItem('lunagestio_current_user');
+            },
+
+            // Simulación de login avec support administrateur
+            login: async function(email, password) {
+                // Usuarios de prueba para desarrollo
+                const testUsers = {
+                    'admin@lunagestio.com': {
+                        id: 'admin-001',
+                        email: 'admin@lunagestio.com',
+                        firstName: 'Admin',
+                        lastName: 'Lunagestio',
+                        role: 'admin',
+                        password: 'admin123'
+                    },
+                    'client@example.com': {
+                        id: 'client-001',
+                        email: 'client@example.com',
+                        firstName: 'Jean',
+                        lastName: 'Dupont',
+                        role: 'client',
+                        password: 'client123'
+                    }
+                };
+
+                // Verificar usuarios de prueba primero
+                if (testUsers[email] && testUsers[email].password === password) {
+                    this.setCurrentUser(testUsers[email]);
+                    return { success: true, user: testUsers[email] };
+                }
+
+                try {
+                    // Intentar con usuarios de Firebase
+                    const users = await FirebaseManager.getAllUsers();
+                    const user = users.find(u => u.email === email && u.password === password);
+                    
+                    if (user) {
+                        this.setCurrentUser(user);
+                        return { success: true, user };
+                    } else {
+                        return { success: false, error: "Email o contraseña incorrectos" };
+                    }
+                } catch (error) {
+                    return { success: false, error: "Error de conexión. Intente nuevamente." };
+                }
+            },
+
+            // Simulación de registro
+            register: async function(userData) {
+                try {
+                    const users = await FirebaseManager.getAllUsers();
+                    const existingUser = users.find(u => u.email === userData.email);
+                    
+                    if (existingUser) {
+                        return { success: false, error: "Ya existe un usuario con este email" };
+                    }
+                    
+                    const newUser = await FirebaseManager.createUser(userData);
+                    this.setCurrentUser(newUser);
+                    return { success: true, user: newUser };
+                } catch (error) {
+                    return { success: false, error: "Error al crear la cuenta. Intente nuevamente." };
+                }
             }
         };
 
@@ -1354,6 +1845,226 @@
         let currentLang = 'ca';
         let unreadMessagesCount = 0;
         let messagesCheckInterval = null;
+
+        // ===== SYSTÈME D'ADMINISTRATION =====
+        let currentAdminSection = 'appointments';
+        let currentAdminTab = 'all-appointments';
+
+        function showAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'block';
+            showAdminSection('appointments');
+        }
+
+        function hideAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+
+        function showAdminSection(section) {
+            currentAdminSection = section;
+            
+            // Cacher toutes les sections
+            document.querySelectorAll('.admin-section').forEach(sec => {
+                sec.style.display = 'none';
+            });
+            
+            // Afficher la section sélectionnée
+            document.getElementById(`admin${section.charAt(0).toUpperCase() + section.slice(1)}`).style.display = 'block';
+            
+            // Charger les données
+            if (section === 'appointments') {
+                loadAdminAppointments();
+            } else if (section === 'users') {
+                loadAdminUsers();
+            }
+        }
+
+        function showAdminTab(tab) {
+            currentAdminTab = tab;
+            
+            // Mettre à jour les boutons de navigation
+            document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Recharger les appointments avec le filtre
+            loadAdminAppointments();
+        }
+
+        async function loadAdminAppointments() {
+            try {
+                const appointments = await FirebaseManager.getAllAppointments();
+                displayAdminAppointments(appointments);
+            } catch (error) {
+                console.error('Error cargando appointments admin:', error);
+                showMessage('Error cargando los appointments', 'error');
+            }
+        }
+
+        function displayAdminAppointments(appointments) {
+            const container = document.getElementById('adminAppointmentsList');
+            const statsContainer = document.getElementById('adminStats');
+            
+            if (!appointments || appointments.length === 0) {
+                container.innerHTML = '<div class="no-messages">No hay appointments</div>';
+                statsContainer.innerHTML = '';
+                return;
+            }
+
+            // Filtrer selon l'onglet actuel
+            let filteredAppointments = appointments;
+            if (currentAdminTab === 'pending-appointments') {
+                filteredAppointments = appointments.filter(a => a.status === 'pending');
+            } else if (currentAdminTab === 'today-appointments') {
+                const today = new Date().toISOString().split('T')[0];
+                filteredAppointments = appointments.filter(a => a.date === today);
+            }
+
+            // Statistiques
+            const total = filteredAppointments.length;
+            const confirmed = filteredAppointments.filter(a => a.status === 'confirmed').length;
+            const pending = filteredAppointments.filter(a => a.status === 'pending').length;
+            const cancelled = filteredAppointments.filter(a => a.status === 'cancelled').length;
+
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${total}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #27ae60;">${confirmed}</div>
+                    <div class="stat-label">Confirmados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #f39c12;">${pending}</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #e74c3c;">${cancelled}</div>
+                    <div class="stat-label">Cancelados</div>
+                </div>
+            `;
+
+            // Liste des appointments
+            container.innerHTML = filteredAppointments.map(appointment => {
+                const appointmentDate = new Date(appointment.date);
+                const formattedDate = appointmentDate.toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const statusClass = {
+                    'confirmed': 'status-confirmed',
+                    'pending': 'status-pending',
+                    'cancelled': 'status-cancelled'
+                }[appointment.status] || 'status-pending';
+
+                const statusText = {
+                    'confirmed': 'Confirmado',
+                    'pending': 'Pendiente',
+                    'cancelled': 'Cancelado'
+                }[appointment.status] || appointment.status;
+
+                const serviceText = {
+                    'extranjeria': 'Extranjería',
+                    'laboral': 'Fiscal/Contable',
+                    'seguros': 'Seguros',
+                    'vehiculos': 'Vehículos',
+                    'otro': 'Otros'
+                }[appointment.service] || appointment.service;
+
+                return `
+                    <div class="appointment-card ${appointment.status}">
+                        <div class="appointment-header">
+                            <div>
+                                <div class="appointment-service">${serviceText}</div>
+                                <div style="font-size: 0.9rem; color: #7f8c8d;">
+                                    👤 ${appointment.userName} (${appointment.userEmail})
+                                </div>
+                            </div>
+                            <span class="appointment-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="appointment-details">
+                            <div><strong>📅 Fecha:</strong> ${formattedDate}</div>
+                            <div><strong>⏰ Hora:</strong> ${appointment.time}</div>
+                            ${appointment.message ? `<div><strong>💬 Mensaje:</strong> ${appointment.message}</div>` : ''}
+                            <div><strong>🆔 ID:</strong> ${appointment.id}</div>
+                        </div>
+                        <div class="appointment-actions">
+                            ${appointment.status === 'pending' ? `
+                                <button class="btn-action btn-confirm" onclick="updateAppointmentStatus('${appointment.id}', 'confirmed')">
+                                    ✅ Confirmar
+                                </button>
+                            ` : ''}
+                            ${appointment.status !== 'cancelled' ? `
+                                <button class="btn-action btn-cancel" onclick="updateAppointmentStatus('${appointment.id}', 'cancelled')">
+                                    ❌ Cancelar
+                                </button>
+                            ` : ''}
+                            ${appointment.status === 'confirmed' ? `
+                                <button class="btn-action btn-reschedule" onclick="updateAppointmentStatus('${appointment.id}', 'pending')">
+                                    🔄 Pendiente
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function loadAdminUsers() {
+            const loadingElement = document.getElementById('usersLoading');
+            const usersListElement = document.getElementById('adminUsersList');
+            
+            try {
+                const users = await FirebaseManager.getAllUsers();
+                
+                loadingElement.style.display = 'none';
+                usersListElement.style.display = 'block';
+                
+                usersListElement.innerHTML = `
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(user => `
+                                <tr>
+                                    <td>${user.firstName} ${user.lastName}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.role || 'client'}</td>
+                                    <td style="font-size: 0.8rem;">${user.id}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error cargando usuarios admin:', error);
+                loadingElement.innerHTML = '<div class="error-message">Error cargando los usuarios</div>';
+            }
+        }
+
+        async function updateAppointmentStatus(appointmentId, newStatus) {
+            try {
+                await FirebaseManager.updateAppointmentStatus(appointmentId, newStatus);
+                showMessage(`Appointment ${newStatus} correctamente`, 'success');
+                loadAdminAppointments(); // Recargar la lista
+            } catch (error) {
+                console.error('Error actualizando appointment:', error);
+                showMessage('Error actualizando el appointment', 'error');
+            }
+        }
 
         // ===== SISTEMA DE NOTIFICATIONS =====
         async function loadUserMessages() {
@@ -1410,7 +2121,7 @@
             if (messages.length === 0) {
                 messagesList.innerHTML = `
                     <div class="no-messages">
-                        <i class="fas fa-envelope-open">📬</i>
+                        📬
                         <h3 data-i18n="messages.noMessages">No teniu cap missatge nou</h3>
                         <p>${translations[currentLang]?.["messages.noMessages"] || 'You have no new messages'}</p>
                     </div>
@@ -1419,7 +2130,7 @@
             }
 
             messagesList.innerHTML = messages.map(message => {
-                const messageDate = message.createdAt?.toDate ? message.createdAt.toDate() : new Date(message.createdAt);
+                const messageDate = message.createdAt?.toDate ? message.createdAt.toDate() : new Date(message.createdAt || new Date());
                 const isUnread = !message.read;
                 
                 return `
@@ -1433,11 +2144,11 @@
                                 ${getMessageTypeText(message.type)}
                             </span>
                         </div>
-                        <div class="message-subject">${message.subject}</div>
-                        <div class="message-content">${message.content}</div>
+                        <div class="message-subject">${message.subject || 'Sin asunto'}</div>
+                        <div class="message-content">${message.content || 'Sin contenido'}</div>
                         ${isUnread ? `
                             <div style="color: #e74c3c; font-weight: bold; font-size: 0.9rem;">
-                                <i class="fas fa-circle">●</i> ${translations[currentLang]?.["messages.unread"] || 'Unread'}
+                                ● ${translations[currentLang]?.["messages.unread"] || 'Unread'}
                             </div>
                         ` : ''}
                     </div>
@@ -1494,31 +2205,49 @@
                 const logoutText = translations[currentLang]?.["auth.logout"] || 'Logout';
                 const notificationsText = translations[currentLang]?.["auth.notifications"] || 'Notifications';
                 
+                let adminButton = '';
+                if (currentUser.role === 'admin') {
+                    adminButton = `
+                        <button onclick="showAdminPanel()" class="btn-auth btn-admin" title="Mode Administrateur">
+                            🔧 Admin
+                        </button>
+                    `;
+                }
+                
                 container.innerHTML = `
                     <span class="user-welcome">
-                        <i class="fas fa-user-circle">👤</i>
-                        ${welcomeText} ${currentUser.firstName}
+                        👤 ${welcomeText} ${currentUser.firstName}
+                        ${currentUser.role === 'admin' ? ' (Admin)' : ''}
                     </span>
+                    ${adminButton}
                     <button onclick="syncData()" class="btn-auth btn-sync" title="${syncText}">
-                        <i class="fas fa-sync-alt">🔄</i>
+                        🔄
                     </button>
                     <button onclick="openMessagesModal()" class="btn-auth btn-notification" title="${notificationsText}" id="notificationBtn">
-                        <i class="fas fa-bell">🔔</i>
+                        🔔
                         ${unreadMessagesCount > 0 ? `<span class="notification-badge">${unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}</span>` : ''}
                     </button>
                     <button onclick="logout()" class="btn-auth btn-logout">
-                        <i class="fas fa-sign-out-alt">🚪</i> ${logoutText}
+                        🚪 ${logoutText}
                     </button>
                 `;
+
+                // Si es admin, mostrar panel admin
+                if (currentUser.role === 'admin') {
+                    showAdminPanel();
+                } else {
+                    hideAdminPanel();
+                }
             } else {
                 container.innerHTML = `
-                    <a href="login.html" class="btn-auth btn-login">
-                        <i class="fas fa-sign-in-alt">🔑</i> <span data-i18n="auth.login">Iniciar sessió</span>
-                    </a>
-                    <a href="register.html" class="btn-auth btn-register">
-                        <i class="fas fa-user-plus">👥</i> <span data-i18n="auth.register">Registre</span>
-                    </a>
+                    <button onclick="showLogin()" class="btn-auth btn-login">
+                        🔑 <span data-i18n="auth.login">Iniciar sessió</span>
+                    </button>
+                    <button onclick="showRegister()" class="btn-auth btn-register">
+                        👥 <span data-i18n="auth.register">Registre</span>
+                    </button>
                 `;
+                hideAdminPanel();
             }
             
             changeLanguage(currentLang);
@@ -1545,21 +2274,202 @@
         }
 
         // ===== GESTIÓN DE CONEXIÓN =====
+        function showLogin() {
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('my-appointments').style.display = 'none';
+            scrollToSection('login');
+        }
+
+        function showRegister() {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('register').style.display = 'block';
+            document.getElementById('my-appointments').style.display = 'none';
+            scrollToSection('login');
+        }
+
+        function showMyAppointments() {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('my-appointments').style.display = 'block';
+            loadUserAppointments();
+            scrollToSection('my-appointments');
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!email || !password) {
+                showMessage(
+                    currentLang === 'ca' ? 'Si us plau, ompliu tots els camps' :
+                    currentLang === 'es' ? 'Por favor, complete todos los campos' :
+                    'Please fill in all fields',
+                    'error'
+                );
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="spinner"></div> ' + (translations[currentLang]?.["login.button"] || 'Login');
+            
+            const result = await UserManager.login(email, password);
+            
+            if (result.success) {
+                showMessage(
+                    currentLang === 'ca' ? 'Sessió iniciada correctament' :
+                    currentLang === 'es' ? 'Sesión iniciada correctamente' :
+                    'Login successful',
+                    'success'
+                );
+                
+                updateAuthButtons();
+                checkAppointmentAuth();
+                await loadUserMessages();
+                startMessagesPolling();
+                showMyAppointments();
+                
+                // Ocultar formulario de login
+                document.getElementById('login').style.display = 'none';
+            } else {
+                showMessage(result.error, 'error');
+            }
+            
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '🔑 ' + (translations[currentLang]?.["login.button"] || 'Login');
+        }
+
+        async function register() {
+            const firstName = document.getElementById('registerFirstName').value;
+            const lastName = document.getElementById('registerLastName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+            
+            if (!firstName || !lastName || !email || !password) {
+                showMessage(
+                    currentLang === 'ca' ? 'Si us plau, ompliu tots els camps' :
+                    currentLang === 'es' ? 'Por favor, complete todos los campos' :
+                    'Please fill in all fields',
+                    'error'
+                );
+                return;
+            }
+            
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<div class="spinner"></div> ' + (translations[currentLang]?.["register.button"] || 'Register');
+            
+            const userData = {
+                firstName,
+                lastName,
+                email,
+                password,
+                role: 'client'
+            };
+            
+            const result = await UserManager.register(userData);
+            
+            if (result.success) {
+                showMessage(
+                    currentLang === 'ca' ? 'Compte creat correctament' :
+                    currentLang === 'es' ? 'Cuenta creada correctamente' :
+                    'Account created successfully',
+                    'success'
+                );
+                
+                updateAuthButtons();
+                checkAppointmentAuth();
+                await loadUserMessages();
+                startMessagesPolling();
+                showMyAppointments();
+                
+                // Ocultar formulario de registro
+                document.getElementById('register').style.display = 'none';
+            } else {
+                showMessage(result.error, 'error');
+            }
+            
+            registerBtn.disabled = false;
+            registerBtn.innerHTML = '👥 ' + (translations[currentLang]?.["register.button"] || 'Register');
+        }
+
+        // Fonction de login pour test rapide
+        async function quickLogin(email, password) {
+            const result = await UserManager.login(email, password);
+            if (result.success) {
+                showMessage('Connexion réussie!', 'success');
+                updateAuthButtons();
+                checkAppointmentAuth();
+                await loadUserMessages();
+                startMessagesPolling();
+                showMyAppointments();
+                
+                // Ocultar formularios de login/register
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('register').style.display = 'none';
+            } else {
+                showMessage(result.error, 'error');
+            }
+        }
+
+        async function logout() {
+            const confirmMessage = 
+                currentLang === 'ca' ? 'Esteu segur que voleu tancar la sessió?' :
+                currentLang === 'es' ? '¿Estás seguro de que quieres cerrar sesión?' :
+                'Are you sure you want to log out?';
+            
+            if (confirm(confirmMessage)) {
+                stopMessagesPolling();
+                
+                UserManager.logout();
+                updateAuthButtons();
+                checkAppointmentAuth();
+                
+                // Ocultar sección de mis citas
+                document.getElementById('my-appointments').style.display = 'none';
+                
+                showMessage(
+                    currentLang === 'ca' ? 'Sessió tancada correctament' :
+                    currentLang === 'es' ? 'Sesión cerrada correctamente' :
+                    'Logout successful', 
+                    'success'
+                );
+            }
+        }
+
+        // ===== GESTIÓN DE CITAS =====
         function checkAppointmentAuth() {
             const authCheck = document.getElementById('appointmentAuthCheck');
             const appointmentForm = document.getElementById('appointmentForm');
             const currentUser = UserManager.getCurrentUser();
             
             if (currentUser) {
-                authCheck.innerHTML = `
-                    <div class="success-message">
-                        <i class="fas fa-check-circle"></i> 
-                        ${translations[currentLang]?.["auth.connected"] || 'Connected'}: ${currentUser.firstName} ${currentUser.lastName}
-                        <br>
-                        ${translations[currentLang]?.["auth.canBook"] || 'You can now book an appointment.'}
-                    </div>
-                `;
-                appointmentForm.style.display = 'block';
+                if (currentUser.role === 'admin') {
+                    authCheck.innerHTML = `
+                        <div class="info-message">
+                            <i class="fas fa-info-circle"></i> 
+                            ${translations[currentLang]?.["auth.adminMode"] || 'Admin Mode'}
+                            <br>
+                            ${translations[currentLang]?.["auth.adminMessage"] || 'You are logged in as administrator. To book an appointment, use a client account.'}
+                            <br><br>
+                            <button onclick="logout()" class="btn btn-logout" style="padding: 0.5rem 1rem;">
+                                🚪 ${translations[currentLang]?.["auth.changeAccount"] || 'Change account'}
+                            </button>
+                        </div>
+                    `;
+                    appointmentForm.style.display = 'none';
+                } else {
+                    authCheck.innerHTML = `
+                        <div class="success-message">
+                            <i class="fas fa-check-circle"></i> 
+                            ${translations[currentLang]?.["auth.connected"] || 'Connected'}: ${currentUser.firstName} ${currentUser.lastName}
+                            <br>
+                            ${translations[currentLang]?.["auth.canBook"] || 'You can now book an appointment.'}
+                        </div>
+                    `;
+                    appointmentForm.style.display = 'block';
+                }
             } else {
                 authCheck.innerHTML = `
                     <div class="error-message">
@@ -1568,15 +2478,164 @@
                         <br>
                         ${translations[currentLang]?.["auth.loginMessage"] || 'You must be logged in to book an appointment.'}
                         <br><br>
-                        <a href="login.html" class="btn btn-login" style="padding: 0.5rem 1rem; text-decoration: none;">
-                            <i class="fas fa-sign-in-alt">🔑</i> ${translations[currentLang]?.["auth.login"] || 'Login'}
-                        </a>
+                        <button onclick="showLogin()" class="btn btn-login" style="padding: 0.5rem 1rem;">
+                            🔑 ${translations[currentLang]?.["auth.login"] || 'Login'}
+                        </button>
                     </div>
                 `;
                 appointmentForm.style.display = 'none';
             }
             
             changeLanguage(currentLang);
+        }
+
+        async function loadUserAppointments() {
+            const currentUser = UserManager.getCurrentUser();
+            if (!currentUser) return;
+            
+            try {
+                const appointments = await FirebaseManager.getAppointmentsByEmail(currentUser.email);
+                displayUserAppointments(appointments);
+            } catch (error) {
+                console.error('Error cargando citas:', error);
+                showMessage(
+                    currentLang === 'ca' ? 'Error carregant les cites' :
+                    currentLang === 'es' ? 'Error cargando las citas' :
+                    'Error loading appointments',
+                    'error'
+                );
+            }
+        }
+
+        function displayUserAppointments(appointments) {
+            const appointmentsList = document.getElementById('appointmentsList');
+            const appointmentsStats = document.getElementById('appointmentsStats');
+            
+            if (appointments.length === 0) {
+                appointmentsList.innerHTML = `
+                    <div class="no-messages">
+                        📅
+                        <h3>${translations[currentLang]?.["myAppointments.noAppointments"] || 'You have no scheduled appointments'}</h3>
+                    </div>
+                `;
+                
+                appointmentsStats.innerHTML = '';
+                return;
+            }
+            
+            // Calcular estadísticas
+            const total = appointments.length;
+            const confirmed = appointments.filter(a => a.status === 'confirmed').length;
+            const pending = appointments.filter(a => a.status === 'pending').length;
+            const cancelled = appointments.filter(a => a.status === 'cancelled').length;
+            
+            // Mostrar estadísticas
+            appointmentsStats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${total}</div>
+                    <div class="stat-label">${translations[currentLang]?.["myAppointments.total"] || 'Total'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #27ae60;">${confirmed}</div>
+                    <div class="stat-label">${translations[currentLang]?.["myAppointments.confirmed"] || 'Confirmed'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #f39c12;">${pending}</div>
+                    <div class="stat-label">${translations[currentLang]?.["myAppointments.pending"] || 'Pending'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #e74c3c;">${cancelled}</div>
+                    <div class="stat-label">${translations[currentLang]?.["myAppointments.cancelled"] || 'Cancelled'}</div>
+                </div>
+            `;
+            
+            // Mostrar lista de citas
+            appointmentsList.innerHTML = appointments.map(appointment => {
+                const appointmentDate = new Date(appointment.date);
+                const formattedDate = appointmentDate.toLocaleDateString(
+                    currentLang === 'ca' ? 'ca-ES' : 
+                    currentLang === 'es' ? 'es-ES' : 'en-US',
+                    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+                );
+                
+                const statusClass = {
+                    'confirmed': 'status-confirmed',
+                    'pending': 'status-pending',
+                    'cancelled': 'status-cancelled'
+                }[appointment.status] || 'status-pending';
+                
+                const statusText = {
+                    'confirmed': translations[currentLang]?.["myAppointments.confirmed"] || 'Confirmed',
+                    'pending': translations[currentLang]?.["myAppointments.pending"] || 'Pending',
+                    'cancelled': translations[currentLang]?.["myAppointments.cancelled"] || 'Cancelled'
+                }[appointment.status] || appointment.status;
+                
+                const serviceText = {
+                    'extranjeria': translations[currentLang]?.["services.foreign.title"] || 'Foreign Affairs',
+                    'laboral': translations[currentLang]?.["services.labor.title"] || 'Tax / Accounting',
+                    'seguros': translations[currentLang]?.["services.insurance.title"] || 'Insurance',
+                    'vehiculos': translations[currentLang]?.["services.vehicles.title"] || 'Vehicles',
+                    'otro': translations[currentLang]?.["form.other"] || 'Other'
+                }[appointment.service] || appointment.service;
+                
+                return `
+                    <div class="appointment-card ${appointment.status}">
+                        <div class="appointment-header">
+                            <div class="appointment-service">${serviceText}</div>
+                            <span class="appointment-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="appointment-details">
+                            <div><strong>${translations[currentLang]?.["myAppointments.date"] || 'Date'}:</strong> ${formattedDate}</div>
+                            <div><strong>${translations[currentLang]?.["myAppointments.time"] || 'Time'}:</strong> ${appointment.time}</div>
+                            ${appointment.message ? `<div><strong>${translations[currentLang]?.["form.message"] || 'Message'}:</strong> ${appointment.message}</div>` : ''}
+                        </div>
+                        ${appointment.status !== 'cancelled' ? `
+                            <div class="appointment-actions">
+                                <button class="btn-action btn-cancel" onclick="cancelAppointment('${appointment.id}')">
+                                    ${translations[currentLang]?.["myAppointments.cancel"] || 'Cancel'}
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            changeLanguage(currentLang);
+        }
+
+        async function cancelAppointment(appointmentId) {
+            const confirmMessage = 
+                currentLang === 'ca' ? 'Esteu segur que voleu cancel·lar aquesta cita?' :
+                currentLang === 'es' ? '¿Está seguro de que quiere cancelar esta cita?' :
+                'Are you sure you want to cancel this appointment?';
+            
+            if (confirm(confirmMessage)) {
+                try {
+                    const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    await updateDoc(doc(window.db, 'appointments', appointmentId), {
+                        status: 'cancelled',
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    showMessage(
+                        currentLang === 'ca' ? 'Cita cancel·lada correctament' :
+                        currentLang === 'es' ? 'Cita cancelada correctamente' :
+                        'Appointment cancelled successfully',
+                        'success'
+                    );
+                    
+                    // Recargar citas
+                    await loadUserAppointments();
+                } catch (error) {
+                    console.error('Error cancelando cita:', error);
+                    showMessage(
+                        currentLang === 'ca' ? 'Error cancel·lant la cita' :
+                        currentLang === 'es' ? 'Error cancelando la cita' :
+                        'Error cancelling appointment',
+                        'error'
+                    );
+                }
+            }
         }
 
         // ===== FUNCIONES PRINCIPALES =====
@@ -1610,12 +2669,8 @@
         function showMessage(message, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = type === 'success' ? 'success-message' : 
-                                  type === 'error' ? 'error-message' : 'availability-info';
-            messageDiv.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                              type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                ${message}
-            `;
+                                  type === 'error' ? 'error-message' : 'info-message';
+            messageDiv.innerHTML = message;
             
             document.body.insertBefore(messageDiv, document.body.firstChild);
             
@@ -1669,16 +2724,45 @@
                 if (appointments.length === 0) {
                     resultsDiv.innerHTML = `
                         <div class="no-messages">
-                            <i class="fas fa-calendar-times">📅</i>
-                            <h3>${translations[currentLang]?.["messages.noMessages"] || 'No messages'}</h3>
-                            <p>${translations[currentLang]?.["query.subtitle"] || 'No appointments found'}</p>
+                            📅
+                            <h3>${translations[currentLang]?.["myAppointments.noAppointments"] || 'You have no scheduled appointments'}</h3>
+                            <p>${translations[currentLang]?.["query.subtitle"] || 'Verify the status of your scheduled appointments'}</p>
                         </div>
                     `;
                 } else {
+                    // Mostrar estadísticas
+                    const total = appointments.length;
+                    const confirmed = appointments.filter(a => a.status === 'confirmed').length;
+                    const pending = appointments.filter(a => a.status === 'pending').length;
+                    const cancelled = appointments.filter(a => a.status === 'cancelled').length;
+                    
+                    let statsHTML = `
+                        <div class="appointments-stats">
+                            <div class="stat-card">
+                                <div class="stat-number">${total}</div>
+                                <div class="stat-label">${translations[currentLang]?.["myAppointments.total"] || 'Total'}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #27ae60;">${confirmed}</div>
+                                <div class="stat-label">${translations[currentLang]?.["myAppointments.confirmed"] || 'Confirmed'}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #f39c12;">${pending}</div>
+                                <div class="stat-label">${translations[currentLang]?.["myAppointments.pending"] || 'Pending'}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: #e74c3c;">${cancelled}</div>
+                                <div class="stat-label">${translations[currentLang]?.["myAppointments.cancelled"] || 'Cancelled'}</div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Mostrar lista de citas
                     let appointmentsHTML = appointments.map(appointment => {
                         const appointmentDate = new Date(appointment.date);
                         const formattedDate = appointmentDate.toLocaleDateString(
-                            currentLang === 'ca' ? 'ca-ES' : 'es-ES',
+                            currentLang === 'ca' ? 'ca-ES' : 
+                            currentLang === 'es' ? 'es-ES' : 'en-US',
                             { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
                         );
                         
@@ -1689,9 +2773,9 @@
                         }[appointment.status] || 'status-pending';
                         
                         const statusText = {
-                            'confirmed': translations[currentLang]?.["messages.confirmation"] || 'Confirmed',
-                            'pending': translations[currentLang]?.["messages.reminder"] || 'Pending',
-                            'cancelled': translations[currentLang]?.["messages.cancellation"] || 'Cancelled'
+                            'confirmed': translations[currentLang]?.["myAppointments.confirmed"] || 'Confirmed',
+                            'pending': translations[currentLang]?.["myAppointments.pending"] || 'Pending',
+                            'cancelled': translations[currentLang]?.["myAppointments.cancelled"] || 'Cancelled'
                         }[appointment.status] || appointment.status;
                         
                         const serviceText = {
@@ -1709,88 +2793,69 @@
                                     <span class="appointment-status ${statusClass}">${statusText}</span>
                                 </div>
                                 <div class="appointment-details">
-                                    <div><strong>${translations[currentLang]?.["messages.date"] || 'Date'}:</strong> ${formattedDate}</div>
-                                    <div><strong>${translations[currentLang]?.["form.selectTime"] || 'Time'}:</strong> ${appointment.time}</div>
+                                    <div><strong>${translations[currentLang]?.["myAppointments.date"] || 'Date'}:</strong> ${formattedDate}</div>
+                                    <div><strong>${translations[currentLang]?.["myAppointments.time"] || 'Time'}:</strong> ${appointment.time}</div>
                                     ${appointment.message ? `<div><strong>${translations[currentLang]?.["form.message"] || 'Message'}:</strong> ${appointment.message}</div>` : ''}
                                 </div>
                             </div>
                         `;
                     }).join('');
                     
-                    resultsDiv.innerHTML = appointmentsHTML;
+                    resultsDiv.innerHTML = statsHTML + appointmentsHTML;
                 }
                 
             } catch (error) {
                 console.error('Error consultando citas:', error);
                 resultsDiv.innerHTML = `
                     <div class="error-message">
-                        <i class="fas fa-exclamation-circle"></i>
                         ${translations[currentLang]?.["query.error"] || 'Error loading appointments. Please try again.'}
                         <br><br>
                         <button class="btn" onclick="queryAppointments()">
-                            <i class="fas fa-redo">🔄</i> ${translations[currentLang]?.["query.button"] || 'Try Again'}
+                            🔄 ${translations[currentLang]?.["query.button"] || 'Try Again'}
                         </button>
                     </div>
                 `;
             }
             
             queryBtn.disabled = false;
-            queryBtn.innerHTML = '<i class="fas fa-search">🔍</i> ' + (translations[currentLang]?.["query.button"] || 'Check Appointments');
-        }
-
-        async function logout() {
-            const confirmMessage = 
-                currentLang === 'ca' ? 'Esteu segur que voleu tancar la sessió?' :
-                currentLang === 'es' ? '¿Estás seguro de que quieres cerrar sesión?' :
-                'Are you sure you want to log out?';
-            
-            if (confirm(confirmMessage)) {
-                stopMessagesPolling();
-                
-                if (window.SyncManager) {
-                    await window.SyncManager.quickSync();
-                }
-                
-                UserManager.logout();
-                updateAuthButtons();
-                checkAppointmentAuth();
-                
-                showMessage(
-                    currentLang === 'ca' ? 'Sessió tancada correctament' :
-                    currentLang === 'es' ? 'Sesión cerrada correctamente' :
-                    'Logout successful', 
-                    'success'
-                );
-            }
+            queryBtn.innerHTML = '🔍 ' + (translations[currentLang]?.["query.button"] || 'Check Appointments');
         }
 
         // ===== INITIALISATION =====
         document.addEventListener('DOMContentLoaded', async function() {
+            // Inicializar traducciones con catalán por defecto
             changeLanguage('ca');
             
+            // Añadir event listeners para los botones de idioma
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     changeLanguage(this.getAttribute('data-lang'));
                 });
             });
 
+            // Actualizar botones de autenticación
             updateAuthButtons();
+            
+            // Verificar autenticación para citas
             checkAppointmentAuth();
             
+            // Configurar fecha mínima
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointmentDate').min = today;
             
+            // Configurar horarios
             configureTimeSlots();
             
+            // Configurar formulario de cita
             document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const currentUser = UserManager.getCurrentUser();
-                if (!currentUser) {
+                if (!currentUser || currentUser.role === 'admin') {
                     showMessage(
-                        currentLang === 'ca' ? 'Heu d\'iniciar sessió per sol·licitar una cita' :
-                        currentLang === 'es' ? 'Debe iniciar sesión para solicitar una cita' :
-                        'You must be logged in to book an appointment',
+                        currentLang === 'ca' ? 'Heu d\'iniciar sessió com a client per sol·licitar una cita' :
+                        currentLang === 'es' ? 'Debe iniciar sesión como cliente para solicitar una cita' :
+                        'You must be logged in as client to book an appointment',
                         'error'
                     );
                     return;
@@ -1835,7 +2900,13 @@
                         'success'
                     );
                     
+                    // Limpiar formulario
                     document.getElementById('appointmentForm').reset();
+                    
+                    // Actualizar lista de citas si está visible
+                    if (document.getElementById('my-appointments').style.display === 'block') {
+                        await loadUserAppointments();
+                    }
                     
                 } catch (error) {
                     console.error('Error guardando cita:', error);
@@ -1848,22 +2919,25 @@
                 }
                 
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane">✉️</i> ' + (translations[currentLang]?.["form.submit"] || 'Confirm Appointment');
+                submitBtn.innerHTML = '✉️ ' + (translations[currentLang]?.["form.submit"] || 'Confirm Appointment');
             });
             
+            // Charger les messages si l'utilisateur est connecté
             const currentUser = UserManager.getCurrentUser();
             if (currentUser) {
                 await loadUserMessages();
                 startMessagesPolling();
             }
             
+            // Configurar menú móvil
             document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
                 document.querySelector('.nav-links').classList.toggle('active');
             });
             
-            console.log('🚀 Sitio Lunagestio cargado - Sistema corregido para errores de índice');
+            console.log('🚀 Sitio Lunagestio cargado - Sistema completo corregido');
         });
 
+        // Fermer le modal en cliquant à l'extérieur
         window.onclick = function(event) {
             const modal = document.getElementById('messagesModal');
             if (event.target === modal) {
@@ -1871,6 +2945,7 @@
             }
         }
 
+        // Función de sincronización
         async function syncData() {
             showMessage(
                 currentLang === 'ca' ? 'Sincronització en curs...' :
@@ -1878,6 +2953,17 @@
                 'Synchronization in progress...',
                 'info'
             );
+            
+            // Recargar datos
+            const currentUser = UserManager.getCurrentUser();
+            if (currentUser) {
+                if (currentUser.role === 'admin') {
+                    await loadAdminAppointments();
+                } else {
+                    await loadUserAppointments();
+                }
+                await loadUserMessages();
+            }
             
             setTimeout(() => {
                 showMessage(
