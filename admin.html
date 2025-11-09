@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Lunagestio</title>
+    
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbzW8zQkUPH4JY9Qc-DAboH2XER_IJQjI",
+            authDomain: "luna-gestion.firebaseapp.com",
+            projectId: "luna-gestion",
+            storageBucket: "luna-gestion.firebasestorage.app",
+            messagingSenderId: "5549836438",
+            appId: "1:5549836438:web:be38e0d9a3a9b458635ab7"
+        };
+
+        // Initialiser Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            console.log('✅ Firebase initialisé avec succès');
+        } catch (error) {
+            console.error('❌ Erreur initialisation Firebase:', error);
+        }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -57,11 +82,16 @@
             align-items: center;
             gap: 0.5rem;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
 
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-sync {
+            background: #9b59b6;
         }
 
         .btn-danger {
@@ -133,6 +163,13 @@
             color: #7f8c8d;
         }
 
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
         @media (max-width: 768px) {
             .admin-header {
                 flex-direction: column;
@@ -142,6 +179,15 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .user-actions {
+                flex-direction: column;
+            }
+            
+            .user-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -149,7 +195,10 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1><i class="fas fa-user-shield"></i> Panel Administrateur - Lunagestio</h1>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div class="user-actions">
+                <button class="btn btn-sync" onclick="syncData()">
+                    <i class="fas fa-sync-alt"></i> Synchroniser
+                </button>
                 <a href="index.html" class="btn">
                     <i class="fas fa-home"></i> Site principal
                 </a>
@@ -168,6 +217,10 @@
             <div class="stat-card">
                 <div class="stat-number" id="totalUsers">0</div>
                 <div>Clients inscrits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingAppointments">0</div>
+                <div>En attente</div>
             </div>
         </div>
 
@@ -229,7 +282,95 @@
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script type="module" src="./sync-manager.js"></script>
+
     <script>
+        // ===== GESTIONNAIRE FIREBASE =====
+        const FirebaseManager = {
+            // Récupérer tous les rendez-vous
+            getAllAppointments: async function() {
+                try {
+                    const { collection, getDocs, orderBy } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    const snapshot = await getDocs(collection(window.db, 'appointments'));
+                    const appointments = [];
+                    snapshot.forEach(doc => {
+                        appointments.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    return appointments;
+                } catch (error) {
+                    console.error('Erreur récupération rendez-vous:', error);
+                    return [];
+                }
+            },
+
+            // Récupérer tous les utilisateurs
+            getAllUsers: async function() {
+                try {
+                    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    const snapshot = await getDocs(collection(window.db, 'users'));
+                    const users = [];
+                    snapshot.forEach(doc => {
+                        users.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    return users;
+                } catch (error) {
+                    console.error('Erreur récupération utilisateurs:', error);
+                    return [];
+                }
+            },
+
+            // Mettre à jour un rendez-vous
+            updateAppointment: async function(appointmentId, updates) {
+                try {
+                    const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    await updateDoc(doc(window.db, 'appointments', appointmentId), {
+                        ...updates,
+                        updatedAt: serverTimestamp()
+                    });
+                    return true;
+                } catch (error) {
+                    console.error('Erreur mise à jour rendez-vous:', error);
+                    return false;
+                }
+            },
+
+            // Supprimer un rendez-vous
+            deleteAppointment: async function(appointmentId) {
+                try {
+                    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    await deleteDoc(doc(window.db, 'appointments', appointmentId));
+                    return true;
+                } catch (error) {
+                    console.error('Erreur suppression rendez-vous:', error);
+                    return false;
+                }
+            },
+
+            // Mettre à jour le mot de passe utilisateur
+            updateUserPassword: async function(userId, newPassword) {
+                try {
+                    const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    await updateDoc(doc(window.db, 'users', userId), {
+                        password: newPassword,
+                        updatedAt: serverTimestamp()
+                    });
+                    return true;
+                } catch (error) {
+                    console.error('Erreur mise à jour mot de passe:', error);
+                    return false;
+                }
+            }
+        };
+
+        // ===== FONCTIONS ADMIN =====
+        
         // Vérification de sécurité
         function checkAdminAccess() {
             const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
@@ -251,97 +392,154 @@
         }
 
         // Charger les statistiques
-        function loadStats() {
-            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-            const users = JSON.parse(localStorage.getItem('lunagestio_users')) || [];
-            const clients = users.filter(u => u.role === 'client');
-            
-            document.getElementById('totalAppointments').textContent = appointments.length;
-            document.getElementById('totalUsers').textContent = clients.length;
+        async function loadStats() {
+            try {
+                const appointments = await FirebaseManager.getAllAppointments();
+                const users = await FirebaseManager.getAllUsers();
+                const clients = users.filter(u => u.role === 'client');
+                const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
+                
+                document.getElementById('totalAppointments').textContent = appointments.length;
+                document.getElementById('totalUsers').textContent = clients.length;
+                document.getElementById('pendingAppointments').textContent = pendingAppointments.length;
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
         }
 
         // Charger les rendez-vous
-        function loadAppointments() {
-            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-            const list = document.getElementById('appointmentsList');
-            
-            if (appointments.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun rendez-vous programmé</p>';
-                return;
-            }
+        async function loadAppointments() {
+            try {
+                const appointments = await FirebaseManager.getAllAppointments();
+                const list = document.getElementById('appointmentsList');
+                
+                if (appointments.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun rendez-vous programmé</p>';
+                    return;
+                }
 
-            // Trier par date
-            appointments.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+                // Trier par date
+                appointments.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
 
-            list.innerHTML = appointments.map(apt => `
-                <div class="appointment-item">
-                    <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${apt.userName} - ${getServiceName(apt.service)}</h4>
-                    <p><strong>Date:</strong> ${formatDate(apt.date)} à ${apt.time}</p>
-                    <p><strong>Email:</strong> ${apt.userEmail}</p>
-                    <p><strong>Téléphone:</strong> ${apt.userPhone || 'Non renseigné'}</p>
-                    <p><strong>Statut:</strong> <span style="color: ${apt.status === 'confirmed' ? '#27ae60' : '#f39c12'}">${apt.status === 'confirmed' ? 'Confirmé' : 'En attente'}</span></p>
-                    ${apt.message ? `<p><strong>Message:</strong> ${apt.message}</p>` : ''}
-                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        ${apt.status !== 'confirmed' ? `
-                            <button class="btn btn-success" onclick="confirmAppointment('${apt.id}')" style="padding: 0.5rem 1rem;">
-                                <i class="fas fa-check"></i> Confirmer
+                list.innerHTML = appointments.map(apt => `
+                    <div class="appointment-item">
+                        <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${apt.userName} - ${getServiceName(apt.service)}</h4>
+                        <p><strong>Date:</strong> ${formatDate(apt.date)} à ${apt.time}</p>
+                        <p><strong>Email:</strong> ${apt.userEmail}</p>
+                        <p><strong>Téléphone:</strong> ${apt.userPhone || 'Non renseigné'}</p>
+                        <p><strong>Statut:</strong> <span style="color: ${apt.status === 'confirmed' ? '#27ae60' : apt.status === 'cancelled' ? '#e74c3c' : '#f39c12'}">${
+                            apt.status === 'confirmed' ? 'Confirmé' : 
+                            apt.status === 'cancelled' ? 'Annulé' : 
+                            'En attente'
+                        }</span></p>
+                        ${apt.message ? `<p><strong>Message:</strong> ${apt.message}</p>` : ''}
+                        <div class="user-actions">
+                            ${apt.status !== 'confirmed' ? `
+                                <button class="btn btn-success" onclick="confirmAppointment('${apt.id}')">
+                                    <i class="fas fa-check"></i> Confirmer
+                                </button>
+                            ` : ''}
+                            ${apt.status !== 'cancelled' ? `
+                                <button class="btn btn-danger" onclick="cancelAppointment('${apt.id}')">
+                                    <i class="fas fa-times"></i> Annuler
+                                </button>
+                            ` : ''}
+                            <button class="btn" onclick="deleteAppointment('${apt.id}')" style="background: #95a5a6;">
+                                <i class="fas fa-trash"></i> Supprimer
                             </button>
-                        ` : ''}
-                        <button class="btn btn-danger" onclick="cancelAppointment('${apt.id}')" style="padding: 0.5rem 1rem;">
-                            <i class="fas fa-times"></i> Annuler
-                        </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (error) {
+                console.error('Erreur chargement rendez-vous:', error);
+                document.getElementById('appointmentsList').innerHTML = 
+                    '<p style="text-align: center; color: #e74c3c;">Erreur lors du chargement des rendez-vous</p>';
+            }
         }
 
         // Charger les utilisateurs
-        function loadUsers() {
-            const users = JSON.parse(localStorage.getItem('lunagestio_users')) || [];
-            const clients = users.filter(u => u.role === 'client');
-            const list = document.getElementById('usersList');
-            
-            if (clients.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun client inscrit</p>';
-                return;
-            }
+        async function loadUsers() {
+            try {
+                const users = await FirebaseManager.getAllUsers();
+                const clients = users.filter(u => u.role === 'client');
+                const list = document.getElementById('usersList');
+                
+                if (clients.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun client inscrit</p>';
+                    return;
+                }
 
-            list.innerHTML = clients.map(user => `
-                <div class="appointment-item">
-                    <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${user.firstName} ${user.lastName}</h4>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Téléphone:</strong> ${user.phone || 'Non renseigné'}</p>
-                    <p><strong>Inscrit le:</strong> ${formatDate(user.createdAt.split('T')[0])}</p>
-                </div>
-            `).join('');
+                list.innerHTML = clients.map(user => `
+                    <div class="appointment-item">
+                        <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${user.firstName} ${user.lastName}</h4>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Téléphone:</strong> ${user.phone || 'Non renseigné'}</p>
+                        <p><strong>Adresse:</strong> ${user.address || 'Non renseignée'}</p>
+                        <p><strong>Inscrit le:</strong> ${formatDate(user.createdAt?.toDate?.() || user.createdAt)}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur chargement utilisateurs:', error);
+                document.getElementById('usersList').innerHTML = 
+                    '<p style="text-align: center; color: #e74c3c;">Erreur lors du chargement des utilisateurs</p>';
+            }
         }
 
         // Gestion des rendez-vous
-        function confirmAppointment(appointmentId) {
-            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-            const appointment = appointments.find(apt => apt.id === appointmentId);
-            if (appointment) {
-                appointment.status = 'confirmed';
-                localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
-                loadAppointments();
-                loadStats();
-                showMessage('Rendez-vous confirmé avec succès!', 'success');
+        async function confirmAppointment(appointmentId) {
+            try {
+                const success = await FirebaseManager.updateAppointment(appointmentId, { status: 'confirmed' });
+                if (success) {
+                    showMessage('Rendez-vous confirmé avec succès!', 'success');
+                    await loadAppointments();
+                    await loadStats();
+                } else {
+                    showMessage('Erreur lors de la confirmation', 'error');
+                }
+            } catch (error) {
+                console.error('Erreur confirmation:', error);
+                showMessage('Erreur lors de la confirmation', 'error');
             }
         }
 
-        function cancelAppointment(appointmentId) {
+        async function cancelAppointment(appointmentId) {
             if (confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous?')) {
-                const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-                const updatedAppointments = appointments.filter(apt => apt.id !== appointmentId);
-                localStorage.setItem('lunagestio_appointments', JSON.stringify(updatedAppointments));
-                loadAppointments();
-                loadStats();
-                showMessage('Rendez-vous annulé avec succès!', 'success');
+                try {
+                    const success = await FirebaseManager.updateAppointment(appointmentId, { status: 'cancelled' });
+                    if (success) {
+                        showMessage('Rendez-vous annulé avec succès!', 'success');
+                        await loadAppointments();
+                        await loadStats();
+                    } else {
+                        showMessage('Erreur lors de l\'annulation', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erreur annulation:', error);
+                    showMessage('Erreur lors de l\'annulation', 'error');
+                }
+            }
+        }
+
+        async function deleteAppointment(appointmentId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer définitivement ce rendez-vous?')) {
+                try {
+                    const success = await FirebaseManager.deleteAppointment(appointmentId);
+                    if (success) {
+                        showMessage('Rendez-vous supprimé avec succès!', 'success');
+                        await loadAppointments();
+                        await loadStats();
+                    } else {
+                        showMessage('Erreur lors de la suppression', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erreur suppression:', error);
+                    showMessage('Erreur lors de la suppression', 'error');
+                }
             }
         }
 
         // Changement de mot de passe
-        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
@@ -351,48 +549,64 @@
 
             // Validation
             if (currentPassword !== currentUser.password) {
-                showMessage('Mot de passe actuel incorrect', 'error');
+                showMessage('Mot de passe actuel incorrect', 'error', 'passwordMessage');
                 return;
             }
 
             if (newPassword.length < 6) {
-                showMessage('Le nouveau mot de passe doit contenir au moins 6 caractères', 'error');
+                showMessage('Le nouveau mot de passe doit contenir au moins 6 caractères', 'error', 'passwordMessage');
                 return;
             }
 
             if (newPassword !== confirmPassword) {
-                showMessage('Les mots de passe ne correspondent pas', 'error');
+                showMessage('Les mots de passe ne correspondent pas', 'error', 'passwordMessage');
                 return;
             }
 
-            // Mettre à jour le mot de passe
-            const success = UserManager.updateUserPassword(currentUser.id, newPassword);
-            
-            if (success) {
-                // Mettre à jour l'utilisateur connecté
-                currentUser.password = newPassword;
-                localStorage.setItem('lunagestio_current_user', JSON.stringify(currentUser));
+            try {
+                // Mettre à jour dans Firebase
+                const success = await FirebaseManager.updateUserPassword(currentUser.id, newPassword);
                 
-                showMessage('Mot de passe changé avec succès!', 'success');
-                this.reset();
-            } else {
-                showMessage('Erreur lors du changement de mot de passe', 'error');
+                if (success) {
+                    // Mettre à jour l'utilisateur connecté
+                    currentUser.password = newPassword;
+                    localStorage.setItem('lunagestio_current_user', JSON.stringify(currentUser));
+                    
+                    showMessage('Mot de passe changé avec succès!', 'success', 'passwordMessage');
+                    this.reset();
+                } else {
+                    showMessage('Erreur lors du changement de mot de passe', 'error', 'passwordMessage');
+                }
+            } catch (error) {
+                console.error('Erreur changement mot de passe:', error);
+                showMessage('Erreur lors du changement de mot de passe', 'error', 'passwordMessage');
             }
         });
 
-        // Fonctions utilitaires
+        // ===== FONCTIONS UTILITAIRES =====
         function getServiceName(serviceKey) {
             const services = {
                 'extranjeria': 'Étrangérie',
                 'laboral': 'Fiscal / Comptable',
                 'seguros': 'Assurances',
-                'vehiculos': 'Véhicules'
+                'vehiculos': 'Véhicules',
+                'otro': 'Autre service'
             };
             return services[serviceKey] || serviceKey;
         }
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
+        function formatDate(dateInput) {
+            if (!dateInput) return 'Date inconnue';
+            
+            let date;
+            if (dateInput instanceof Date) {
+                date = dateInput;
+            } else if (dateInput.toDate) {
+                date = dateInput.toDate();
+            } else {
+                date = new Date(dateInput);
+            }
+            
             return date.toLocaleDateString('fr-FR', {
                 weekday: 'long',
                 year: 'numeric',
@@ -401,8 +615,10 @@
             });
         }
 
-        function showMessage(message, type) {
-            const messageDiv = document.getElementById('passwordMessage');
+        function showMessage(message, type, containerId = null) {
+            const messageDiv = document.getElementById(containerId || 'passwordMessage');
+            if (!messageDiv) return;
+            
             messageDiv.innerHTML = `
                 <div style="padding: 1rem; border-radius: 8px; background: ${type === 'success' ? '#d4edda' : '#f8d7da'}; color: ${type === 'success' ? '#155724' : '#721c24'}; border: 1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'};">
                     <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
@@ -411,44 +627,44 @@
             `;
             
             setTimeout(() => {
-                messageDiv.innerHTML = '';
+                if (messageDiv.innerHTML.includes(message)) {
+                    messageDiv.innerHTML = '';
+                }
             }, 5000);
         }
 
-        function logout() {
-            localStorage.removeItem('lunagestio_current_user');
-            window.location.href = 'login.html';
+        // ===== FONCTIONS DE SYNCHRONISATION ET DÉCONNEXION =====
+        async function syncData() {
+            if (window.SyncManager) {
+                await window.SyncManager.manualSync();
+                // Recharger les données après synchronisation
+                await loadStats();
+                await loadAppointments();
+                await loadUsers();
+            } else {
+                showMessage('Synchronisation non disponible', 'error');
+            }
         }
 
-        // Gestionnaire d'utilisateurs (identique à login.html)
-        const UserManager = {
-            getUsers: () => {
-                const users = localStorage.getItem('lunagestio_users');
-                return users ? JSON.parse(users) : [];
-            },
-
-            saveUsers: (users) => {
-                localStorage.setItem('lunagestio_users', JSON.stringify(users));
-            },
-
-            updateUserPassword: (userId, newPassword) => {
-                const users = UserManager.getUsers();
-                const userIndex = users.findIndex(u => u.id === userId);
-                if (userIndex !== -1) {
-                    users[userIndex].password = newPassword;
-                    UserManager.saveUsers(users);
-                    return true;
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                // Synchroniser avant déconnexion
+                if (window.SyncManager) {
+                    await window.SyncManager.quickSync();
                 }
-                return false;
+                
+                localStorage.removeItem('lunagestio_current_user');
+                window.location.href = 'login.html';
             }
-        };
+        }
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', async function() {
             if (checkAdminAccess()) {
-                loadStats();
-                loadAppointments();
-                loadUsers();
+                await loadStats();
+                await loadAppointments();
+                await loadUsers();
+                console.log('✅ Panel admin chargé avec succès');
             }
         });
     </script>
