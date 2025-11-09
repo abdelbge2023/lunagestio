@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,13 +19,12 @@
             appId: "1:5549836438:web:be38e0d9a3a9b458635ab7"
         };
 
-        // Initialiser Firebase
         try {
             const app = initializeApp(firebaseConfig);
             window.db = getFirestore(app);
-            console.log('✅ Firebase initialisé avec succès');
+            console.log('✅ Firebase inicialitzat correctament');
         } catch (error) {
-            console.error('❌ Erreur initialisation Firebase:', error);
+            console.error('❌ Error inicialització Firebase:', error);
         }
     </script>
 
@@ -44,7 +43,7 @@
         }
 
         .admin-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 1rem;
         }
@@ -60,6 +59,31 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 0.3rem;
+            background: #f8f9fa;
+            padding: 0.3rem;
+            border-radius: 8px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: #3498db;
+            color: white;
+            transform: scale(1.05);
         }
 
         .admin-card {
@@ -102,23 +126,12 @@
             background: #27ae60;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .btn-warning {
+            background: #f39c12;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
+        .btn-info {
+            background: #17a2b8;
         }
 
         .stats-grid {
@@ -142,32 +155,145 @@
             margin-bottom: 0.5rem;
         }
 
-        .appointment-item {
+        .data-section {
+            margin-bottom: 3rem;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .data-item {
+            background: #f8f9fa;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
             padding: 1.5rem;
-            margin-bottom: 1rem;
-            background: #f8f9fa;
+            transition: all 0.3s;
         }
 
-        .password-toggle {
-            position: relative;
+        .data-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        .password-toggle i {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #7f8c8d;
+        .appointment-item {
+            border-left: 4px solid #3498db;
         }
 
-        .user-actions {
+        .appointment-item.confirmed {
+            border-left-color: #27ae60;
+        }
+
+        .appointment-item.cancelled {
+            border-left-color: #e74c3c;
+        }
+
+        .appointment-item.pending {
+            border-left-color: #f39c12;
+        }
+
+        .user-item {
+            border-left: 4px solid #9b59b6;
+        }
+
+        .action-buttons {
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
             flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .message-history {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .message-admin {
+            background: #d4edda;
+            border-left: 3px solid #27ae60;
+        }
+
+        .message-client {
+            background: #e2e3e5;
+            border-left: 3px solid #6c757d;
+        }
+
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
         }
 
         @media (max-width: 768px) {
@@ -176,17 +302,23 @@
                 text-align: center;
             }
             
-            .stats-grid {
+            .stats-grid, .data-grid {
                 grid-template-columns: 1fr;
             }
             
-            .user-actions {
+            .action-buttons {
                 flex-direction: column;
             }
             
-            .user-actions .btn {
+            .action-buttons .btn {
                 width: 100%;
                 justify-content: center;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -194,91 +326,158 @@
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1><i class="fas fa-user-shield"></i> Panel Administrateur - Lunagestio</h1>
-            <div class="user-actions">
+            <h1><i class="fas fa-user-shield"></i> <span data-i18n="admin.title">Panel d'Administració - Lunagestio</span></h1>
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="ca">CA</button>
+                    <button class="lang-btn" data-lang="es">ES</button>
+                </div>
                 <button class="btn btn-sync" onclick="syncData()">
-                    <i class="fas fa-sync-alt"></i> Synchroniser
+                    <i class="fas fa-sync-alt"></i> <span data-i18n="admin.sync">Sincronitzar</span>
                 </button>
                 <a href="index.html" class="btn">
-                    <i class="fas fa-home"></i> Site principal
+                    <i class="fas fa-home"></i> <span data-i18n="admin.home">Lloc principal</span>
                 </a>
                 <button class="btn btn-danger" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="admin.logout">Tancar sessió</span>
                 </button>
             </div>
         </div>
 
-        <!-- Statistiques -->
+        <!-- Estadístiques -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number" id="totalAppointments">0</div>
-                <div>Rendez-vous total</div>
+                <div data-i18n="admin.stats.appointments">Total cites</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="totalUsers">0</div>
-                <div>Clients inscrits</div>
+                <div data-i18n="admin.stats.users">Clients registrats</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="pendingAppointments">0</div>
-                <div>En attente</div>
+                <div data-i18n="admin.stats.pending">Pendents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayAppointments">0</div>
+                <div data-i18n="admin.stats.today">Avui</div>
             </div>
         </div>
 
-        <!-- Gestion des rendez-vous -->
+        <!-- Gestió de Cites -->
         <div class="admin-card">
-            <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
-                <i class="fas fa-calendar-alt"></i> Gestion des Rendez-vous
-            </h2>
+            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <h2 style="color: #2c3e50;">
+                    <i class="fas fa-calendar-alt"></i> <span data-i18n="admin.appointments.title">Gestió de Cites</span>
+                </h2>
+                <div class="search-box">
+                    <input type="text" id="searchAppointments" placeholder="Cercar per nom, email o servei..." data-i18n="admin.search.placeholder">
+                </div>
+            </div>
             <div id="appointmentsList">
-                <!-- Liste des rendez-vous -->
+                <!-- Llista de cites -->
             </div>
         </div>
 
-        <!-- Changement de mot de passe -->
+        <!-- Gestió d'Usuaris -->
+        <div class="admin-card">
+            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <h2 style="color: #2c3e50;">
+                    <i class="fas fa-users"></i> <span data-i18n="admin.users.title">Gestió d'Usuaris</span>
+                </h2>
+                <div class="search-box">
+                    <input type="text" id="searchUsers" placeholder="Cercar per nom o email..." data-i18n="admin.search.users">
+                </div>
+            </div>
+            <div id="usersList">
+                <!-- Llista d'usuaris -->
+            </div>
+        </div>
+
+        <!-- Canvi de Contrasenya -->
         <div class="admin-card">
             <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
-                <i class="fas fa-key"></i> Changement de mot de passe
+                <i class="fas fa-key"></i> <span data-i18n="admin.password.title">Canvi de Contrasenya</span>
             </h2>
             <form id="changePasswordForm">
                 <div class="form-group">
-                    <label for="currentPassword">Mot de passe actuel</label>
-                    <div class="password-toggle">
-                        <input type="password" id="currentPassword" required placeholder="Votre mot de passe actuel">
-                        <i class="fas fa-eye" onclick="togglePassword('currentPassword', this)"></i>
-                    </div>
+                    <label for="currentPassword" data-i18n="admin.password.current">Contrasenya actual</label>
+                    <input type="password" id="currentPassword" required data-i18n="admin.password.current.placeholder">
                 </div>
                 
                 <div class="form-group">
-                    <label for="newPassword">Nouveau mot de passe</label>
-                    <div class="password-toggle">
-                        <input type="password" id="newPassword" required placeholder="Nouveau mot de passe">
-                        <i class="fas fa-eye" onclick="togglePassword('newPassword', this)"></i>
-                    </div>
+                    <label for="newPassword" data-i18n="admin.password.new">Nova contrasenya</label>
+                    <input type="password" id="newPassword" required data-i18n="admin.password.new.placeholder">
                 </div>
                 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirmer le nouveau mot de passe</label>
-                    <div class="password-toggle">
-                        <input type="password" id="confirmPassword" required placeholder="Confirmer le mot de passe">
-                        <i class="fas fa-eye" onclick="togglePassword('confirmPassword', this)"></i>
-                    </div>
+                    <label for="confirmPassword" data-i18n="admin.password.confirm">Confirmar nova contrasenya</label>
+                    <input type="password" id="confirmPassword" required data-i18n="admin.password.confirm.placeholder">
                 </div>
                 
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Changer le mot de passe
+                    <i class="fas fa-save"></i> <span data-i18n="admin.password.submit">Canviar contrasenya</span>
                 </button>
             </form>
             <div id="passwordMessage" style="margin-top: 1rem;"></div>
         </div>
+    </div>
 
-        <!-- Gestion des utilisateurs -->
-        <div class="admin-card">
-            <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
-                <i class="fas fa-users"></i> Gestion des Utilisateurs
-            </h2>
-            <div id="usersList">
-                <!-- Liste des utilisateurs -->
+    <!-- Modal per enviar missatge -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 data-i18n="admin.message.title">Enviar Missatge</h3>
+                <button onclick="closeMessageModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
             </div>
+            <form id="messageForm">
+                <input type="hidden" id="messageAppointmentId">
+                <input type="hidden" id="messageUserId">
+                <input type="hidden" id="messageUserEmail">
+                
+                <div class="form-group">
+                    <label data-i18n="admin.message.recipient">Destinatari</label>
+                    <input type="text" id="messageRecipient" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label data-i18n="admin.message.type">Tipus de missatge</label>
+                    <select id="messageType" required>
+                        <option value="confirmation" data-i18n="admin.message.confirmation">Confirmació de cita</option>
+                        <option value="cancellation" data-i18n="admin.message.cancellation">Cancel·lació de cita</option>
+                        <option value="information" data-i18n="admin.message.information">Informació addicional</option>
+                        <option value="reminder" data-i18n="admin.message.reminder">Recordatori</option>
+                        <option value="other" data-i18n="admin.message.other">Altres</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label data-i18n="admin.message.subject">Assumpte</label>
+                    <input type="text" id="messageSubject" required data-i18n="admin.message.subject.placeholder">
+                </div>
+                
+                <div class="form-group">
+                    <label data-i18n="admin.message.content">Contingut del missatge</label>
+                    <textarea id="messageContent" required data-i18n="admin.message.content.placeholder"></textarea>
+                </div>
+
+                <div id="messageHistory" class="message-history" style="display: none;">
+                    <h4 data-i18n="admin.message.history">Historial de missatges</h4>
+                    <div id="historyContent"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane"></i> <span data-i18n="admin.message.send">Enviar missatge</span>
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="showMessageHistory()">
+                        <i class="fas fa-history"></i> <span data-i18n="admin.message.history">Historial</span>
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="closeMessageModal()">
+                        <i class="fas fa-times"></i> <span data-i18n="admin.message.cancel">Cancel·lar</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -286,9 +485,200 @@
     <script type="module" src="./sync-manager.js"></script>
 
     <script>
-        // ===== GESTIONNAIRE FIREBASE =====
+        // ===== TRADUCCIONS =====
+        const translations = {
+            ca: {
+                "admin.title": "Panel d'Administració - Lunagestio",
+                "admin.sync": "Sincronitzar",
+                "admin.home": "Lloc principal",
+                "admin.logout": "Tancar sessió",
+                
+                "admin.stats.appointments": "Total cites",
+                "admin.stats.users": "Clients registrats",
+                "admin.stats.pending": "Pendents",
+                "admin.stats.today": "Avui",
+                
+                "admin.appointments.title": "Gestió de Cites",
+                "admin.users.title": "Gestió d'Usuaris",
+                
+                "admin.search.placeholder": "Cercar per nom, email o servei...",
+                "admin.search.users": "Cercar per nom o email...",
+                
+                "admin.password.title": "Canvi de Contrasenya",
+                "admin.password.current": "Contrasenya actual",
+                "admin.password.current.placeholder": "La teva contrasenya actual",
+                "admin.password.new": "Nova contrasenya",
+                "admin.password.new.placeholder": "Nova contrasenya",
+                "admin.password.confirm": "Confirmar nova contrasenya",
+                "admin.password.confirm.placeholder": "Confirma la nova contrasenya",
+                "admin.password.submit": "Canviar contrasenya",
+                
+                "admin.appointment.service": "Servei",
+                "admin.appointment.date": "Data",
+                "admin.appointment.time": "Hora",
+                "admin.appointment.client": "Client",
+                "admin.appointment.email": "Email",
+                "admin.appointment.phone": "Telèfon",
+                "admin.appointment.status": "Estat",
+                "admin.appointment.message": "Missatge",
+                "admin.appointment.actions": "Accions",
+                
+                "admin.status.pending": "Pendent",
+                "admin.status.confirmed": "Confirmada",
+                "admin.status.cancelled": "Cancel·lada",
+                "admin.status.completed": "Completada",
+                
+                "admin.action.confirm": "Confirmar",
+                "admin.action.cancel": "Cancel·lar",
+                "admin.action.delete": "Eliminar",
+                "admin.action.message": "Enviar missatge",
+                "admin.action.view": "Veure detalls",
+                
+                "admin.user.name": "Nom",
+                "admin.user.email": "Email",
+                "admin.user.phone": "Telèfon",
+                "admin.user.address": "Adreça",
+                "admin.user.registered": "Registrat el",
+                "admin.user.appointments": "Cites",
+                
+                "admin.message.title": "Enviar Missatge",
+                "admin.message.recipient": "Destinatari",
+                "admin.message.type": "Tipus de missatge",
+                "admin.message.confirmation": "Confirmació de cita",
+                "admin.message.cancellation": "Cancel·lació de cita",
+                "admin.message.information": "Informació addicional",
+                "admin.message.reminder": "Recordatori",
+                "admin.message.other": "Altres",
+                "admin.message.subject": "Assumpte",
+                "admin.message.subject.placeholder": "Assumpte del missatge",
+                "admin.message.content": "Contingut del missatge",
+                "admin.message.content.placeholder": "Escriu el teu missatge aquí...",
+                "admin.message.send": "Enviar missatge",
+                "admin.message.history": "Historial de missatges",
+                "admin.message.cancel": "Cancel·lar",
+                "admin.message.sent": "Missatge enviat correctament",
+                "admin.message.error": "Error en enviar el missatge",
+                
+                "admin.noAppointments": "No hi ha cites programades",
+                "admin.noUsers": "No hi ha clients registrats",
+                
+                "admin.confirmDelete": "Estàs segur que vols eliminar aquesta cita?",
+                "admin.confirmCancel": "Estàs segur que vols cancel·lar aquesta cita?",
+                "admin.confirmLogout": "Estàs segur que vols tancar la sessió?"
+            },
+            es: {
+                "admin.title": "Panel de Administración - Lunagestio",
+                "admin.sync": "Sincronizar",
+                "admin.home": "Sitio principal",
+                "admin.logout": "Cerrar sesión",
+                
+                "admin.stats.appointments": "Total citas",
+                "admin.stats.users": "Clientes registrados",
+                "admin.stats.pending": "Pendientes",
+                "admin.stats.today": "Hoy",
+                
+                "admin.appointments.title": "Gestión de Citas",
+                "admin.users.title": "Gestión de Usuarios",
+                
+                "admin.search.placeholder": "Buscar por nombre, email o servicio...",
+                "admin.search.users": "Buscar por nombre o email...",
+                
+                "admin.password.title": "Cambio de Contraseña",
+                "admin.password.current": "Contraseña actual",
+                "admin.password.current.placeholder": "Tu contraseña actual",
+                "admin.password.new": "Nueva contraseña",
+                "admin.password.new.placeholder": "Nueva contraseña",
+                "admin.password.confirm": "Confirmar nueva contraseña",
+                "admin.password.confirm.placeholder": "Confirma la nueva contraseña",
+                "admin.password.submit": "Cambiar contraseña",
+                
+                "admin.appointment.service": "Servicio",
+                "admin.appointment.date": "Fecha",
+                "admin.appointment.time": "Hora",
+                "admin.appointment.client": "Cliente",
+                "admin.appointment.email": "Email",
+                "admin.appointment.phone": "Teléfono",
+                "admin.appointment.status": "Estado",
+                "admin.appointment.message": "Mensaje",
+                "admin.appointment.actions": "Acciones",
+                
+                "admin.status.pending": "Pendiente",
+                "admin.status.confirmed": "Confirmada",
+                "admin.status.cancelled": "Cancelada",
+                "admin.status.completed": "Completada",
+                
+                "admin.action.confirm": "Confirmar",
+                "admin.action.cancel": "Cancelar",
+                "admin.action.delete": "Eliminar",
+                "admin.action.message": "Enviar mensaje",
+                "admin.action.view": "Ver detalles",
+                
+                "admin.user.name": "Nombre",
+                "admin.user.email": "Email",
+                "admin.user.phone": "Teléfono",
+                "admin.user.address": "Dirección",
+                "admin.user.registered": "Registrado el",
+                "admin.user.appointments": "Citas",
+                
+                "admin.message.title": "Enviar Mensaje",
+                "admin.message.recipient": "Destinatario",
+                "admin.message.type": "Tipo de mensaje",
+                "admin.message.confirmation": "Confirmación de cita",
+                "admin.message.cancellation": "Cancelación de cita",
+                "admin.message.information": "Información adicional",
+                "admin.message.reminder": "Recordatorio",
+                "admin.message.other": "Otros",
+                "admin.message.subject": "Asunto",
+                "admin.message.subject.placeholder": "Asunto del mensaje",
+                "admin.message.content": "Contenido del mensaje",
+                "admin.message.content.placeholder": "Escribe tu mensaje aquí...",
+                "admin.message.send": "Enviar mensaje",
+                "admin.message.history": "Historial de mensajes",
+                "admin.message.cancel": "Cancelar",
+                "admin.message.sent": "Mensaje enviado correctamente",
+                "admin.message.error": "Error al enviar el mensaje",
+                
+                "admin.noAppointments": "No hay citas programadas",
+                "admin.noUsers": "No hay clientes registrados",
+                
+                "admin.confirmDelete": "¿Estás seguro de que quieres eliminar esta cita?",
+                "admin.confirmCancel": "¿Estás seguro de que quieres cancelar esta cita?",
+                "admin.confirmLogout": "¿Estás seguro de que quieres cerrar sesión?"
+            }
+        };
+
+        let currentLang = 'ca';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Actualizar todos los textos
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Actualizar atributo lang del HTML
+            document.documentElement.lang = lang;
+        }
+
+        // ===== GESTIONADOR FIREBASE =====
         const FirebaseManager = {
-            // Récupérer tous les rendez-vous
+            // Obtener todas las citas
             getAllAppointments: async function() {
                 try {
                     const { collection, getDocs, orderBy } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
@@ -302,12 +692,12 @@
                     });
                     return appointments;
                 } catch (error) {
-                    console.error('Erreur récupération rendez-vous:', error);
+                    console.error('Error obteniendo citas:', error);
                     return [];
                 }
             },
 
-            // Récupérer tous les utilisateurs
+            // Obtener todos los usuarios
             getAllUsers: async function() {
                 try {
                     const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
@@ -321,12 +711,12 @@
                     });
                     return users;
                 } catch (error) {
-                    console.error('Erreur récupération utilisateurs:', error);
+                    console.error('Error obteniendo usuarios:', error);
                     return [];
                 }
             },
 
-            // Mettre à jour un rendez-vous
+            // Actualizar una cita
             updateAppointment: async function(appointmentId, updates) {
                 try {
                     const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
@@ -336,24 +726,24 @@
                     });
                     return true;
                 } catch (error) {
-                    console.error('Erreur mise à jour rendez-vous:', error);
+                    console.error('Error actualizando cita:', error);
                     return false;
                 }
             },
 
-            // Supprimer un rendez-vous
+            // Eliminar una cita
             deleteAppointment: async function(appointmentId) {
                 try {
                     const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
                     await deleteDoc(doc(window.db, 'appointments', appointmentId));
                     return true;
                 } catch (error) {
-                    console.error('Erreur suppression rendez-vous:', error);
+                    console.error('Error eliminando cita:', error);
                     return false;
                 }
             },
 
-            // Mettre à jour le mot de passe utilisateur
+            // Actualizar contraseña de usuario
             updateUserPassword: async function(userId, newPassword) {
                 try {
                     const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
@@ -363,15 +753,59 @@
                     });
                     return true;
                 } catch (error) {
-                    console.error('Erreur mise à jour mot de passe:', error);
+                    console.error('Error actualizando contraseña:', error);
                     return false;
+                }
+            },
+
+            // Enviar mensaje
+            sendMessage: async function(messageData) {
+                try {
+                    const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const docRef = await addDoc(collection(window.db, 'messages'), {
+                        ...messageData,
+                        createdAt: serverTimestamp(),
+                        read: false
+                    });
+                    
+                    return docRef.id;
+                } catch (error) {
+                    console.error('Error enviando mensaje:', error);
+                    throw error;
+                }
+            },
+
+            // Obtener historial de mensajes
+            getMessageHistory: async function(userId) {
+                try {
+                    const { collection, query, where, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const q = query(
+                        collection(window.db, 'messages'),
+                        where('userId', '==', userId),
+                        orderBy('createdAt', 'desc')
+                    );
+                    
+                    const snapshot = await getDocs(q);
+                    const messages = [];
+                    snapshot.forEach(doc => {
+                        messages.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    return messages;
+                } catch (error) {
+                    console.error('Error obteniendo historial:', error);
+                    return [];
                 }
             }
         };
 
-        // ===== FONCTIONS ADMIN =====
+        // ===== FUNCIONES ADMIN =====
         
-        // Vérification de sécurité
         function checkAdminAccess() {
             const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
             
@@ -382,16 +816,6 @@
             return true;
         }
 
-        // Basculer la visibilité du mot de passe
-        function togglePassword(inputId, icon) {
-            const input = document.getElementById(inputId);
-            const type = input.type === 'password' ? 'text' : 'password';
-            input.type = type;
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        }
-
-        // Charger les statistiques
         async function loadStats() {
             try {
                 const appointments = await FirebaseManager.getAllAppointments();
@@ -399,146 +823,353 @@
                 const clients = users.filter(u => u.role === 'client');
                 const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
                 
+                const today = new Date().toISOString().split('T')[0];
+                const todayAppointments = appointments.filter(apt => apt.date === today);
+                
                 document.getElementById('totalAppointments').textContent = appointments.length;
                 document.getElementById('totalUsers').textContent = clients.length;
                 document.getElementById('pendingAppointments').textContent = pendingAppointments.length;
+                document.getElementById('todayAppointments').textContent = todayAppointments.length;
             } catch (error) {
-                console.error('Erreur chargement stats:', error);
+                console.error('Error cargando estadísticas:', error);
             }
         }
 
-        // Charger les rendez-vous
         async function loadAppointments() {
             try {
                 const appointments = await FirebaseManager.getAllAppointments();
                 const list = document.getElementById('appointmentsList');
                 
                 if (appointments.length === 0) {
-                    list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun rendez-vous programmé</p>';
+                    list.innerHTML = `<p style="text-align: center; color: #7f8c8d;" data-i18n="admin.noAppointments">No hi ha cites programades</p>`;
+                    changeLanguage(currentLang);
                     return;
                 }
 
-                // Trier par date
+                // Ordenar por fecha
                 appointments.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
 
-                list.innerHTML = appointments.map(apt => `
-                    <div class="appointment-item">
-                        <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${apt.userName} - ${getServiceName(apt.service)}</h4>
-                        <p><strong>Date:</strong> ${formatDate(apt.date)} à ${apt.time}</p>
-                        <p><strong>Email:</strong> ${apt.userEmail}</p>
-                        <p><strong>Téléphone:</strong> ${apt.userPhone || 'Non renseigné'}</p>
-                        <p><strong>Statut:</strong> <span style="color: ${apt.status === 'confirmed' ? '#27ae60' : apt.status === 'cancelled' ? '#e74c3c' : '#f39c12'}">${
-                            apt.status === 'confirmed' ? 'Confirmé' : 
-                            apt.status === 'cancelled' ? 'Annulé' : 
-                            'En attente'
-                        }</span></p>
-                        ${apt.message ? `<p><strong>Message:</strong> ${apt.message}</p>` : ''}
-                        <div class="user-actions">
-                            ${apt.status !== 'confirmed' ? `
-                                <button class="btn btn-success" onclick="confirmAppointment('${apt.id}')">
-                                    <i class="fas fa-check"></i> Confirmer
-                                </button>
+                const searchTerm = document.getElementById('searchAppointments').value.toLowerCase();
+                const filteredAppointments = appointments.filter(apt => 
+                    apt.userName.toLowerCase().includes(searchTerm) ||
+                    apt.userEmail.toLowerCase().includes(searchTerm) ||
+                    apt.service.toLowerCase().includes(searchTerm)
+                );
+
+                if (filteredAppointments.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: #7f8c8d;">No s'han trobat cites</p>`;
+                    return;
+                }
+
+                list.innerHTML = filteredAppointments.map(apt => {
+                    const statusText = getStatusText(apt.status);
+                    const statusColor = getStatusColor(apt.status);
+                    
+                    return `
+                        <div class="data-item appointment-item ${apt.status}">
+                            <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${apt.userName} - ${getServiceName(apt.service)}</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <strong><i class="fas fa-calendar"></i> <span data-i18n="admin.appointment.date">Data</span>:</strong><br>
+                                    ${formatDate(apt.date)}
+                                </div>
+                                <div>
+                                    <strong><i class="fas fa-clock"></i> <span data-i18n="admin.appointment.time">Hora</span>:</strong><br>
+                                    ${apt.time}
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <strong><i class="fas fa-envelope"></i> <span data-i18n="admin.appointment.email">Email</span>:</strong><br>
+                                    ${apt.userEmail}
+                                </div>
+                                <div>
+                                    <strong><i class="fas fa-phone"></i> <span data-i18n="admin.appointment.phone">Telèfon</span>:</strong><br>
+                                    ${apt.userPhone || 'No especificat'}
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <strong><i class="fas fa-info-circle"></i> <span data-i18n="admin.appointment.status">Estat</span>:</strong>
+                                <span style="color: ${statusColor}; font-weight: bold; margin-left: 0.5rem;">
+                                    ${statusText}
+                                </span>
+                            </div>
+                            ${apt.message ? `
+                                <div style="margin-bottom: 1rem;">
+                                    <strong><i class="fas fa-comment"></i> <span data-i18n="admin.appointment.message">Missatge</span>:</strong><br>
+                                    ${apt.message}
+                                </div>
                             ` : ''}
-                            ${apt.status !== 'cancelled' ? `
-                                <button class="btn btn-danger" onclick="cancelAppointment('${apt.id}')">
-                                    <i class="fas fa-times"></i> Annuler
+                            <div class="action-buttons">
+                                ${apt.status !== 'confirmed' ? `
+                                    <button class="btn btn-success" onclick="confirmAppointment('${apt.id}')">
+                                        <i class="fas fa-check"></i> <span data-i18n="admin.action.confirm">Confirmar</span>
+                                    </button>
+                                ` : ''}
+                                ${apt.status !== 'cancelled' ? `
+                                    <button class="btn btn-warning" onclick="cancelAppointment('${apt.id}')">
+                                        <i class="fas fa-times"></i> <span data-i18n="admin.action.cancel">Cancel·lar</span>
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-info" onclick="openMessageModal('${apt.id}', '${apt.userId}', '${apt.userEmail}', '${apt.userName}')">
+                                    <i class="fas fa-envelope"></i> <span data-i18n="admin.action.message">Enviar missatge</span>
                                 </button>
-                            ` : ''}
-                            <button class="btn" onclick="deleteAppointment('${apt.id}')" style="background: #95a5a6;">
-                                <i class="fas fa-trash"></i> Supprimer
-                            </button>
+                                <button class="btn btn-danger" onclick="deleteAppointment('${apt.id}')">
+                                    <i class="fas fa-trash"></i> <span data-i18n="admin.action.delete">Eliminar</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
+                
+                changeLanguage(currentLang);
+                
             } catch (error) {
-                console.error('Erreur chargement rendez-vous:', error);
+                console.error('Error cargando citas:', error);
                 document.getElementById('appointmentsList').innerHTML = 
-                    '<p style="text-align: center; color: #e74c3c;">Erreur lors du chargement des rendez-vous</p>';
+                    '<p style="text-align: center; color: #e74c3c;">Error carregant les cites</p>';
             }
         }
 
-        // Charger les utilisateurs
         async function loadUsers() {
             try {
                 const users = await FirebaseManager.getAllUsers();
+                const appointments = await FirebaseManager.getAllAppointments();
                 const clients = users.filter(u => u.role === 'client');
                 const list = document.getElementById('usersList');
                 
                 if (clients.length === 0) {
-                    list.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Aucun client inscrit</p>';
+                    list.innerHTML = `<p style="text-align: center; color: #7f8c8d;" data-i18n="admin.noUsers">No hi ha clients registrats</p>`;
+                    changeLanguage(currentLang);
                     return;
                 }
 
-                list.innerHTML = clients.map(user => `
-                    <div class="appointment-item">
-                        <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${user.firstName} ${user.lastName}</h4>
-                        <p><strong>Email:</strong> ${user.email}</p>
-                        <p><strong>Téléphone:</strong> ${user.phone || 'Non renseigné'}</p>
-                        <p><strong>Adresse:</strong> ${user.address || 'Non renseignée'}</p>
-                        <p><strong>Inscrit le:</strong> ${formatDate(user.createdAt?.toDate?.() || user.createdAt)}</p>
-                    </div>
-                `).join('');
+                const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+                const filteredUsers = clients.filter(user => 
+                    user.firstName.toLowerCase().includes(searchTerm) ||
+                    user.lastName.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+
+                if (filteredUsers.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: #7f8c8d;">No s'han trobat usuaris</p>`;
+                    return;
+                }
+
+                list.innerHTML = filteredUsers.map(user => {
+                    const userAppointments = appointments.filter(apt => apt.userId === user.id);
+                    
+                    return `
+                        <div class="data-item user-item">
+                            <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${user.firstName} ${user.lastName}</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <strong><i class="fas fa-envelope"></i> <span data-i18n="admin.user.email">Email</span>:</strong><br>
+                                    ${user.email}
+                                </div>
+                                <div>
+                                    <strong><i class="fas fa-phone"></i> <span data-i18n="admin.user.phone">Telèfon</span>:</strong><br>
+                                    ${user.phone || 'No especificat'}
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <strong><i class="fas fa-map-marker-alt"></i> <span data-i18n="admin.user.address">Adreça</span>:</strong><br>
+                                ${user.address || 'No especificada'}
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong><i class="fas fa-calendar"></i> <span data-i18n="admin.user.registered">Registrat el</span>:</strong><br>
+                                    ${formatDate(user.createdAt?.toDate?.() || user.createdAt)}
+                                </div>
+                                <div style="text-align: right;">
+                                    <strong><i class="fas fa-list-alt"></i> <span data-i18n="admin.user.appointments">Cites</span>:</strong><br>
+                                    ${userAppointments.length}
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-info" onclick="openMessageModal(null, '${user.id}', '${user.email}', '${user.firstName} ${user.lastName}')">
+                                    <i class="fas fa-envelope"></i> <span data-i18n="admin.action.message">Enviar missatge</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                changeLanguage(currentLang);
+                
             } catch (error) {
-                console.error('Erreur chargement utilisateurs:', error);
+                console.error('Error cargando usuarios:', error);
                 document.getElementById('usersList').innerHTML = 
-                    '<p style="text-align: center; color: #e74c3c;">Erreur lors du chargement des utilisateurs</p>';
+                    '<p style="text-align: center; color: #e74c3c;">Error carregant els usuaris</p>';
             }
         }
 
-        // Gestion des rendez-vous
+        // Gestión de citas
         async function confirmAppointment(appointmentId) {
             try {
                 const success = await FirebaseManager.updateAppointment(appointmentId, { status: 'confirmed' });
                 if (success) {
-                    showMessage('Rendez-vous confirmé avec succès!', 'success');
+                    showMessage(translations[currentLang]['admin.action.confirm'] + ' correctament', 'success');
                     await loadAppointments();
                     await loadStats();
                 } else {
-                    showMessage('Erreur lors de la confirmation', 'error');
+                    showMessage('Error en la confirmació', 'error');
                 }
             } catch (error) {
-                console.error('Erreur confirmation:', error);
-                showMessage('Erreur lors de la confirmation', 'error');
+                console.error('Error confirmando:', error);
+                showMessage('Error en la confirmació', 'error');
             }
         }
 
         async function cancelAppointment(appointmentId) {
-            if (confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous?')) {
+            const confirmMessage = currentLang === 'ca' ? 
+                'Estàs segur que vols cancel·lar aquesta cita?' :
+                '¿Estás seguro de que quieres cancelar esta cita?';
+                
+            if (confirm(confirmMessage)) {
                 try {
                     const success = await FirebaseManager.updateAppointment(appointmentId, { status: 'cancelled' });
                     if (success) {
-                        showMessage('Rendez-vous annulé avec succès!', 'success');
+                        showMessage(translations[currentLang]['admin.action.cancel'] + ' correctament', 'success');
                         await loadAppointments();
                         await loadStats();
                     } else {
-                        showMessage('Erreur lors de l\'annulation', 'error');
+                        showMessage('Error en la cancel·lació', 'error');
                     }
                 } catch (error) {
-                    console.error('Erreur annulation:', error);
-                    showMessage('Erreur lors de l\'annulation', 'error');
+                    console.error('Error cancelando:', error);
+                    showMessage('Error en la cancel·lació', 'error');
                 }
             }
         }
 
         async function deleteAppointment(appointmentId) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer définitivement ce rendez-vous?')) {
+            const confirmMessage = currentLang === 'ca' ? 
+                'Estàs segur que vols eliminar aquesta cita?' :
+                '¿Estás seguro de que quieres eliminar esta cita?';
+                
+            if (confirm(confirmMessage)) {
                 try {
                     const success = await FirebaseManager.deleteAppointment(appointmentId);
                     if (success) {
-                        showMessage('Rendez-vous supprimé avec succès!', 'success');
+                        showMessage(translations[currentLang]['admin.action.delete'] + ' correctament', 'success');
                         await loadAppointments();
                         await loadStats();
                     } else {
-                        showMessage('Erreur lors de la suppression', 'error');
+                        showMessage('Error en l\'eliminació', 'error');
                     }
                 } catch (error) {
-                    console.error('Erreur suppression:', error);
-                    showMessage('Erreur lors de la suppression', 'error');
+                    console.error('Error eliminando:', error);
+                    showMessage('Error en l\'eliminació', 'error');
                 }
             }
         }
 
-        // Changement de mot de passe
+        // Modal de mensajes
+        function openMessageModal(appointmentId, userId, userEmail, userName) {
+            document.getElementById('messageAppointmentId').value = appointmentId || '';
+            document.getElementById('messageUserId').value = userId;
+            document.getElementById('messageUserEmail').value = userEmail;
+            document.getElementById('messageRecipient').value = `${userName} (${userEmail})`;
+            
+            // Configurar asunto por defecto según tipo de mensaje
+            const messageType = document.getElementById('messageType');
+            const messageSubject = document.getElementById('messageSubject');
+            
+            messageType.addEventListener('change', function() {
+                const type = this.value;
+                const subjects = {
+                    'confirmation': currentLang === 'ca' ? 'Confirmació de la teva cita' : 'Confirmación de tu cita',
+                    'cancellation': currentLang === 'ca' ? 'Cancel·lació de la teva cita' : 'Cancelación de tu cita',
+                    'information': currentLang === 'ca' ? 'Informació important' : 'Información importante',
+                    'reminder': currentLang === 'ca' ? 'Recordatori de cita' : 'Recordatorio de cita',
+                    'other': currentLang === 'ca' ? 'Missatge de Lunagestio' : 'Mensaje de Lunagestio'
+                };
+                messageSubject.value = subjects[type] || '';
+            });
+            
+            document.getElementById('messageModal').style.display = 'block';
+            document.getElementById('messageHistory').style.display = 'none';
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+            document.getElementById('messageForm').reset();
+        }
+
+        async function showMessageHistory() {
+            const userId = document.getElementById('messageUserId').value;
+            const historyContent = document.getElementById('historyContent');
+            const messageHistory = document.getElementById('messageHistory');
+            
+            try {
+                const messages = await FirebaseManager.getMessageHistory(userId);
+                historyContent.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    historyContent.innerHTML = '<p style="text-align: center; color: #7f8c8d;">No hi ha missatges previs</p>';
+                } else {
+                    messages.forEach(msg => {
+                        const messageDate = msg.createdAt?.toDate ? msg.createdAt.toDate() : new Date(msg.createdAt);
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message-item ${msg.sender === 'admin' ? 'message-admin' : 'message-client'}`;
+                        messageDiv.innerHTML = `
+                            <strong>${msg.sender === 'admin' ? 'Admin' : 'Client'}</strong> - ${formatDateTime(messageDate)}<br>
+                            <strong>${msg.subject}</strong><br>
+                            ${msg.content}
+                        `;
+                        historyContent.appendChild(messageDiv);
+                    });
+                }
+                
+                messageHistory.style.display = 'block';
+            } catch (error) {
+                console.error('Error cargando historial:', error);
+                historyContent.innerHTML = '<p style="text-align: center; color: #e74c3c;">Error carregant l\'historial</p>';
+            }
+        }
+
+        // Envío de mensajes
+        document.getElementById('messageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const appointmentId = document.getElementById('messageAppointmentId').value;
+            const userId = document.getElementById('messageUserId').value;
+            const userEmail = document.getElementById('messageUserEmail').value;
+            const messageType = document.getElementById('messageType').value;
+            const subject = document.getElementById('messageSubject').value;
+            const content = document.getElementById('messageContent').value;
+
+            const messageData = {
+                appointmentId: appointmentId || null,
+                userId: userId,
+                userEmail: userEmail,
+                type: messageType,
+                subject: subject,
+                content: content,
+                sender: 'admin',
+                status: 'sent'
+            };
+
+            try {
+                await FirebaseManager.sendMessage(messageData);
+                showMessage(translations[currentLang]['admin.message.sent'], 'success');
+                closeMessageModal();
+                
+                // Aquí podrías integrar con un servicio de email como EmailJS o SendGrid
+                console.log('Mensaje preparado para enviar:', {
+                    to: userEmail,
+                    subject: subject,
+                    content: content
+                });
+                
+            } catch (error) {
+                console.error('Error enviando mensaje:', error);
+                showMessage(translations[currentLang]['admin.message.error'], 'error');
+            }
+        });
+
+        // Cambio de contraseña
         document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -547,56 +1178,73 @@
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // Validation
             if (currentPassword !== currentUser.password) {
-                showMessage('Mot de passe actuel incorrect', 'error', 'passwordMessage');
+                showMessage('Contrasenya actual incorrecta', 'error', 'passwordMessage');
                 return;
             }
 
             if (newPassword.length < 6) {
-                showMessage('Le nouveau mot de passe doit contenir au moins 6 caractères', 'error', 'passwordMessage');
+                showMessage('La nova contrasenya ha de tenir almenys 6 caràcters', 'error', 'passwordMessage');
                 return;
             }
 
             if (newPassword !== confirmPassword) {
-                showMessage('Les mots de passe ne correspondent pas', 'error', 'passwordMessage');
+                showMessage('Les contrasenyes no coincideixen', 'error', 'passwordMessage');
                 return;
             }
 
             try {
-                // Mettre à jour dans Firebase
                 const success = await FirebaseManager.updateUserPassword(currentUser.id, newPassword);
                 
                 if (success) {
-                    // Mettre à jour l'utilisateur connecté
                     currentUser.password = newPassword;
                     localStorage.setItem('lunagestio_current_user', JSON.stringify(currentUser));
                     
-                    showMessage('Mot de passe changé avec succès!', 'success', 'passwordMessage');
+                    showMessage('Contrasenya canviada correctament', 'success', 'passwordMessage');
                     this.reset();
                 } else {
-                    showMessage('Erreur lors du changement de mot de passe', 'error', 'passwordMessage');
+                    showMessage('Error en canviar la contrasenya', 'error', 'passwordMessage');
                 }
             } catch (error) {
-                console.error('Erreur changement mot de passe:', error);
-                showMessage('Erreur lors du changement de mot de passe', 'error', 'passwordMessage');
+                console.error('Error cambiando contraseña:', error);
+                showMessage('Error en canviar la contrasenya', 'error', 'passwordMessage');
             }
         });
 
-        // ===== FONCTIONS UTILITAIRES =====
+        // ===== FUNCIONES UTILITARIAS =====
         function getServiceName(serviceKey) {
             const services = {
-                'extranjeria': 'Étrangérie',
-                'laboral': 'Fiscal / Comptable',
-                'seguros': 'Assurances',
-                'vehiculos': 'Véhicules',
-                'otro': 'Autre service'
+                'extranjeria': currentLang === 'ca' ? 'Estrangeria' : 'Extranjería',
+                'laboral': currentLang === 'ca' ? 'Fiscal / Comptable' : 'Fiscal / Contable',
+                'seguros': currentLang === 'ca' ? 'Assegurances' : 'Seguros',
+                'vehiculos': currentLang === 'ca' ? 'Vehicles' : 'Vehículos',
+                'otro': currentLang === 'ca' ? 'Altres serveis' : 'Otros servicios'
             };
             return services[serviceKey] || serviceKey;
         }
 
+        function getStatusText(status) {
+            const statuses = {
+                'pending': translations[currentLang]['admin.status.pending'],
+                'confirmed': translations[currentLang]['admin.status.confirmed'],
+                'cancelled': translations[currentLang]['admin.status.cancelled'],
+                'completed': translations[currentLang]['admin.status.completed']
+            };
+            return statuses[status] || status;
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'pending': '#f39c12',
+                'confirmed': '#27ae60',
+                'cancelled': '#e74c3c',
+                'completed': '#3498db'
+            };
+            return colors[status] || '#95a5a6';
+        }
+
         function formatDate(dateInput) {
-            if (!dateInput) return 'Date inconnue';
+            if (!dateInput) return 'Data desconeguda';
             
             let date;
             if (dateInput instanceof Date) {
@@ -607,11 +1255,34 @@
                 date = new Date(dateInput);
             }
             
-            return date.toLocaleDateString('fr-FR', {
-                weekday: 'long',
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            return date.toLocaleDateString(currentLang === 'ca' ? 'ca-ES' : 'es-ES', options);
+        }
+
+        function formatDateTime(dateInput) {
+            if (!dateInput) return 'Data desconeguda';
+            
+            let date;
+            if (dateInput instanceof Date) {
+                date = dateInput;
+            } else if (dateInput.toDate) {
+                date = dateInput.toDate();
+            } else {
+                date = new Date(dateInput);
+            }
+            
+            return date.toLocaleString(currentLang === 'ca' ? 'ca-ES' : 'es-ES', {
+                day: '2-digit',
+                month: '2-digit',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+                hour: '2-digit',
+                minute: '2-digit'
             });
         }
 
@@ -633,22 +1304,22 @@
             }, 5000);
         }
 
-        // ===== FONCTIONS DE SYNCHRONISATION ET DÉCONNEXION =====
+        // ===== FUNCIONES DE SINCRONIZACIÓN Y DESCONEXIÓN =====
         async function syncData() {
             if (window.SyncManager) {
                 await window.SyncManager.manualSync();
-                // Recharger les données après synchronisation
                 await loadStats();
                 await loadAppointments();
                 await loadUsers();
             } else {
-                showMessage('Synchronisation non disponible', 'error');
+                showMessage('Sincronització no disponible', 'error');
             }
         }
 
         async function logout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                // Synchroniser avant déconnexion
+            const confirmMessage = translations[currentLang]['admin.confirmLogout'];
+            
+            if (confirm(confirmMessage)) {
                 if (window.SyncManager) {
                     await window.SyncManager.quickSync();
                 }
@@ -658,15 +1329,35 @@
             }
         }
 
-        // ===== INITIALISATION =====
+        // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', async function() {
+            // Configurar eventos de búsqueda
+            document.getElementById('searchAppointments').addEventListener('input', loadAppointments);
+            document.getElementById('searchUsers').addEventListener('input', loadUsers);
+            
+            // Configurar eventos de idioma
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    changeLanguage(this.getAttribute('data-lang'));
+                });
+            });
+
             if (checkAdminAccess()) {
+                changeLanguage('ca');
                 await loadStats();
                 await loadAppointments();
                 await loadUsers();
-                console.log('✅ Panel admin chargé avec succès');
+                console.log('✅ Panel admin cargado correctamente');
             }
         });
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('messageModal');
+            if (event.target === modal) {
+                closeMessageModal();
+            }
+        }
     </script>
 </body>
 </html>
