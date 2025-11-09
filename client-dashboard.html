@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace Client - Lunagestio</title>
+    
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbzW8zQkUPH4JY9Qc-DAboH2XER_IJQjI",
+            authDomain: "luna-gestion.firebaseapp.com",
+            projectId: "luna-gestion",
+            storageBucket: "luna-gestion.firebasestorage.app",
+            messagingSenderId: "5549836438",
+            appId: "1:5549836438:web:be38e0d9a3a9b458635ab7"
+        };
+
+        // Initialiser Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            console.log('✅ Firebase initialisé avec succès');
+        } catch (error) {
+            console.error('❌ Erreur initialisation Firebase:', error);
+        }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -15,12 +40,14 @@
         body {
             font-family: 'Arial', sans-serif;
             background: #f8f9fa;
+            min-height: 100vh;
         }
 
         .dashboard-header {
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
-            padding: 1rem;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .header-container {
@@ -29,6 +56,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 1rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
@@ -37,6 +65,13 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
 
         .dashboard-container {
@@ -58,14 +93,98 @@
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
         }
 
         .appointment-item {
             background: white;
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1.5rem;
+            border-radius: 10px;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #27ae60;
+        }
+
+        .appointment-item.cancelled {
+            border-left-color: #e74c3c;
+            opacity: 0.7;
+        }
+
+        .appointment-item.pending {
+            border-left-color: #f39c12;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #3498db;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-sync {
+            background: #9b59b6;
+        }
+
+        .no-appointments {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #3498db;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -74,8 +193,31 @@
                 text-align: center;
             }
             
+            .user-info {
+                flex-direction: column;
+            }
+            
+            .user-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .user-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .appointment-actions {
+                flex-direction: column;
+            }
+            
+            .appointment-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -83,15 +225,20 @@
 <body>
     <header class="dashboard-header">
         <div class="header-container">
-            <h1><i class="fas fa-user-circle"></i> Espace Client</h1>
+            <h1><i class="fas fa-user-circle"></i> Espace Client - Lunagestio</h1>
             <div class="user-info">
                 <span id="userName">Utilisateur</span>
-                <a href="index.html" class="btn" style="color: white; text-decoration: none; padding: 0.5rem 1rem; background: #27ae60; border-radius: 5px;">
-                    <i class="fas fa-home"></i> Accueil
-                </a>
-                <button onclick="logout()" style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">
-                    <i class="fas fa-sign-out-alt"></i> Déconnexion
-                </button>
+                <div class="user-actions">
+                    <button onclick="syncData()" class="btn btn-sync" title="Synchroniser">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Accueil
+                    </a>
+                    <button onclick="logout()" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -100,58 +247,291 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3 id="totalAppointments">0</h3>
-                <p>Rendez-vous</p>
+                <p>Rendez-vous total</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="confirmedAppointments">0</h3>
+                <p>Confirmés</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="pendingAppointments">0</h3>
+                <p>En attente</p>
             </div>
         </div>
 
-        <h2>Mes Rendez-vous</h2>
+        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">
+            <i class="fas fa-calendar-alt"></i> Mes Rendez-vous
+        </h2>
         <div id="appointmentsList">
             <!-- Rendez-vous chargés dynamiquement -->
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script type="module" src="./sync-manager.js"></script>
+
     <script>
+        // ===== GESTIONNAIRE FIREBASE =====
+        const FirebaseManager = {
+            // Récupérer les rendez-vous de l'utilisateur
+            getUserAppointments: async function(userId) {
+                try {
+                    const { collection, query, where, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const q = query(
+                        collection(window.db, 'appointments'),
+                        where('userId', '==', userId),
+                        orderBy('date', 'desc'),
+                        orderBy('time', 'desc')
+                    );
+                    
+                    const snapshot = await getDocs(q);
+                    const appointments = [];
+                    snapshot.forEach(doc => {
+                        appointments.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    return appointments;
+                } catch (error) {
+                    console.error('Erreur récupération rendez-vous:', error);
+                    throw error;
+                }
+            },
+
+            // Annuler un rendez-vous
+            cancelAppointment: async function(appointmentId) {
+                try {
+                    const { doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    await updateDoc(doc(window.db, 'appointments', appointmentId), {
+                        status: 'cancelled',
+                        updatedAt: serverTimestamp()
+                    });
+                    return true;
+                } catch (error) {
+                    console.error('Erreur annulation rendez-vous:', error);
+                    throw error;
+                }
+            }
+        };
+
+        // ===== FONCTIONS PRINCIPALES =====
+        
         function checkAuth() {
             const currentUser = JSON.parse(localStorage.getItem('lunagestio_current_user'));
-            if (!currentUser) {
+            if (!currentUser || currentUser.role === 'admin') {
                 window.location.href = 'login.html';
                 return null;
             }
             return currentUser;
         }
 
-        function loadDashboard() {
+        async function loadDashboard() {
             const user = checkAuth();
             if (!user) return;
 
+            // Afficher le nom de l'utilisateur
             document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
 
-            const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments')) || [];
-            const userAppointments = appointments.filter(apt => apt.userId === user.id);
-
-            document.getElementById('totalAppointments').textContent = userAppointments.length;
-
+            // Afficher le chargement
             const list = document.getElementById('appointmentsList');
-            if (userAppointments.length === 0) {
-                list.innerHTML = '<p>Aucun rendez-vous programmé</p>';
+            list.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Chargement de vos rendez-vous...</p>
+                </div>
+            `;
+
+            try {
+                // Récupérer les rendez-vous depuis Firebase
+                const userAppointments = await FirebaseManager.getUserAppointments(user.id);
+
+                // Mettre à jour les statistiques
+                updateStats(userAppointments);
+
+                // Afficher les rendez-vous
+                displayAppointments(userAppointments);
+                
+            } catch (error) {
+                console.error('Erreur chargement dashboard:', error);
+                list.innerHTML = `
+                    <div class="no-appointments">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #e74c3c; margin-bottom: 1rem;"></i>
+                        <h3>Erreur de chargement</h3>
+                        <p>Impossible de charger vos rendez-vous. Veuillez réessayer.</p>
+                        <button onclick="loadDashboard()" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-redo"></i> Réessayer
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats(appointments) {
+            const total = appointments.length;
+            const confirmed = appointments.filter(apt => apt.status === 'confirmed').length;
+            const pending = appointments.filter(apt => apt.status === 'pending').length;
+
+            document.getElementById('totalAppointments').textContent = total;
+            document.getElementById('confirmedAppointments').textContent = confirmed;
+            document.getElementById('pendingAppointments').textContent = pending;
+        }
+
+        function displayAppointments(appointments) {
+            const list = document.getElementById('appointmentsList');
+            
+            if (appointments.length === 0) {
+                list.innerHTML = `
+                    <div class="no-appointments">
+                        <i class="fas fa-calendar-times" style="font-size: 3rem; color: #95a5a6; margin-bottom: 1rem;"></i>
+                        <h3>Aucun rendez-vous</h3>
+                        <p>Vous n'avez pas encore de rendez-vous programmé.</p>
+                        <a href="index.html#citas" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Prendre un rendez-vous
+                        </a>
+                    </div>
+                `;
                 return;
             }
 
-            list.innerHTML = userAppointments.map(apt => `
-                <div class="appointment-item">
-                    <h4>${apt.service}</h4>
-                    <p>Date: ${apt.date} à ${apt.time}</p>
-                    <p>Statut: ${apt.status}</p>
-                    ${apt.message ? `<p>Message: ${apt.message}</p>` : ''}
-                </div>
-            `).join('');
+            list.innerHTML = appointments.map(apt => {
+                const appointmentDate = new Date(apt.date);
+                const now = new Date();
+                const isPast = appointmentDate < now;
+                const isToday = appointmentDate.toDateString() === now.toDateString();
+                
+                let statusText, statusColor, statusClass = '';
+                
+                if (apt.status === 'cancelled') {
+                    statusText = 'Annulé';
+                    statusColor = '#e74c3c';
+                    statusClass = 'cancelled';
+                } else if (apt.status === 'confirmed') {
+                    statusText = 'Confirmé';
+                    statusColor = '#27ae60';
+                } else {
+                    statusText = 'En attente';
+                    statusColor = '#f39c12';
+                    statusClass = 'pending';
+                }
+                
+                if (isPast && apt.status !== 'cancelled') {
+                    statusText = 'Terminé';
+                    statusColor = '#95a5a6';
+                }
+                
+                return `
+                    <div class="appointment-item ${statusClass}">
+                        <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">${getServiceName(apt.service)}</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <strong><i class="fas fa-calendar"></i> Date:</strong><br>
+                                ${formatDisplayDate(apt.date)}
+                            </div>
+                            <div>
+                                <strong><i class="fas fa-clock"></i> Heure:</strong><br>
+                                ${apt.time}
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong><i class="fas fa-info-circle"></i> Statut:</strong>
+                            <span style="color: ${statusColor}; font-weight: bold; margin-left: 0.5rem;">
+                                ${statusText}
+                            </span>
+                        </div>
+                        ${apt.message ? `
+                            <div style="margin-bottom: 1rem;">
+                                <strong><i class="fas fa-comment"></i> Message:</strong><br>
+                                ${apt.message}
+                            </div>
+                        ` : ''}
+                        <div class="appointment-actions">
+                            ${!isPast && apt.status === 'pending' ? `
+                                <button class="btn btn-danger" onclick="cancelAppointment('${apt.id}')">
+                                    <i class="fas fa-times"></i> Annuler
+                                </button>
+                            ` : ''}
+                            ${apt.status === 'confirmed' && !isPast ? `
+                                <button class="btn btn-danger" onclick="cancelAppointment('${apt.id}')">
+                                    <i class="fas fa-times"></i> Annuler
+                                </button>
+                            ` : ''}
+                            <a href="index.html#consulta-citas" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Voir détails
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function logout() {
-            localStorage.removeItem('lunagestio_current_user');
-            window.location.href = 'login.html';
+        async function cancelAppointment(appointmentId) {
+            if (!confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
+                return;
+            }
+
+            try {
+                const success = await FirebaseManager.cancelAppointment(appointmentId);
+                if (success) {
+                    alert('Rendez-vous annulé avec succès !');
+                    await loadDashboard(); // Recharger le dashboard
+                } else {
+                    alert('Erreur lors de l\'annulation du rendez-vous');
+                }
+            } catch (error) {
+                console.error('Erreur annulation:', error);
+                alert('Erreur lors de l\'annulation du rendez-vous');
+            }
         }
 
+        // ===== FONCTIONS UTILITAIRES =====
+        function getServiceName(serviceKey) {
+            const services = {
+                'extranjeria': 'Étrangérie',
+                'laboral': 'Fiscal / Comptable',
+                'seguros': 'Assurances',
+                'vehiculos': 'Véhicules',
+                'otro': 'Autre service'
+            };
+            return services[serviceKey] || serviceKey;
+        }
+
+        function formatDisplayDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // ===== FONCTIONS DE SYNCHRONISATION ET DÉCONNEXION =====
+        async function syncData() {
+            if (window.SyncManager) {
+                await window.SyncManager.manualSync();
+                // Recharger les données après synchronisation
+                await loadDashboard();
+            } else {
+                alert('Synchronisation non disponible');
+            }
+        }
+
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                // Synchroniser avant déconnexion
+                if (window.SyncManager) {
+                    await window.SyncManager.quickSync();
+                }
+                
+                localStorage.removeItem('lunagestio_current_user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ===== INITIALISATION =====
         document.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
 </body>
