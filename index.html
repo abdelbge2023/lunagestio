@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lunagestio - Gestion Intégrale</title>
     
-    <!-- Firebase -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -79,6 +79,32 @@
 
         .nav-links a:hover {
             background: rgba(255,255,255,0.1);
+        }
+
+        /* ===== SELECTEUR DE LANGUE ===== */
+        .language-selector {
+            display: flex;
+            gap: 0.3rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.3rem;
+            border-radius: 8px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: #f39c12;
+            transform: scale(1.05);
         }
 
         /* ===== BOUTONS AUTHENTIFICATION ===== */
@@ -585,7 +611,7 @@
         <nav class="nav-container">
             <div class="logo">
                 <img src="images/logo.png" alt="Lunagestio Logo" onerror="this.style.display='none'">
-                <span>Lunagestio</span>
+                <span data-i18n="nav.logo">Lunagestio</span>
             </div>
             
             <button class="mobile-menu-btn">
@@ -593,18 +619,26 @@
             </button>
 
             <ul class="nav-links">
-                <li><a href="#inicio">Accueil</a></li>
-                <li><a href="#servicios">Services</a></li>
-                <li><a href="#contacto">Contact</a></li>
-                <li><a href="#citas">Rendez-vous</a></li>
+                <li><a href="#inicio" data-i18n="nav.home">Accueil</a></li>
+                <li><a href="#servicios" data-i18n="nav.services">Services</a></li>
+                <li><a href="#contacto" data-i18n="nav.contact">Contact</a></li>
+                <li><a href="#citas" data-i18n="nav.appointment">Rendez-vous</a></li>
+                
+                <!-- Sélecteur de langue -->
+                <li class="language-selector">
+                    <button class="lang-btn active" data-lang="fr">FR</button>
+                    <button class="lang-btn" data-lang="es">ES</button>
+                    <button class="lang-btn" data-lang="ca">CA</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </li>
                 
                 <!-- Boutons d'authentification -->
                 <li class="auth-buttons">
                     <a href="login.html" class="btn-auth btn-login">
-                        <i class="fas fa-sign-in-alt"></i> Connexion
+                        <i class="fas fa-sign-in-alt"></i> <span data-i18n="auth.login">Connexion</span>
                     </a>
                     <a href="register.html" class="btn-auth btn-register">
-                        <i class="fas fa-user-plus"></i> Inscription
+                        <i class="fas fa-user-plus"></i> <span data-i18n="auth.register">Inscription</span>
                     </a>
                 </li>
             </ul>
@@ -614,86 +648,86 @@
     <!-- Hero Section -->
     <section class="hero" id="inicio">
         <div class="hero-content">
-            <h1>Lunagestio - Votre Partenaire de Confiance</h1>
-            <p>Services complets de gestion : Étrangérie, Fiscalité, Comptabilité et plus</p>
+            <h1 data-i18n="hero.title">Lunagestio - Votre Partenaire de Confiance</h1>
+            <p data-i18n="hero.subtitle">Services complets de gestion : Étrangérie, Fiscalité, Comptabilité et plus</p>
             <button class="btn" onclick="scrollToSection('citas')">
-                <i class="fas fa-calendar-check"></i> Prendre Rendez-vous
+                <i class="fas fa-calendar-check"></i> <span data-i18n="hero.cta">Prendre Rendez-vous</span>
             </button>
         </div>
     </section>
 
     <!-- Services Section -->
     <section class="services" id="servicios">
-        <h2 class="section-title">Nos Services</h2>
+        <h2 class="section-title" data-i18n="services.title">Nos Services</h2>
         <div class="services-grid">
             <!-- Service d'Étrangérie -->
             <div class="service-card">
                 <div class="service-icon">🌍</div>
-                <h3>Étrangérie</h3>
-                <p class="service-description">
+                <h3 data-i18n="services.foreign.title">Étrangérie</h3>
+                <p class="service-description" data-i18n="services.foreign.description">
                     Gestion complète des démarches d'immigration pour les résidents internationaux. 
                     Conseils spécialisés en permis de séjour, travail, nationalité espagnole, 
                     regroupement familial et traductions assermentées.
                 </p>
                 <ul class="service-features">
-                    <li>Permis de séjour et travail</li>
-                    <li>Nationalité espagnole</li>
-                    <li>Regroupement familial</li>
-                    <li>Traductions assermentées</li>
-                    <li>Conseil juridique migratoire</li>
+                    <li data-i18n="services.foreign.feature1">Permis de séjour et travail</li>
+                    <li data-i18n="services.foreign.feature2">Nationalité espagnole</li>
+                    <li data-i18n="services.foreign.feature3">Regroupement familial</li>
+                    <li data-i18n="services.foreign.feature4">Traductions assermentées</li>
+                    <li data-i18n="services.foreign.feature5">Conseil juridique migratoire</li>
                 </ul>
             </div>
 
             <!-- Service Fiscal -->
             <div class="service-card">
                 <div class="service-icon">💼</div>
-                <h3>Fiscal / Comptable</h3>
-                <p class="service-description">
+                <h3 data-i18n="services.labor.title">Fiscal / Comptable</h3>
+                <p class="service-description" data-i18n="services.labor.description">
                     Solutions complètes pour entreprises et indépendants. Nous gérons toute la 
                     documentation, paies, contrats, inscriptions à la Sécurité Sociale, 
                     ainsi que la déclaration d'impôts et obligations fiscales.
                 </p>
                 <ul class="service-features">
-                    <li>Gestion des paies et contrats</li>
-                    <li>Inscriptions Sécurité Sociale</li>
-                    <li>Déclarations d'impôts</li>
-                    <li>Conseil fiscal</li>
-                    <li>Comptabilité pour entreprises</li>
+                    <li data-i18n="services.labor.feature1">Gestion des paies et contrats</li>
+                    <li data-i18n="services.labor.feature2">Inscriptions Sécurité Sociale</li>
+                    <li data-i18n="services.labor.feature3">Déclarations d'impôts</li>
+                    <li data-i18n="services.labor.feature4">Conseil fiscal</li>
+                    <li data-i18n="services.labor.feature5">Comptabilité pour entreprises</li>
                 </ul>
             </div>
 
             <!-- Service d'Assurances -->
             <div class="service-card">
                 <div class="service-icon">🛡️</div>
-                <h3>Assurances</h3>
-                <p class="service-description">
+                <h3 data-i18n="services.insurance.title">Assurances</h3>
+                <p class="service-description" data-i18n="services.insurance.description">
                     Trouvez les meilleures couvertures d'assurance adaptées à vos besoins spécifiques. 
                     Nous travaillons avec les principales compagnies pour vous offrir des assurances 
                     habitation, santé, vie, automobile et responsabilité civile.
                 </p>
                 <ul class="service-features">
-                    <li>Assurances habitation</li>
-                    <li>Assurances santé et vie</li>
-                    <li>Assurances automobile</li>
-                    <li>Responsabilité civile</li>
-                    <li>Comparaison des compagnies</li>
+                    <li data-i18n="services.insurance.feature1">Assurances habitation</li>
+                    <li data-i18n="services.insurance.feature2">Assurances santé et vie</li>
+                    <li data-i18n="services.insurance.feature3">Assurances automobile</li>
+                    <li data-i18n="services.insurance.feature4">Responsabilité civile</li>
+                    <li data-i18n="services.insurance.feature5">Comparaison des compagnies</li>
                 </ul>
             </div>
 
             <!-- Service Véhicules -->
             <div class="service-card">
                 <div class="service-icon">🚗</div>
-                <h3>Véhicules</h3>
-                <p class="service-description">
+                <h3 data-i18n="services.vehicles.title">Véhicules</h3>
+                <p class="service-description" data-i18n="services.vehicles.description">
                     Nous gérons toutes les démarches liées à votre véhicule de manière rapide et efficace. 
                     Des transferts et immatriculations au contrôle technique et permis de circulation.
                 </p>
                 <ul class="service-features">
-                    <li>Transferts de véhicules</li>
-                    <li>Immatriculations et CT</li>
-                    <li>Permis de circulation</li>
-                    <li>Radiation temporaire/définitive</li>
-                    <li>Gestion des amendes</li>
+                    <li data-i18n="services.vehicles.feature1">Transferts de véhicules</li>
+                    <li data-i18n="services.vehicles.feature2">Immatriculations et CT</li>
+                    <li data-i18n="services.vehicles.feature3">Permis de circulation</li>
+                    <li data-i18n="services.vehicles.feature4">Radiation temporaire/définitive</li>
+                    <li data-i18n="services.vehicles.feature5">Gestion des amendes</li>
                 </ul>
             </div>
         </div>
@@ -701,53 +735,53 @@
 
     <!-- Appointment Section -->
     <section class="appointment-section" id="citas">
-        <h2 class="section-title">Prendre un Rendez-vous</h2>
-        <p>Réservez votre consultation en ligne</p>
+        <h2 class="section-title" data-i18n="appointment.title">Prendre un Rendez-vous</h2>
+        <p data-i18n="appointment.subtitle">Réservez votre consultation en ligne</p>
         
         <div class="appointment-form">
+            <div class="availability-info">
+                <h4><i class="fas fa-info-circle"></i> <span data-i18n="availability.title">Horaires Disponibles</span></h4>
+                <p data-i18n="availability.schedule">Lun-Mar: 10h-13h et 16h-19h | Mer-Ven: 10h-15h</p>
+                <p data-i18n="availability.closed">Fermé: week-ends et jours fériés</p>
+            </div>
+            
             <div id="appointmentAuthCheck">
                 <!-- Vérification de connexion -->
             </div>
             
             <form id="appointmentForm" style="display: none;">
                 <div class="form-group">
-                    <label for="service">Service demandé *</label>
+                    <label for="service" data-i18n="form.service">Service demandé *</label>
                     <select id="service" required>
-                        <option value="">Sélectionnez un service</option>
-                        <option value="extranjeria">Étrangérie</option>
-                        <option value="laboral">Fiscal / Comptable</option>
-                        <option value="seguros">Assurances</option>
-                        <option value="vehiculos">Véhicules</option>
+                        <option value="" data-i18n="form.selectService">Sélectionnez un service</option>
+                        <option value="extranjeria" data-i18n="services.foreign.title">Étrangérie</option>
+                        <option value="laboral" data-i18n="services.labor.title">Fiscal / Comptable</option>
+                        <option value="seguros" data-i18n="services.insurance.title">Assurances</option>
+                        <option value="vehiculos" data-i18n="services.vehicles.title">Véhicules</option>
+                        <option value="otro" data-i18n="form.other">Autre</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="appointmentDate">Date souhaitée *</label>
+                    <label for="appointmentDate" data-i18n="form.selectDate">Date souhaitée *</label>
                     <input type="date" id="appointmentDate" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="appointmentTime">Heure *</label>
+                    <label for="appointmentTime" data-i18n="form.selectTime">Heure *</label>
                     <select id="appointmentTime" required>
-                        <option value="">Sélectionnez une heure</option>
-                        <option value="10:00">10:00</option>
-                        <option value="11:00">11:00</option>
-                        <option value="12:00">12:00</option>
-                        <option value="13:00">13:00</option>
-                        <option value="14:00">14:00</option>
-                        <option value="16:00">16:00</option>
-                        <option value="17:00">17:00</option>
-                        <option value="18:00">18:00</option>
+                        <option value="" data-i18n="form.selectTime">Sélectionnez une heure</option>
+                        <!-- Les créneaux seront générés dynamiquement -->
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="message">Message (optionnel)</label>
-                    <textarea id="message" rows="4" placeholder="Informations supplémentaires sur votre consultation..."></textarea>
+                    <label for="message" data-i18n="form.message">Message (optionnel)</label>
+                    <textarea id="message" rows="4" data-i18n="form.messagePlaceholder" placeholder="Informations supplémentaires sur votre consultation..."></textarea>
                 </div>
                 
                 <button type="submit" class="btn" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i> Confirmer le Rendez-vous
+                    <i class="fas fa-paper-plane"></i> <span data-i18n="form.submit">Confirmer le Rendez-vous</span>
                 </button>
             </form>
         </div>
@@ -756,16 +790,16 @@
     <!-- Consultation des Rendez-vous Section -->
     <section class="appointment-query-section" id="consulta-citas">
         <div class="appointment-form">
-            <h2>Consulter Vos Rendez-vous</h2>
-            <p>Vérifiez l'état de vos rendez-vous programmés</p>
+            <h2 data-i18n="query.title">Consulter Vos Rendez-vous</h2>
+            <p data-i18n="query.subtitle">Vérifiez l'état de vos rendez-vous programmés</p>
             
             <div class="form-group">
-                <label for="queryEmail">Email *</label>
-                <input type="email" id="queryEmail" required placeholder="Entrez l'email utilisé pour la réservation">
+                <label for="queryEmail" data-i18n="query.email">Email *</label>
+                <input type="email" id="queryEmail" required data-i18n="query.emailPlaceholder" placeholder="Entrez l'email utilisé pour la réservation">
             </div>
             
             <button class="btn btn-secondary" onclick="queryAppointments()" id="queryBtn">
-                <i class="fas fa-search"></i> Consulter les Rendez-vous
+                <i class="fas fa-search"></i> <span data-i18n="query.button">Consulter les Rendez-vous</span>
             </button>
             
             <div id="appointmentsResults" style="margin-top: 2rem;"></div>
@@ -774,56 +808,379 @@
 
     <!-- Contact Section -->
     <section class="contact-info" id="contacto">
-        <h2 class="section-title">Contact</h2>
+        <h2 class="section-title" data-i18n="contact.title">Contact</h2>
         <div class="contact-grid">
             <div class="contact-card">
                 <i class="fas fa-map-marker-alt"></i>
-                <h3>Adresse</h3>
+                <h3 data-i18n="contact.address">Adresse</h3>
                 <p>C/ Sant Marti 17<br>Palafrugell, Spain, 17200</p>
             </div>
             <div class="contact-card">
                 <i class="fas fa-phone"></i>
-                <h3>Téléphone</h3>
+                <h3 data-i18n="contact.phone">Téléphone</h3>
                 <p>+34 972 30 43 09<br>640 56 48 54 / 678 13 94 21</p>
             </div>
             <div class="contact-card">
                 <i class="fas fa-envelope"></i>
-                <h3>Email</h3>
+                <h3 data-i18n="contact.email">Email</h3>
                 <p>info@lunagestio.com</p>
             </div>
             <div class="contact-card">
                 <i class="fas fa-clock"></i>
-                <h3>Horaires</h3>
-                <p>Lun-Mar: 10h-13h et 16h-19h</p>
-                <p>Mer-Ven: 10h-15h</p>
+                <h3 data-i18n="contact.hours.title">Horaires</h3>
+                <p data-i18n="contact.hours.monday">Lun-Mar: 10h-13h et 16h-19h</p>
+                <p data-i18n="contact.hours.wednesday">Mer-Ven: 10h-15h</p>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2024 Lunagestio. Tous droits réservés.</p>
+        <p>&copy; 2024 Lunagestio. <span data-i18n="footer.rights">Tous droits réservés.</span></p>
         <p style="margin-top: 1rem; opacity: 0.8;">
-            <i class="fas fa-shield-alt"></i> Votre vie privée est importante pour nous
+            <i class="fas fa-shield-alt"></i> <span data-i18n="footer.privacy">Votre vie privée est importante pour nous</span>
         </p>
     </footer>
 
-    <script>
-        // ===== CONFIGURATION FIREBASE =====
-        const firebaseConfig = {
-            // ⚠️ REMPLACEZ PAR VOS CLÉS FIREBASE
-            apiKey: "AIzaSyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            authDomain: "votre-projet.firebaseapp.com",
-            projectId: "votre-projet-id",
-            storageBucket: "votre-projet.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:aaaaaaaaaaaaaaaaaaaaaa"
-        };
+    <!-- Script Firebase -->
+    <script src="firebase-config.js"></script>
 
-        // Initialiser Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
+    <script>
+        // ===== SYSTÈME DE TRADUCTION COMPLET =====
+        const translations = {
+            fr: {
+                "nav.logo": "Lunagestio",
+                "nav.home": "Accueil",
+                "nav.services": "Services",
+                "nav.contact": "Contact",
+                "nav.appointment": "Rendez-vous",
+                
+                "auth.login": "Connexion",
+                "auth.register": "Inscription",
+                
+                "hero.title": "Lunagestio - Votre Partenaire de Confiance",
+                "hero.subtitle": "Services complets de gestion : Étrangérie, Fiscalité, Comptabilité et plus",
+                "hero.cta": "Prendre Rendez-vous",
+                
+                "services.title": "Nos Services",
+                "services.foreign.title": "Étrangérie",
+                "services.foreign.description": "Gestion complète des démarches d'immigration pour les résidents internationaux.",
+                "services.foreign.feature1": "Permis de séjour et travail",
+                "services.foreign.feature2": "Nationalité espagnole",
+                "services.foreign.feature3": "Regroupement familial",
+                "services.foreign.feature4": "Traductions assermentées",
+                "services.foreign.feature5": "Conseil juridique migratoire",
+                
+                "services.labor.title": "Fiscal / Comptable",
+                "services.labor.description": "Solutions complètes pour entreprises et indépendants.",
+                "services.labor.feature1": "Gestion des paies et contrats",
+                "services.labor.feature2": "Inscriptions Sécurité Sociale",
+                "services.labor.feature3": "Déclarations d'impôts",
+                "services.labor.feature4": "Conseil fiscal",
+                "services.labor.feature5": "Comptabilité pour entreprises",
+                
+                "services.insurance.title": "Assurances",
+                "services.insurance.description": "Trouvez les meilleures couvertures d'assurance adaptées à vos besoins.",
+                "services.insurance.feature1": "Assurances habitation",
+                "services.insurance.feature2": "Assurances santé et vie",
+                "services.insurance.feature3": "Assurances automobile",
+                "services.insurance.feature4": "Responsabilité civile",
+                "services.insurance.feature5": "Comparaison des compagnies",
+                
+                "services.vehicles.title": "Véhicules",
+                "services.vehicles.description": "Nous gérons toutes les démarches liées à votre véhicule.",
+                "services.vehicles.feature1": "Transferts de véhicules",
+                "services.vehicles.feature2": "Immatriculations et CT",
+                "services.vehicles.feature3": "Permis de circulation",
+                "services.vehicles.feature4": "Radiation temporaire/définitive",
+                "services.vehicles.feature5": "Gestion des amendes",
+                
+                "appointment.title": "Prendre un Rendez-vous",
+                "appointment.subtitle": "Réservez votre consultation en ligne",
+                
+                "availability.title": "Horaires Disponibles",
+                "availability.schedule": "Lun-Mar: 10h-13h et 16h-19h | Mer-Ven: 10h-15h",
+                "availability.closed": "Fermé: week-ends et jours fériés",
+                
+                "form.service": "Service demandé *",
+                "form.selectService": "Sélectionnez un service",
+                "form.selectDate": "Sélectionnez une date *",
+                "form.selectTime": "Sélectionnez une heure *",
+                "form.message": "Message (optionnel)",
+                "form.messagePlaceholder": "Informations supplémentaires sur votre consultation...",
+                "form.other": "Autre",
+                "form.submit": "Confirmer le Rendez-vous",
+                
+                "query.title": "Consulter Vos Rendez-vous",
+                "query.subtitle": "Vérifiez l'état de vos rendez-vous programmés",
+                "query.email": "Email *",
+                "query.emailPlaceholder": "Entrez l'email utilisé pour la réservation",
+                "query.button": "Consulter les Rendez-vous",
+                "query.noAppointments": "Aucun rendez-vous trouvé",
+                "query.noAppointmentsText": "Aucun rendez-vous enregistré avec cet email.",
+                "query.yourAppointments": "Vos Rendez-vous Programmés",
+                
+                "contact.title": "Contact",
+                "contact.address": "Adresse",
+                "contact.phone": "Téléphone",
+                "contact.email": "Email",
+                "contact.hours.title": "Horaires",
+                "contact.hours.monday": "Lun-Mar: 10h-13h et 16h-19h",
+                "contact.hours.wednesday": "Mer-Ven: 10h-15h",
+                
+                "footer.rights": "Tous droits réservés.",
+                "footer.privacy": "Votre vie privée est importante pour nous"
+            },
+            es: {
+                "nav.logo": "Lunagestio",
+                "nav.home": "Inicio",
+                "nav.services": "Servicios",
+                "nav.contact": "Contacto",
+                "nav.appointment": "Citas",
+                
+                "auth.login": "Conectar",
+                "auth.register": "Registro",
+                
+                "hero.title": "Lunagestio - Su Socio de Confianza",
+                "hero.subtitle": "Servicios integrales de gestión: Extranjería, Fiscalidad, Contabilidad y más",
+                "hero.cta": "Solicitar Cita",
+                
+                "services.title": "Nuestros Servicios",
+                "services.foreign.title": "Extranjería",
+                "services.foreign.description": "Gestión completa de trámites de extranjería para residentes internacionales.",
+                "services.foreign.feature1": "Permisos de residencia y trabajo",
+                "services.foreign.feature2": "Nacionalidad española",
+                "services.foreign.feature3": "Reagrupación familiar",
+                "services.foreign.feature4": "Traducciones juradas",
+                "services.foreign.feature5": "Asesoramiento legal migratorio",
+                
+                "services.labor.title": "Laboral / Fiscal-Contable",
+                "services.labor.description": "Soluciones integrales para empresas y autónomos.",
+                "services.labor.feature1": "Gestión de nóminas y contratos",
+                "services.labor.feature2": "Altas/bajas Seguridad Social",
+                "services.labor.feature3": "Declaraciones de impuestos",
+                "services.labor.feature4": "Asesoramiento fiscal",
+                "services.labor.feature5": "Contabilidad para empresas",
+                
+                "services.insurance.title": "Seguros",
+                "services.insurance.description": "Encuentra las mejores coberturas de seguros adaptadas a tus necesidades.",
+                "services.insurance.feature1": "Seguros de hogar y comunidades",
+                "services.insurance.feature2": "Seguros de salud y vida",
+                "services.insurance.feature3": "Seguros de automóvil",
+                "services.insurance.feature4": "Responsabilidad civil",
+                "services.insurance.feature5": "Comparativa de compañías",
+                
+                "services.vehicles.title": "Vehículos",
+                "services.vehicles.description": "Gestionamos todos los trámites relacionados con tu vehículo.",
+                "services.vehicles.feature1": "Transferencias de vehículos",
+                "services.vehicles.feature2": "Matriculaciones e ITV",
+                "services.vehicles.feature3": "Permisos de circulación",
+                "services.vehicles.feature4": "Bajas temporales y definitivas",
+                "services.vehicles.feature5": "Gestión de multas",
+                
+                "appointment.title": "Solicitar Cita",
+                "appointment.subtitle": "Reserve su consulta en línea",
+                
+                "availability.title": "Horarios Disponibles",
+                "availability.schedule": "Lunes y martes: 10:00-13:00 y 16:00-19:00 | Miércoles a viernes: 10:00-15:00",
+                "availability.closed": "Cerrado: fines de semana y festivos",
+                
+                "form.service": "Servicio solicitado *",
+                "form.selectService": "Seleccione un servicio",
+                "form.selectDate": "Seleccione una fecha *",
+                "form.selectTime": "Seleccione una hora *",
+                "form.message": "Mensaje (opcional)",
+                "form.messagePlaceholder": "Información adicional sobre tu consulta...",
+                "form.other": "Otro",
+                "form.submit": "Confirmar Cita",
+                
+                "query.title": "Consulta Tus Citas",
+                "query.subtitle": "Verifica el estado de tus citas programadas",
+                "query.email": "Email *",
+                "query.emailPlaceholder": "Introduce el email usado en la reserva",
+                "query.button": "Consultar Citas",
+                "query.noAppointments": "No se encontraron citas",
+                "query.noAppointmentsText": "No hay citas registradas con este email.",
+                "query.yourAppointments": "Tus Citas Programadas",
+                
+                "contact.title": "Contacto",
+                "contact.address": "Dirección",
+                "contact.phone": "Teléfono",
+                "contact.email": "Email",
+                "contact.hours.title": "Horario",
+                "contact.hours.monday": "Lun-Mar: 10h-13h y 16h-19h",
+                "contact.hours.wednesday": "Mié-Vie: 10h-15h",
+                
+                "footer.rights": "Todos los derechos reservados.",
+                "footer.privacy": "Su privacidad es importante para nosotros"
+            },
+            ca: {
+                "nav.logo": "Lunagestio",
+                "nav.home": "Inici",
+                "nav.services": "Serveis",
+                "nav.contact": "Contacte",
+                "nav.appointment": "Cites",
+                
+                "auth.login": "Connectar",
+                "auth.register": "Registre",
+                
+                "hero.title": "Lunagestio - El Vostre Soci de Confiança",
+                "hero.subtitle": "Serveis integrals de gestió: Estrangeria, Fiscalitat, Comptabilitat i més",
+                "hero.cta": "Sol·licitar Cita",
+                
+                "services.title": "Els Nostres Serveis",
+                "services.foreign.title": "Estrangeria",
+                "services.foreign.description": "Gestió completa de tràmits d'estrangeria per a residents internacionals.",
+                "services.foreign.feature1": "Permisos de residència i treball",
+                "services.foreign.feature2": "Nacionalitat espanyola",
+                "services.foreign.feature3": "Reagrupació familiar",
+                "services.foreign.feature4": "Traduccions jurades",
+                "services.foreign.feature5": "Assessorament legal migratori",
+                
+                "services.labor.title": "Laboral / Fiscal-Comptable",
+                "services.labor.description": "Solucions integrals per a empreses i autònoms.",
+                "services.labor.feature1": "Gestió de nòmines i contractes",
+                "services.labor.feature2": "Altes/baixes Seguretat Social",
+                "services.labor.feature3": "Declaracions d'impostos",
+                "services.labor.feature4": "Assessorament fiscal",
+                "services.labor.feature5": "Comptabilitat per a empreses",
+                
+                "services.insurance.title": "Assegurances",
+                "services.insurance.description": "Troba les millors cobertures d'assegurances adaptades a les teves necessitats.",
+                "services.insurance.feature1": "Assegurances de llar i comunitats",
+                "services.insurance.feature2": "Assegurances de salut i vida",
+                "services.insurance.feature3": "Assegurances d'automòbil",
+                "services.insurance.feature4": "Responsabilitat civil",
+                "services.insurance.feature5": "Comparativa de companyies",
+                
+                "services.vehicles.title": "Vehicles",
+                "services.vehicles.description": "Gestionem tots els tràmits relacionats amb el teu vehicle.",
+                "services.vehicles.feature1": "Transferències de vehicles",
+                "services.vehicles.feature2": "Matriculacions i ITV",
+                "services.vehicles.feature3": "Permisos de circulació",
+                "services.vehicles.feature4": "Baixes temporals i definitives",
+                "services.vehicles.feature5": "Gestió de multes",
+                
+                "appointment.title": "Sol·licitar Cita",
+                "appointment.subtitle": "Reserveu la vostra consulta en línia",
+                
+                "availability.title": "Horaris Disponibles",
+                "availability.schedule": "Dilluns i dimarts: 10:00-13:00 i 16:00-19:00 | Dimecres a divendres: 10:00-15:00",
+                "availability.closed": "Tancat: caps de setmana i festius",
+                
+                "form.service": "Servei sol·licitat *",
+                "form.selectService": "Seleccioneu un servei",
+                "form.selectDate": "Seleccioneu una data *",
+                "form.selectTime": "Seleccioneu una hora *",
+                "form.message": "Missatge (opcional)",
+                "form.messagePlaceholder": "Informació adicional sobre la teva consulta...",
+                "form.other": "Altres",
+                "form.submit": "Confirmar Cita",
+                
+                "query.title": "Consulta Les Teves Cites",
+                "query.subtitle": "Verifica l'estat de les teves cites programades",
+                "query.email": "Email *",
+                "query.emailPlaceholder": "Introduïu l'email utilitzat per a la reserva",
+                "query.button": "Consultar Cites",
+                "query.noAppointments": "No s'han trobat cites",
+                "query.noAppointmentsText": "No hi ha cites registrades amb aquest email.",
+                "query.yourAppointments": "Les Teves Cites Programades",
+                
+                "contact.title": "Contacte",
+                "contact.address": "Adreça",
+                "contact.phone": "Telèfon",
+                "contact.email": "Email",
+                "contact.hours.title": "Horari",
+                "contact.hours.monday": "Dil-Dim: 10h-13h i 16h-19h",
+                "contact.hours.wednesday": "Dix-Div: 10h-15h",
+                
+                "footer.rights": "Tots els drets reservats.",
+                "footer.privacy": "La seva privadesa és important per a nosaltres"
+            },
+            en: {
+                "nav.logo": "Lunagestio",
+                "nav.home": "Home",
+                "nav.services": "Services",
+                "nav.contact": "Contact",
+                "nav.appointment": "Appointments",
+                
+                "auth.login": "Login",
+                "auth.register": "Register",
+                
+                "hero.title": "Lunagestio - Your Trusted Partner",
+                "hero.subtitle": "Comprehensive management services: Foreign Affairs, Taxation, Accounting and more",
+                "hero.cta": "Request Appointment",
+                
+                "services.title": "Our Services",
+                "services.foreign.title": "Foreign Affairs",
+                "services.foreign.description": "Complete management of immigration procedures for international residents.",
+                "services.foreign.feature1": "Residence and work permits",
+                "services.foreign.feature2": "Spanish nationality",
+                "services.foreign.feature3": "Family reunification",
+                "services.foreign.feature4": "Sworn translations",
+                "services.foreign.feature5": "Legal migration advice",
+                
+                "services.labor.title": "Labor / Tax-Accounting",
+                "services.labor.description": "Comprehensive solutions for businesses and self-employed.",
+                "services.labor.feature1": "Payroll and contract management",
+                "services.labor.feature2": "Social Security registration/deregistration",
+                "services.labor.feature3": "Tax declarations",
+                "services.labor.feature4": "Tax advice",
+                "services.labor.feature5": "Business accounting",
+                
+                "services.insurance.title": "Insurance",
+                "services.insurance.description": "Find the best insurance coverage adapted to your needs.",
+                "services.insurance.feature1": "Home and community insurance",
+                "services.insurance.feature2": "Health and life insurance",
+                "services.insurance.feature3": "Car insurance",
+                "services.insurance.feature4": "Civil liability",
+                "services.insurance.feature5": "Company comparison",
+                
+                "services.vehicles.title": "Vehicles",
+                "services.vehicles.description": "We manage all procedures related to your vehicle.",
+                "services.vehicles.feature1": "Vehicle transfers",
+                "services.vehicles.feature2": "Registration and MOT",
+                "services.vehicles.feature3": "Circulation permits",
+                "services.vehicles.feature4": "Temporary and definitive deregistration",
+                "services.vehicles.feature5": "Fine management",
+                
+                "appointment.title": "Request Appointment",
+                "appointment.subtitle": "Book your online consultation",
+                
+                "availability.title": "Available Schedules",
+                "availability.schedule": "Monday and Tuesday: 10:00-13:00 and 16:00-19:00 | Wednesday to Friday: 10:00-15:00",
+                "availability.closed": "Closed: weekends and holidays",
+                
+                "form.service": "Requested Service *",
+                "form.selectService": "Select a service",
+                "form.selectDate": "Select a date *",
+                "form.selectTime": "Select a time *",
+                "form.message": "Message (optional)",
+                "form.messagePlaceholder": "Additional information about your consultation...",
+                "form.other": "Other",
+                "form.submit": "Confirm Appointment",
+                
+                "query.title": "Check Your Appointments",
+                "query.subtitle": "Verify the status of your scheduled appointments",
+                "query.email": "Email *",
+                "query.emailPlaceholder": "Enter the email used for booking",
+                "query.button": "Check Appointments",
+                "query.noAppointments": "No appointments found",
+                "query.noAppointmentsText": "No appointments registered with this email.",
+                "query.yourAppointments": "Your Scheduled Appointments",
+                
+                "contact.title": "Contact",
+                "contact.address": "Address",
+                "contact.phone": "Phone",
+                "contact.email": "Email",
+                "contact.hours.title": "Schedule",
+                "contact.hours.monday": "Mon-Tue: 10am-1pm and 4pm-7pm",
+                "contact.hours.wednesday": "Wed-Fri: 10am-3pm",
+                
+                "footer.rights": "All rights reserved.",
+                "footer.privacy": "Your privacy is important to us"
+            }
+        };
 
         // ===== GESTIONNAIRE FIREBASE =====
         const FirebaseManager = {
@@ -865,43 +1222,6 @@
                     return appointments;
                 } catch (error) {
                     console.error('❌ Erreur récupération Firebase:', error);
-                    throw error;
-                }
-            },
-
-            // Récupérer tous les rendez-vous (pour admin)
-            getAllAppointments: async function() {
-                try {
-                    const snapshot = await db.collection('appointments')
-                        .orderBy('createdAt', 'desc')
-                        .get();
-                    
-                    const appointments = [];
-                    snapshot.forEach(doc => {
-                        appointments.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
-                    });
-                    
-                    return appointments;
-                } catch (error) {
-                    console.error('❌ Erreur récupération tous les rendez-vous:', error);
-                    throw error;
-                }
-            },
-
-            // Mettre à jour le statut d'un rendez-vous
-            updateAppointmentStatus: async function(appointmentId, status) {
-                try {
-                    await db.collection('appointments').doc(appointmentId).update({
-                        status: status,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    console.log('✅ Statut mis à jour:', appointmentId, status);
-                    return true;
-                } catch (error) {
-                    console.error('❌ Erreur mise à jour statut:', error);
                     throw error;
                 }
             },
@@ -974,6 +1294,37 @@
             }
         };
 
+        // ===== VARIABLES GLOBALES =====
+        let currentLang = 'fr';
+
+        // ===== FONCTIONS DE TRADUCTION =====
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Mettre à jour les boutons actifs
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Mettre à jour tous les textes
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Mettre à jour l'attribut lang du HTML
+            document.documentElement.lang = lang;
+        }
+
         // ===== FONCTIONS PRINCIPALES =====
 
         // Vérifier la connexion pour les rendez-vous
@@ -987,11 +1338,11 @@
                     authCheck.innerHTML = `
                         <div class="admin-info">
                             <i class="fas fa-info-circle"></i>
-                            <h3>Mode Administrateur</h3>
-                            <p>Vous êtes connecté en tant qu'administrateur. Pour prendre un rendez-vous, veuillez utiliser un compte client.</p>
+                            <h3 data-i18n="auth.adminMode">Mode Administrateur</h3>
+                            <p data-i18n="auth.adminMessage">Vous êtes connecté en tant qu'administrateur. Pour prendre un rendez-vous, veuillez utiliser un compte client.</p>
                             <div style="margin-top: 1rem;">
                                 <a href="login.html" class="btn-auth btn-login" style="display: inline-flex; margin: 0.5rem;">
-                                    <i class="fas fa-sign-in-alt"></i> Changer de compte
+                                    <i class="fas fa-sign-in-alt"></i> <span data-i18n="auth.changeAccount">Changer de compte</span>
                                 </a>
                             </div>
                         </div>
@@ -1001,8 +1352,12 @@
                     authCheck.innerHTML = `
                         <div class="user-info">
                             <i class="fas fa-check-circle"></i>
-                            <h3>Connecté</h3>
-                            <p>Bonjour ${currentUser.firstName} ${currentUser.lastName} ! Vous pouvez maintenant prendre un rendez-vous.</p>
+                            <h3 data-i18n="auth.connected">Connecté</h3>
+                            <p>${currentLang === 'fr' ? 'Bonjour' : 
+                                currentLang === 'es' ? 'Hola' :
+                                currentLang === 'ca' ? 'Hola' : 'Hello'} ${currentUser.firstName} ${currentUser.lastName} ! 
+                                <span data-i18n="auth.canBook">Vous pouvez maintenant prendre un rendez-vous.</span>
+                            </p>
                         </div>
                     `;
                     appointmentForm.style.display = 'block';
@@ -1011,20 +1366,23 @@
                 authCheck.innerHTML = `
                     <div class="login-required">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Connexion Requise</h3>
-                        <p>Vous devez être connecté pour prendre rendez-vous.</p>
+                        <h3 data-i18n="auth.loginRequired">Connexion Requise</h3>
+                        <p data-i18n="auth.loginMessage">Vous devez être connecté pour prendre rendez-vous.</p>
                         <div style="margin-top: 1rem;">
                             <a href="login.html" class="btn-auth btn-login" style="display: inline-flex; margin: 0.5rem;">
-                                <i class="fas fa-sign-in-alt"></i> Se connecter
+                                <i class="fas fa-sign-in-alt"></i> <span data-i18n="auth.login">Se connecter</span>
                             </a>
                             <a href="register.html" class="btn-auth btn-register" style="display: inline-flex; margin: 0.5rem;">
-                                <i class="fas fa-user-plus"></i> Créer un compte
+                                <i class="fas fa-user-plus"></i> <span data-i18n="auth.register">Créer un compte</span>
                             </a>
                         </div>
                     </div>
                 `;
                 appointmentForm.style.display = 'none';
             }
+            
+            // Retraduire les nouveaux éléments
+            changeLanguage(currentLang);
         }
 
         // Gestion du formulaire de rendez-vous
@@ -1033,7 +1391,13 @@
             
             const currentUser = UserManager.getCurrentUser();
             if (!currentUser || currentUser.role === 'admin') {
-                showMessage('Veuillez vous connecter avec un compte client pour prendre rendez-vous', 'error');
+                showMessage(
+                    currentLang === 'fr' ? 'Veuillez vous connecter avec un compte client pour prendre rendez-vous' :
+                    currentLang === 'es' ? 'Por favor, inicie sesión con una cuenta de cliente para reservar una cita' :
+                    currentLang === 'ca' ? 'Si us plau, inicieu sessió amb un compte de client per reservar una cita' :
+                    'Please log in with a client account to book an appointment', 
+                    'error'
+                );
                 return;
             }
 
@@ -1042,7 +1406,11 @@
             
             // Désactiver le bouton
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+            submitBtn.innerHTML = currentLang === 'fr' ? 
+                '<i class="fas fa-spinner fa-spin"></i> Enregistrement...' :
+                currentLang === 'es' ? '<i class="fas fa-spinner fa-spin"></i> Guardando...' :
+                currentLang === 'ca' ? '<i class="fas fa-spinner fa-spin"></i> Desant...' :
+                '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
             try {
                 const formData = {
@@ -1059,7 +1427,12 @@
 
                 // Validation
                 if (!formData.service || !formData.date || !formData.time) {
-                    throw new Error('Veuillez remplir tous les champs obligatoires');
+                    throw new Error(
+                        currentLang === 'fr' ? 'Veuillez remplir tous les champs obligatoires' :
+                        currentLang === 'es' ? 'Por favor, complete todos los campos obligatorios' :
+                        currentLang === 'ca' ? 'Si us plau, ompliu tots els camps obligatoris' :
+                        'Please fill in all required fields'
+                    );
                 }
 
                 const selectedDate = new Date(formData.date);
@@ -1067,23 +1440,35 @@
                 today.setHours(0, 0, 0, 0);
                 
                 if (selectedDate < today) {
-                    throw new Error('Veuillez sélectionner une date future');
+                    throw new Error(
+                        currentLang === 'fr' ? 'Veuillez sélectionner une date future' :
+                        currentLang === 'es' ? 'Por favor, seleccione una fecha futura' :
+                        currentLang === 'ca' ? 'Si us plau, seleccioneu una data futura' :
+                        'Please select a future date'
+                    );
                 }
 
                 // Sauvegarder dans Firebase
                 const appointment = await FirebaseManager.saveAppointment(formData);
 
-                showMessage(`✅ Rendez-vous confirmé ! Votre rendez-vous pour le ${formatDisplayDate(formData.date)} à ${formData.time} a été enregistré.`, 'success');
+                const successMessage = 
+                    currentLang === 'fr' ? `✅ Rendez-vous confirmé ! Votre rendez-vous pour le ${formatDisplayDate(formData.date)} à ${formData.time} a été enregistré.` :
+                    currentLang === 'es' ? `✅ ¡Cita confirmada! Su cita para el ${formatDisplayDate(formData.date)} a las ${formData.time} ha sido registrada.` :
+                    currentLang === 'ca' ? `✅ Cita confirmada! La seva cita per al ${formatDisplayDate(formData.date)} a les ${formData.time} ha estat registrada.` :
+                    `✅ Appointment confirmed! Your appointment for ${formatDisplayDate(formData.date)} at ${formData.time} has been registered.`;
+
+                showMessage(successMessage, 'success');
                 
                 this.reset();
                 
             } catch (error) {
                 console.error('Erreur:', error);
-                showMessage(error.message || 'Erreur lors de l\'enregistrement du rendez-vous', 'error');
+                showMessage(error.message, 'error');
             } finally {
                 // Réactiver le bouton
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
+                changeLanguage(currentLang); // Retraduire le bouton
             }
         });
 
@@ -1094,20 +1479,35 @@
             const originalText = queryBtn.innerHTML;
             
             if (!email) {
-                showMessage('Veuillez entrer votre email', 'error');
+                showMessage(
+                    currentLang === 'fr' ? 'Veuillez entrer votre email' :
+                    currentLang === 'es' ? 'Por favor, introduzca su email' :
+                    currentLang === 'ca' ? 'Si us plau, introduïu el vostre email' :
+                    'Please enter your email', 
+                    'error'
+                );
                 return;
             }
 
             // Désactiver le bouton
             queryBtn.disabled = true;
-            queryBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recherche...';
+            queryBtn.innerHTML = 
+                currentLang === 'fr' ? '<i class="fas fa-spinner fa-spin"></i> Recherche...' :
+                currentLang === 'es' ? '<i class="fas fa-spinner fa-spin"></i> Buscando...' :
+                currentLang === 'ca' ? '<i class="fas fa-spinner fa-spin"></i> Cercant...' :
+                '<i class="fas fa-spinner fa-spin"></i> Searching...';
 
             try {
                 const resultsDiv = document.getElementById('appointmentsResults');
                 resultsDiv.innerHTML = `
                     <div class="loading">
                         <i class="fas fa-spinner"></i>
-                        <p>Recherche des rendez-vous...</p>
+                        <p>${
+                            currentLang === 'fr' ? 'Recherche des rendez-vous...' :
+                            currentLang === 'es' ? 'Buscando citas...' :
+                            currentLang === 'ca' ? 'Cercant cites...' :
+                            'Searching appointments...'
+                        }</p>
                     </div>
                 `;
 
@@ -1118,14 +1518,15 @@
                     resultsDiv.innerHTML = `
                         <div class="no-appointments">
                             <i class="fas fa-calendar-times" style="font-size: 3rem; color: #95a5a6; margin-bottom: 1rem;"></i>
-                            <h3>Aucun rendez-vous trouvé</h3>
-                            <p>Aucun rendez-vous enregistré avec cet email.</p>
+                            <h3 data-i18n="query.noAppointments">Aucun rendez-vous trouvé</h3>
+                            <p data-i18n="query.noAppointmentsText">Aucun rendez-vous enregistré avec cet email.</p>
                         </div>
                     `;
+                    changeLanguage(currentLang);
                     return;
                 }
                 
-                let html = `<h3 style="color: #2c3e50; margin-bottom: 2rem;">Vos Rendez-vous Programmés</h3>`;
+                let html = `<h3 style="color: #2c3e50; margin-bottom: 2rem;" data-i18n="query.yourAppointments">Vos Rendez-vous Programmés</h3>`;
                 
                 userAppointments.forEach(appointment => {
                     const appointmentDate = new Date(appointment.date);
@@ -1133,42 +1534,76 @@
                     const isPast = appointmentDate < now;
                     const isToday = appointmentDate.toDateString() === now.toDateString();
                     
+                    const statusText = 
+                        currentLang === 'fr' ? (isPast ? 'Terminé' : (appointment.status === 'confirmed' ? 'Confirmé' : 'En attente')) :
+                        currentLang === 'es' ? (isPast ? 'Terminado' : (appointment.status === 'confirmed' ? 'Confirmado' : 'Pendiente')) :
+                        currentLang === 'ca' ? (isPast ? 'Acabat' : (appointment.status === 'confirmed' ? 'Confirmat' : 'Pendent')) :
+                        (isPast ? 'Completed' : (appointment.status === 'confirmed' ? 'Confirmed' : 'Pending'));
+                    
                     html += `
                         <div class="appointment-result ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}">
                             <h4 style="color: #2c3e50; margin-bottom: 1rem;">${getServiceName(appointment.service)}</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                                 <div>
-                                    <strong><i class="fas fa-calendar"></i> Date:</strong><br>
+                                    <strong><i class="fas fa-calendar"></i> ${
+                                        currentLang === 'fr' ? 'Date:' :
+                                        currentLang === 'es' ? 'Fecha:' :
+                                        currentLang === 'ca' ? 'Data:' : 'Date:'
+                                    }</strong><br>
                                     ${formatDisplayDate(appointment.date)}
                                 </div>
                                 <div>
-                                    <strong><i class="fas fa-clock"></i> Heure:</strong><br>
+                                    <strong><i class="fas fa-clock"></i> ${
+                                        currentLang === 'fr' ? 'Heure:' :
+                                        currentLang === 'es' ? 'Hora:' :
+                                        currentLang === 'ca' ? 'Hora:' : 'Time:'
+                                    }</strong><br>
                                     ${appointment.time}
                                 </div>
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                                 <div>
-                                    <strong><i class="fas fa-user"></i> Nom:</strong><br>
+                                    <strong><i class="fas fa-user"></i> ${
+                                        currentLang === 'fr' ? 'Nom:' :
+                                        currentLang === 'es' ? 'Nombre:' :
+                                        currentLang === 'ca' ? 'Nom:' : 'Name:'
+                                    }</strong><br>
                                     ${appointment.userName}
                                 </div>
                                 <div>
-                                    <strong><i class="fas fa-phone"></i> Téléphone:</strong><br>
-                                    ${appointment.userPhone || 'Non renseigné'}
+                                    <strong><i class="fas fa-phone"></i> ${
+                                        currentLang === 'fr' ? 'Téléphone:' :
+                                        currentLang === 'es' ? 'Teléfono:' :
+                                        currentLang === 'ca' ? 'Telèfon:' : 'Phone:'
+                                    }</strong><br>
+                                    ${appointment.userPhone || (
+                                        currentLang === 'fr' ? 'Non renseigné' :
+                                        currentLang === 'es' ? 'No proporcionado' :
+                                        currentLang === 'ca' ? 'No proporcionat' : 'Not provided'
+                                    )}
                                 </div>
                             </div>
                             ${appointment.message ? `
                                 <div style="margin-bottom: 1rem;">
-                                    <strong><i class="fas fa-comment"></i> Message:</strong><br>
+                                    <strong><i class="fas fa-comment"></i> ${
+                                        currentLang === 'fr' ? 'Message:' :
+                                        currentLang === 'es' ? 'Mensaje:' :
+                                        currentLang === 'ca' ? 'Missatge:' : 'Message:'
+                                    }</strong><br>
                                     ${appointment.message}
                                 </div>
                             ` : ''}
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
                                 <span style="color: ${isPast ? '#95a5a6' : (appointment.status === 'confirmed' ? '#27ae60' : '#f39c12')}; font-weight: bold;">
                                     <i class="fas ${isPast ? 'fa-history' : (isToday ? 'fa-bell' : 'fa-clock')}"></i>
-                                    ${isPast ? 'Terminé' : (appointment.status === 'confirmed' ? 'Confirmé' : 'En attente')}
+                                    ${statusText}
                                 </span>
                                 <small style="color: #7f8c8d;">
-                                    ${appointment.createdAt ? `Réservé le ${formatFirebaseDate(appointment.createdAt)}` : ''}
+                                    ${
+                                        currentLang === 'fr' ? 'Réservé le' :
+                                        currentLang === 'es' ? 'Reservado el' :
+                                        currentLang === 'ca' ? 'Reservat el' : 'Booked on'
+                                    } ${appointment.createdAt ? formatFirebaseDate(appointment.createdAt) : ''}
                                 </small>
                             </div>
                         </div>
@@ -1179,11 +1614,18 @@
                 
             } catch (error) {
                 console.error('Erreur recherche:', error);
-                showMessage('Erreur lors de la recherche des rendez-vous', 'error');
+                showMessage(
+                    currentLang === 'fr' ? 'Erreur lors de la recherche des rendez-vous' :
+                    currentLang === 'es' ? 'Error al buscar las citas' :
+                    currentLang === 'ca' ? 'Error en cercar les cites' :
+                    'Error searching appointments', 
+                    'error'
+                );
             } finally {
                 // Réactiver le bouton
                 queryBtn.disabled = false;
                 queryBtn.innerHTML = originalText;
+                changeLanguage(currentLang); // Retraduire le bouton
             }
         }
 
@@ -1217,28 +1659,54 @@
 
         function getServiceName(serviceKey) {
             const services = {
-                'extranjeria': 'Étrangérie',
-                'laboral': 'Fiscal / Comptable',
-                'seguros': 'Assurances',
-                'vehiculos': 'Véhicules'
+                'extranjeria': currentLang === 'fr' ? 'Étrangérie' : 
+                              currentLang === 'es' ? 'Extranjería' :
+                              currentLang === 'ca' ? 'Estrangeria' : 'Foreign Affairs',
+                'laboral': currentLang === 'fr' ? 'Fiscal / Comptable' : 
+                          currentLang === 'es' ? 'Laboral / Fiscal' :
+                          currentLang === 'ca' ? 'Laboral / Fiscal' : 'Labor / Tax',
+                'seguros': currentLang === 'fr' ? 'Assurances' : 
+                          currentLang === 'es' ? 'Seguros' :
+                          currentLang === 'ca' ? 'Assegurances' : 'Insurance',
+                'vehiculos': currentLang === 'fr' ? 'Véhicules' : 
+                            currentLang === 'es' ? 'Vehículos' :
+                            currentLang === 'ca' ? 'Vehicles' : 'Vehicles',
+                'otro': currentLang === 'fr' ? 'Autre service' : 
+                       currentLang === 'es' ? 'Otro servicio' :
+                       currentLang === 'ca' ? 'Altres serveis' : 'Other service'
             };
             return services[serviceKey] || serviceKey;
         }
 
         function formatDisplayDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR', {
+            const options = {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-            });
+            };
+            
+            const locales = {
+                'fr': 'fr-FR',
+                'es': 'es-ES', 
+                'ca': 'ca-ES',
+                'en': 'en-US'
+            };
+            
+            return date.toLocaleDateString(locales[currentLang] || 'fr-FR', options);
         }
 
         function formatFirebaseDate(timestamp) {
             if (!timestamp) return '';
             const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleDateString('fr-FR');
+            const locales = {
+                'fr': 'fr-FR',
+                'es': 'es-ES',
+                'ca': 'ca-ES',
+                'en': 'en-US'
+            };
+            return date.toLocaleDateString(locales[currentLang] || 'fr-FR');
         }
 
         // Menu mobile
@@ -1252,8 +1720,64 @@
             });
         });
 
+        // Configuration des créneaux horaires
+        function configureTimeSlots() {
+            const dateInput = document.getElementById('appointmentDate');
+            const timeSelect = document.getElementById('appointmentTime');
+            
+            dateInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const dayOfWeek = selectedDate.getDay();
+                
+                // Vider les options
+                timeSelect.innerHTML = '<option value="" data-i18n="form.selectTime">Sélectionnez une heure</option>';
+                
+                let availableSlots = [];
+                
+                // Lundi et Mardi
+                if (dayOfWeek === 1 || dayOfWeek === 2) {
+                    availableSlots = ['10:00', '11:00', '12:00', '16:00', '17:00', '18:00'];
+                } 
+                // Mercredi à Vendredi
+                else if (dayOfWeek >= 3 && dayOfWeek <= 5) {
+                    availableSlots = ['10:00', '11:00', '12:00', '13:00', '14:00'];
+                }
+                
+                // Ajouter les créneaux disponibles
+                availableSlots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    timeSelect.appendChild(option);
+                });
+                
+                if (availableSlots.length === 0) {
+                    timeSelect.innerHTML = '<option value="">' + 
+                        (currentLang === 'fr' ? 'Fermé ce jour' :
+                         currentLang === 'es' ? 'Cerrado este día' :
+                         currentLang === 'ca' ? 'Tancat aquest dia' : 'Closed this day') + 
+                        '</option>';
+                    timeSelect.disabled = true;
+                } else {
+                    timeSelect.disabled = false;
+                }
+                
+                changeLanguage(currentLang); // Retraduire
+            });
+        }
+
         // ===== INITIALISATION =====
         document.addEventListener('DOMContentLoaded', async function() {
+            // Initialiser les traductions
+            changeLanguage('fr');
+            
+            // Ajouter les écouteurs d'événements pour les boutons de langue
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    changeLanguage(this.getAttribute('data-lang'));
+                });
+            });
+
             // Vérifier l'authentification
             checkAppointmentAuth();
             
@@ -1264,42 +1788,8 @@
             // Configurer les horaires
             configureTimeSlots();
             
-            console.log('🚀 Site Lunagestio chargé - Version Firebase');
+            console.log('🚀 Site Lunagestio chargé - Version Firebase avec Traductions');
         });
-
-        function configureTimeSlots() {
-            const dateInput = document.getElementById('appointmentDate');
-            const timeSelect = document.getElementById('appointmentTime');
-            
-            dateInput.addEventListener('change', function() {
-                const selectedDate = new Date(this.value);
-                const dayOfWeek = selectedDate.getDay();
-                
-                timeSelect.innerHTML = '<option value="">Sélectionnez une heure</option>';
-                
-                let availableSlots = [];
-                
-                if (dayOfWeek === 1 || dayOfWeek === 2) {
-                    availableSlots = ['10:00', '11:00', '12:00', '16:00', '17:00', '18:00'];
-                } else if (dayOfWeek >= 3 && dayOfWeek <= 5) {
-                    availableSlots = ['10:00', '11:00', '12:00', '13:00', '14:00'];
-                }
-                
-                availableSlots.forEach(slot => {
-                    const option = document.createElement('option');
-                    option.value = slot;
-                    option.textContent = slot;
-                    timeSelect.appendChild(option);
-                });
-                
-                if (availableSlots.length === 0) {
-                    timeSelect.innerHTML = '<option value="">Fermé ce jour</option>';
-                    timeSelect.disabled = true;
-                } else {
-                    timeSelect.disabled = false;
-                }
-            });
-        }
 
         // Test de connexion Firebase
         window.testFirebase = async function() {
@@ -1317,10 +1807,22 @@
                 
                 const result = await FirebaseManager.saveAppointment(testAppointment);
                 console.log('✅ Test Firebase réussi:', result);
-                showMessage('Test Firebase réussi!', 'success');
+                showMessage(
+                    currentLang === 'fr' ? 'Test Firebase réussi!' :
+                    currentLang === 'es' ? '¡Prueba de Firebase exitosa!' :
+                    currentLang === 'ca' ? 'Prova de Firebase exitosa!' :
+                    'Firebase test successful!', 
+                    'success'
+                );
             } catch (error) {
                 console.error('❌ Test Firebase échoué:', error);
-                showMessage('Test Firebase échoué: ' + error.message, 'error');
+                showMessage(
+                    currentLang === 'fr' ? 'Test Firebase échoué: ' + error.message :
+                    currentLang === 'es' ? 'Prueba de Firebase fallida: ' + error.message :
+                    currentLang === 'ca' ? 'Prova de Firebase fallida: ' + error.message :
+                    'Firebase test failed: ' + error.message, 
+                    'error'
+                );
             }
         };
     </script>
