@@ -5,11 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lunagestio - Gestion Intégrale</title>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    
+    <!-- Firebase SDK v9 -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbzW8zQkUPH4JY9Qc-DAboH2XER_IJQjI",
+            authDomain: "luna-gestion.firebaseapp.com",
+            projectId: "luna-gestion",
+            storageBucket: "luna-gestion.firebasestorage.app",
+            messagingSenderId: "5549836438",
+            appId: "1:5549836438:web:be38e0d9a3a9b458635ab7"
+        };
+
+        // Initialiser Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            window.db = getFirestore(app);
+            console.log('✅ Firebase initialisé avec succès');
+        } catch (error) {
+            console.error('❌ Erreur initialisation Firebase:', error);
+        }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* ===== RESET ET CONFIGURATION GÉNÉRALE ===== */
@@ -53,11 +72,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .logo img {
-            height: 40px;
-            border-radius: 8px;
         }
 
         .nav-links {
@@ -111,6 +125,7 @@
         .auth-buttons {
             display: flex;
             gap: 0.5rem;
+            align-items: center;
         }
 
         .btn-auth {
@@ -124,6 +139,8 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-login {
@@ -134,9 +151,25 @@
             background: #3498db;
         }
 
+        .btn-sync {
+            background: #9b59b6;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+        }
+
         .btn-auth:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .user-welcome {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
         }
 
         /* ===== HERO SECTION ===== */
@@ -547,19 +580,19 @@
             .contact-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (max-width: 480px) {
             .auth-buttons {
                 flex-direction: column;
                 width: 100%;
             }
 
-            .btn-auth {
-                text-align: center;
-                justify-content: center;
+            .user-welcome {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
             }
+        }
 
+        @media (max-width: 480px) {
             .hero {
                 height: 70vh;
             }
@@ -632,14 +665,9 @@
                     <button class="lang-btn" data-lang="en">EN</button>
                 </li>
                 
-                <!-- Boutons d'authentification -->
-                <li class="auth-buttons">
-                    <a href="login.html" class="btn-auth btn-login">
-                        <i class="fas fa-sign-in-alt"></i> <span data-i18n="auth.login">Connexion</span>
-                    </a>
-                    <a href="register.html" class="btn-auth btn-register">
-                        <i class="fas fa-user-plus"></i> <span data-i18n="auth.register">Inscription</span>
-                    </a>
+                <!-- Boutons d'authentification (dynamique) -->
+                <li class="auth-buttons" id="authButtonsContainer">
+                    <!-- Contenu chargé dynamiquement -->
                 </li>
             </ul>
         </nav>
@@ -842,8 +870,8 @@
         </p>
     </footer>
 
-    <!-- Script Firebase -->
-    <script src="firebase-config.js"></script>
+    <!-- Scripts -->
+    <script type="module" src="./sync-manager.js"></script>
 
     <script>
         // ===== SYSTÈME DE TRADUCTION COMPLET =====
@@ -857,6 +885,9 @@
                 
                 "auth.login": "Connexion",
                 "auth.register": "Inscription",
+                "auth.logout": "Déconnexion",
+                "auth.sync": "Synchroniser",
+                "auth.welcome": "Bonjour",
                 
                 "hero.title": "Lunagestio - Votre Partenaire de Confiance",
                 "hero.subtitle": "Services complets de gestion : Étrangérie, Fiscalité, Comptabilité et plus",
@@ -940,6 +971,9 @@
                 
                 "auth.login": "Conectar",
                 "auth.register": "Registro",
+                "auth.logout": "Desconectar",
+                "auth.sync": "Sincronizar",
+                "auth.welcome": "Hola",
                 
                 "hero.title": "Lunagestio - Su Socio de Confianza",
                 "hero.subtitle": "Servicios integrales de gestión: Extranjería, Fiscalidad, Contabilidad y más",
@@ -1023,6 +1057,9 @@
                 
                 "auth.login": "Connectar",
                 "auth.register": "Registre",
+                "auth.logout": "Desconnectar",
+                "auth.sync": "Sincronitzar",
+                "auth.welcome": "Hola",
                 
                 "hero.title": "Lunagestio - El Vostre Soci de Confiança",
                 "hero.subtitle": "Serveis integrals de gestió: Estrangeria, Fiscalitat, Comptabilitat i més",
@@ -1106,6 +1143,9 @@
                 
                 "auth.login": "Login",
                 "auth.register": "Register",
+                "auth.logout": "Logout",
+                "auth.sync": "Sync",
+                "auth.welcome": "Hello",
                 
                 "hero.title": "Lunagestio - Your Trusted Partner",
                 "hero.subtitle": "Comprehensive management services: Foreign Affairs, Taxation, Accounting and more",
@@ -1187,10 +1227,12 @@
             // Sauvegarder un rendez-vous
             saveAppointment: async function(appointment) {
                 try {
-                    const docRef = await db.collection('appointments').add({
+                    const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    const docRef = await addDoc(collection(window.db, 'appointments'), {
                         ...appointment,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
                     });
                     
                     console.log('✅ Rendez-vous sauvegardé avec ID:', docRef.id);
@@ -1204,12 +1246,16 @@
             // Récupérer les rendez-vous par email
             getAppointmentsByEmail: async function(email) {
                 try {
-                    const snapshot = await db.collection('appointments')
-                        .where('userEmail', '==', email.toLowerCase())
-                        .orderBy('date')
-                        .orderBy('time')
-                        .get();
+                    const { collection, query, where, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
                     
+                    const q = query(
+                        collection(window.db, 'appointments'),
+                        where('userEmail', '==', email.toLowerCase()),
+                        orderBy('date'),
+                        orderBy('time')
+                    );
+                    
+                    const snapshot = await getDocs(q);
                     const appointments = [];
                     snapshot.forEach(doc => {
                         appointments.push({
@@ -1229,10 +1275,12 @@
             // Sauvegarder un utilisateur
             saveUser: async function(user) {
                 try {
-                    await db.collection('users').doc(user.id).set({
+                    const { doc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+                    
+                    await setDoc(doc(window.db, 'users', user.id), {
                         ...user,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
                     });
                     console.log('✅ Utilisateur sauvegardé:', user.email);
                     return user;
@@ -1245,10 +1293,14 @@
             // Vérifier si l'email existe
             checkEmailExists: async function(email) {
                 try {
-                    const snapshot = await db.collection('users')
-                        .where('email', '==', email.toLowerCase())
-                        .get();
+                    const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
                     
+                    const q = query(
+                        collection(window.db, 'users'),
+                        where('email', '==', email.toLowerCase())
+                    );
+                    
+                    const snapshot = await getDocs(q);
                     return !snapshot.empty;
                 } catch (error) {
                     console.error('❌ Erreur vérification email:', error);
@@ -1259,11 +1311,15 @@
             // Authentifier un utilisateur
             authenticateUser: async function(email, password) {
                 try {
-                    const snapshot = await db.collection('users')
-                        .where('email', '==', email.toLowerCase())
-                        .where('password', '==', password)
-                        .get();
+                    const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
                     
+                    const q = query(
+                        collection(window.db, 'users'),
+                        where('email', '==', email.toLowerCase()),
+                        where('password', '==', password)
+                    );
+                    
+                    const snapshot = await getDocs(q);
                     if (!snapshot.empty) {
                         const userDoc = snapshot.docs[0];
                         return {
@@ -1325,6 +1381,39 @@
             document.documentElement.lang = lang;
         }
 
+        // ===== GESTION DE L'AUTHENTIFICATION =====
+        function updateAuthButtons() {
+            const container = document.getElementById('authButtonsContainer');
+            const currentUser = UserManager.getCurrentUser();
+            
+            if (currentUser) {
+                container.innerHTML = `
+                    <span class="user-welcome">
+                        <i class="fas fa-user-circle"></i>
+                        ${translations[currentLang]?.auth.welcome || 'Hello'} ${currentUser.firstName}
+                    </span>
+                    <button onclick="syncData()" class="btn-auth btn-sync" title="${translations[currentLang]?.auth.sync || 'Sync'}">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button onclick="logout()" class="btn-auth btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> ${translations[currentLang]?.auth.logout || 'Logout'}
+                    </button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <a href="login.html" class="btn-auth btn-login">
+                        <i class="fas fa-sign-in-alt"></i> <span data-i18n="auth.login">Connexion</span>
+                    </a>
+                    <a href="register.html" class="btn-auth btn-register">
+                        <i class="fas fa-user-plus"></i> <span data-i18n="auth.register">Inscription</span>
+                    </a>
+                `;
+            }
+            
+            // Retraduire les boutons
+            changeLanguage(currentLang);
+        }
+
         // ===== FONCTIONS PRINCIPALES =====
 
         // Vérifier la connexion pour les rendez-vous
@@ -1353,9 +1442,7 @@
                         <div class="user-info">
                             <i class="fas fa-check-circle"></i>
                             <h3 data-i18n="auth.connected">Connecté</h3>
-                            <p>${currentLang === 'fr' ? 'Bonjour' : 
-                                currentLang === 'es' ? 'Hola' :
-                                currentLang === 'ca' ? 'Hola' : 'Hello'} ${currentUser.firstName} ${currentUser.lastName} ! 
+                            <p>${translations[currentLang]?.auth.welcome || 'Hello'} ${currentUser.firstName} ${currentUser.lastName} ! 
                                 <span data-i18n="auth.canBook">Vous pouvez maintenant prendre un rendez-vous.</span>
                             </p>
                         </div>
@@ -1392,10 +1479,7 @@
             const currentUser = UserManager.getCurrentUser();
             if (!currentUser || currentUser.role === 'admin') {
                 showMessage(
-                    currentLang === 'fr' ? 'Veuillez vous connecter avec un compte client pour prendre rendez-vous' :
-                    currentLang === 'es' ? 'Por favor, inicie sesión con una cuenta de cliente para reservar una cita' :
-                    currentLang === 'ca' ? 'Si us plau, inicieu sessió amb un compte de client per reservar una cita' :
-                    'Please log in with a client account to book an appointment', 
+                    translations[currentLang]?.auth.adminMessage || 'Please log in with a client account to book an appointment', 
                     'error'
                 );
                 return;
@@ -1406,11 +1490,10 @@
             
             // Désactiver le bouton
             submitBtn.disabled = true;
-            submitBtn.innerHTML = currentLang === 'fr' ? 
-                '<i class="fas fa-spinner fa-spin"></i> Enregistrement...' :
-                currentLang === 'es' ? '<i class="fas fa-spinner fa-spin"></i> Guardando...' :
-                currentLang === 'ca' ? '<i class="fas fa-spinner fa-spin"></i> Desant...' :
-                '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
+                (currentLang === 'fr' ? 'Enregistrement...' :
+                 currentLang === 'es' ? 'Guardando...' :
+                 currentLang === 'ca' ? 'Desant...' : 'Saving...');
 
             try {
                 const formData = {
@@ -1709,6 +1792,48 @@
             return date.toLocaleDateString(locales[currentLang] || 'fr-FR');
         }
 
+        // ===== FONCTIONS DE SYNCHRONISATION ET DÉCONNEXION =====
+        async function syncData() {
+            if (window.SyncManager) {
+                await window.SyncManager.manualSync();
+            } else {
+                showMessage(
+                    currentLang === 'fr' ? 'Synchronisation non disponible' :
+                    currentLang === 'es' ? 'Sincronización no disponible' :
+                    currentLang === 'ca' ? 'Sincronització no disponible' :
+                    'Sync not available', 
+                    'error'
+                );
+            }
+        }
+
+        async function logout() {
+            const confirmMessage = 
+                currentLang === 'fr' ? 'Êtes-vous sûr de vouloir vous déconnecter ?' :
+                currentLang === 'es' ? '¿Estás seguro de que quieres desconectar?' :
+                currentLang === 'ca' ? 'Esteu segur que voleu desconnectar?' :
+                'Are you sure you want to log out?';
+            
+            if (confirm(confirmMessage)) {
+                // Synchroniser avant déconnexion
+                if (window.SyncManager) {
+                    await window.SyncManager.quickSync();
+                }
+                
+                UserManager.logout();
+                updateAuthButtons();
+                checkAppointmentAuth();
+                
+                showMessage(
+                    currentLang === 'fr' ? 'Déconnexion réussie' :
+                    currentLang === 'es' ? 'Desconexión exitosa' :
+                    currentLang === 'ca' ? 'Desconnexió exitosa' :
+                    'Logout successful', 
+                    'success'
+                );
+            }
+        }
+
         // Menu mobile
         document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
             document.querySelector('.nav-links').classList.toggle('active');
@@ -1778,7 +1903,10 @@
                 });
             });
 
-            // Vérifier l'authentification
+            // Mettre à jour les boutons d'authentification
+            updateAuthButtons();
+            
+            // Vérifier l'authentification pour les rendez-vous
             checkAppointmentAuth();
             
             // Configurer la date minimale
@@ -1788,43 +1916,8 @@
             // Configurer les horaires
             configureTimeSlots();
             
-            console.log('🚀 Site Lunagestio chargé - Version Firebase avec Traductions');
+            console.log('🚀 Site Lunagestio chargé - Version Firebase avec Synchronisation');
         });
-
-        // Test de connexion Firebase
-        window.testFirebase = async function() {
-            try {
-                console.log('🧪 Test Firebase...');
-                const testAppointment = {
-                    userId: 'test',
-                    userName: 'Test User',
-                    userEmail: 'test@test.com',
-                    service: 'extranjeria',
-                    date: '2024-12-31',
-                    time: '10:00',
-                    status: 'pending'
-                };
-                
-                const result = await FirebaseManager.saveAppointment(testAppointment);
-                console.log('✅ Test Firebase réussi:', result);
-                showMessage(
-                    currentLang === 'fr' ? 'Test Firebase réussi!' :
-                    currentLang === 'es' ? '¡Prueba de Firebase exitosa!' :
-                    currentLang === 'ca' ? 'Prova de Firebase exitosa!' :
-                    'Firebase test successful!', 
-                    'success'
-                );
-            } catch (error) {
-                console.error('❌ Test Firebase échoué:', error);
-                showMessage(
-                    currentLang === 'fr' ? 'Test Firebase échoué: ' + error.message :
-                    currentLang === 'es' ? 'Prueba de Firebase fallida: ' + error.message :
-                    currentLang === 'ca' ? 'Prova de Firebase fallida: ' + error.message :
-                    'Firebase test failed: ' + error.message, 
-                    'error'
-                );
-            }
-        };
     </script>
 </body>
 </html>
