@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - Lunagestio</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -124,19 +129,6 @@
             border: 1px solid #4caf50;
         }
 
-        .password-toggle {
-            position: relative;
-        }
-
-        .password-toggle i {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #7f8c8d;
-        }
-
         @media (max-width: 480px) {
             .login-container {
                 padding: 1.5rem;
@@ -163,16 +155,14 @@
                 <input type="email" id="email" required placeholder="votre@email.com">
             </div>
 
-            <div class="form-group password-toggle">
+            <div class="form-group">
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" required placeholder="Votre mot de passe">
-                <i class="fas fa-eye" id="togglePassword"></i>
             </div>
 
             <button type="submit" class="btn">Se connecter</button>
         </form>
 
-        <!-- Bouton admin caché mais accessible -->
         <button type="button" class="btn admin-login-btn" onclick="showAdminLogin()">
             <i class="fas fa-user-shield"></i> Accès Administrateur
         </button>
@@ -183,42 +173,58 @@
         </div>
     </div>
 
+    <!-- Script Firebase -->
+    <script src="firebase-config.js"></script>
+
     <script>
-        // Gestionnaire d'utilisateurs COMPLET
+        // Gestionnaire d'utilisateurs Firebase
         const UserManager = {
-            getUsers: () => {
-                const users = localStorage.getItem('lunagestio_users');
-                return users ? JSON.parse(users) : [];
+            getUsers: async () => {
+                try {
+                    const snapshot = await db.collection('users').get();
+                    const users = [];
+                    snapshot.forEach(doc => {
+                        users.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    return users;
+                } catch (error) {
+                    console.error('Erreur récupération utilisateurs:', error);
+                    return [];
+                }
             },
 
-            saveUsers: (users) => {
-                localStorage.setItem('lunagestio_users', JSON.stringify(users));
-            },
-
-            authenticate: (email, password) => {
-                const users = UserManager.getUsers();
-                return users.find(u => u.email === email && u.password === password);
+            authenticate: async (email, password) => {
+                try {
+                    const snapshot = await db.collection('users')
+                        .where('email', '==', email.toLowerCase())
+                        .where('password', '==', password)
+                        .get();
+                    
+                    if (!snapshot.empty) {
+                        const userDoc = snapshot.docs[0];
+                        return {
+                            id: userDoc.id,
+                            ...userDoc.data()
+                        };
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Erreur authentification:', error);
+                    return null;
+                }
             },
 
             setCurrentUser: (user) => {
                 localStorage.setItem('lunagestio_current_user', JSON.stringify(user));
-            },
-
-            updateUserPassword: (userId, newPassword) => {
-                const users = UserManager.getUsers();
-                const userIndex = users.findIndex(u => u.id === userId);
-                if (userIndex !== -1) {
-                    users[userIndex].password = newPassword;
-                    UserManager.saveUsers(users);
-                    return true;
-                }
-                return false;
             }
         };
 
-        // Initialisation admin par défaut - CORRIGÉE
-        function initializeDefaultAdmin() {
-            const users = UserManager.getUsers();
+        // Initialisation admin par défaut
+        async function initializeDefaultAdmin() {
+            const users = await UserManager.getUsers();
             const adminExists = users.some(user => user.role === 'admin');
             
             if (!adminExists) {
@@ -232,23 +238,18 @@
                     phone: '+34 972 30 43 09',
                     createdAt: new Date().toISOString()
                 };
-                users.push(adminUser);
-                UserManager.saveUsers(users);
-                console.log('Compte admin créé:', adminUser.email, adminUser.password);
+                
+                try {
+                    await db.collection('users').doc(adminUser.id).set(adminUser);
+                    console.log('✅ Compte admin créé:', adminUser.email);
+                } catch (error) {
+                    console.error('❌ Erreur création admin:', error);
+                }
             }
         }
 
-        // Basculer la visibilité du mot de passe
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-        });
-
         // Gestionnaire de connexion
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('email').value.trim();
@@ -259,7 +260,7 @@
                 return;
             }
 
-            const user = UserManager.authenticate(email, password);
+            const user = await UserManager.authenticate(email, password);
             
             if (user) {
                 UserManager.setCurrentUser(user);
@@ -280,7 +281,6 @@
         function showAdminLogin() {
             document.getElementById('email').value = 'admin@lunagestio.com';
             document.getElementById('password').value = 'Admin123!';
-            // Ne pas soumettre automatiquement, laisser l'utilisateur le faire
             showAlert('Identifiants admin pré-remplis. Cliquez sur "Se connecter"', 'success');
         }
 
