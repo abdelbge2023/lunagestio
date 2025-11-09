@@ -1,20 +1,33 @@
 // sync-manager.js - Gestionnaire de synchronisation corrigé
-import { db } from './firebase-config.js';
-
-const SyncManager = {
-    deviceId: localStorage.getItem('lunagestio_device_id') || this.generateDeviceId(),
-    lastSync: localStorage.getItem('lunagestio_last_sync') || 0,
-    isSyncing: false,
+class SyncManager {
+    constructor() {
+        this.deviceId = localStorage.getItem('lunagestio_device_id') || this.generateDeviceId();
+        this.lastSync = parseInt(localStorage.getItem('lunagestio_last_sync') || '0');
+        this.isSyncing = false;
+        this.init();
+    }
 
     // Générer un ID d'appareil unique
-    generateDeviceId: function() {
+    generateDeviceId() {
         const id = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('lunagestio_device_id', id);
         return id;
-    },
+    }
+
+    async init() {
+        // Charger Firebase dynamiquement
+        await this.loadFirebase();
+        this.initAutoSync();
+    }
+
+    async loadFirebase() {
+        if (typeof firebase === 'undefined') {
+            await import('./firebase-config.js');
+        }
+    }
 
     // Synchroniser les données
-    syncData: async function() {
+    async syncData() {
         if (this.isSyncing) {
             console.log('⚠️ Synchronisation déjà en cours...');
             return false;
@@ -30,134 +43,137 @@ const SyncManager = {
         try {
             console.log('🔄 Début de la synchronisation...');
             
-            // 1. Récupérer les données locales modifiées
-            const localChanges = this.getLocalChanges();
+            // 1. Récupérer les données locales
+            const localData = this.getLocalData();
             
-            // 2. Envoyer les changements locaux au serveur
-            if (localChanges.hasChanges) {
-                await this.pushChangesToServer(localChanges);
-            }
+            // 2. Envoyer les données au serveur
+            await this.pushToServer(localData);
             
             // 3. Récupérer les données du serveur
-            const serverData = await this.pullChangesFromServer();
+            const serverData = await this.pullFromServer();
             
             // 4. Fusionner les données
             this.mergeData(serverData);
             
-            // 5. Mettre à jour le timestamp de synchronisation
+            // 5. Mettre à jour le timestamp
             this.lastSync = Date.now();
             localStorage.setItem('lunagestio_last_sync', this.lastSync.toString());
             
             console.log('✅ Synchronisation terminée avec succès');
+            this.showSyncStatus('Synchronisation réussie!', 'success');
             return true;
             
         } catch (error) {
             console.error('❌ Erreur de synchronisation:', error);
-            this.showSyncStatus('Erreur de synchronisation: ' + error.message, 'error');
+            this.showSyncStatus('Erreur de synchronisation', 'error');
             return false;
         } finally {
             this.isSyncing = false;
         }
-    },
+    }
 
-    // Récupérer les changements locaux
-    getLocalChanges: function() {
-        const users = JSON.parse(localStorage.getItem('lunagestio_users') || '[]');
-        const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments') || '[]');
-        
-        // Filtrer seulement les données modifiées depuis la dernière sync
-        const changedUsers = users.filter(user => 
-            !user.synced || user.updatedAt > this.lastSync
-        );
-        
-        const changedAppointments = appointments.filter(apt => 
-            !apt.synced || apt.updatedAt > this.lastSync
-        );
-
+    // Récupérer toutes les données locales
+    getLocalData() {
         return {
-            hasChanges: changedUsers.length > 0 || changedAppointments.length > 0,
-            users: changedUsers,
-            appointments: changedAppointments,
             deviceId: this.deviceId,
+            users: JSON.parse(localStorage.getItem('lunagestio_users') || '[]'),
+            appointments: JSON.parse(localStorage.getItem('lunagestio_appointments') || '[]'),
             lastSync: this.lastSync
         };
-    },
+    }
 
-    // Envoyer les changements au serveur
-    pushChangesToServer: async function(changes) {
+    // Envoyer les données au serveur
+    async pushToServer(localData) {
         try {
-            console.log('📤 Envoi des changements au serveur...', changes);
+            const { doc, setDoc, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
             
-            // Envoyer les utilisateurs
-            for (const user of changes.users) {
-                if (user.id) {
-                    await db.collection('users').doc(user.id).set({
-                        ...user,
+            console.log('📤 Envoi des données au serveur...');
+
+            // Synchroniser les utilisateurs
+            for (const user of localData.users) {
+                if (user.id && user.id.startsWith('local_')) {
+                    // Nouvel utilisateur local - créer sur le serveur
+                    const userData = { ...user };
+                    delete userData.id;
+                    
+                    const docRef = await addDoc(collection(window.db, "users"), {
+                        ...userData,
                         deviceId: this.deviceId,
-                        updatedAt: new Date(),
-                        synced: true
-                    }, { merge: true });
-                }
-            }
-            
-            // Envoyer les rendez-vous
-            for (const appointment of changes.appointments) {
-                if (appointment.id) {
-                    await db.collection('appointments').doc(appointment.id).set({
-                        ...appointment,
-                        deviceId: this.deviceId,
-                        updatedAt: new Date(),
-                        synced: true
-                    }, { merge: true });
-                } else {
-                    // Nouveau rendez-vous
-                    const docRef = await db.collection('appointments').add({
-                        ...appointment,
-                        deviceId: this.deviceId,
-                        createdAt: new Date(),
-                        updatedAt: new Date(),
-                        synced: true
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
                     });
                     
                     // Mettre à jour l'ID local
-                    appointment.id = docRef.id;
-                    this.updateLocalAppointmentId(appointment.localId, docRef.id);
+                    user.id = docRef.id;
+                } else if (user.id) {
+                    // Utilisateur existant - mettre à jour
+                    await setDoc(doc(window.db, "users", user.id), {
+                        ...user,
+                        deviceId: this.deviceId,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
                 }
             }
-            
-            console.log('✅ Changements envoyés avec succès');
+
+            // Synchroniser les rendez-vous
+            for (const appointment of localData.appointments) {
+                if (appointment.id && appointment.id.startsWith('local_')) {
+                    // Nouveau rendez-vous local
+                    const aptData = { ...appointment };
+                    delete aptData.id;
+                    
+                    const docRef = await addDoc(collection(window.db, "appointments"), {
+                        ...aptData,
+                        deviceId: this.deviceId,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    appointment.id = docRef.id;
+                } else if (appointment.id) {
+                    // Rendez-vous existant
+                    await setDoc(doc(window.db, "appointments", appointment.id), {
+                        ...appointment,
+                        deviceId: this.deviceId,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                }
+            }
+
+            console.log('✅ Données envoyées avec succès');
             
         } catch (error) {
-            console.error('❌ Erreur envoi des changements:', error);
+            console.error('❌ Erreur envoi des données:', error);
             throw error;
         }
-    },
+    }
 
-    // Récupérer les changements du serveur
-    pullChangesFromServer: async function() {
+    // Récupérer les données du serveur
+    async pullFromServer() {
         try {
+            const { collection, getDocs, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js');
+            
             console.log('📥 Récupération des données du serveur...');
-            
+
             // Récupérer les utilisateurs
-            const usersSnapshot = await db.collection('users')
-                .where('updatedAt', '>', new Date(this.lastSync))
-                .get();
-            
+            const usersQuery = query(collection(window.db, "users"));
+            const usersSnapshot = await getDocs(usersQuery);
             const serverUsers = [];
             usersSnapshot.forEach(doc => {
                 serverUsers.push({ id: doc.id, ...doc.data() });
             });
-            
+
             // Récupérer les rendez-vous
-            const appointmentsSnapshot = await db.collection('appointments')
-                .where('updatedAt', '>', new Date(this.lastSync))
-                .get();
-            
+            const appointmentsQuery = query(
+                collection(window.db, "appointments"),
+                orderBy("updatedAt", "desc")
+            );
+            const appointmentsSnapshot = await getDocs(appointmentsQuery);
             const serverAppointments = [];
             appointmentsSnapshot.forEach(doc => {
                 serverAppointments.push({ id: doc.id, ...doc.data() });
             });
-            
+
             console.log(`✅ Données récupérées: ${serverUsers.length} users, ${serverAppointments.length} rdv`);
             
             return {
@@ -169,10 +185,10 @@ const SyncManager = {
             console.error('❌ Erreur récupération des données:', error);
             throw error;
         }
-    },
+    }
 
     // Fusionner les données
-    mergeData: function(serverData) {
+    mergeData(serverData) {
         // Fusionner les utilisateurs
         const localUsers = JSON.parse(localStorage.getItem('lunagestio_users') || '[]');
         const mergedUsers = this.mergeArrays(localUsers, serverData.users, 'id');
@@ -184,12 +200,19 @@ const SyncManager = {
         localStorage.setItem('lunagestio_appointments', JSON.stringify(mergedAppointments));
         
         console.log('✅ Données fusionnées avec succès');
-    },
+    }
 
-    // Fusionner deux tableaux en gardant les versions les plus récentes
-    mergeArrays: function(localArray, serverArray, idKey) {
+    // Fusionner deux tableaux
+    mergeArrays(localArray, serverArray, idKey) {
         const merged = [...localArray];
+        const serverMap = new Map();
         
+        // Créer une map des éléments serveur
+        serverArray.forEach(item => {
+            serverMap.set(item[idKey], item);
+        });
+        
+        // Mettre à jour ou ajouter les éléments serveur
         serverArray.forEach(serverItem => {
             const existingIndex = merged.findIndex(item => item[idKey] === serverItem[idKey]);
             
@@ -197,55 +220,53 @@ const SyncManager = {
                 // Nouvel élément du serveur
                 merged.push(serverItem);
             } else {
-                // Conflit: garder la version la plus récente
-                const localItem = merged[existingIndex];
-                const serverUpdated = new Date(serverItem.updatedAt || 0);
-                const localUpdated = new Date(localItem.updatedAt || 0);
-                
-                if (serverUpdated > localUpdated) {
-                    merged[existingIndex] = serverItem;
+                // Remplacer par la version serveur (plus récente)
+                merged[existingIndex] = serverItem;
+            }
+        });
+        
+        // Garder les éléments locaux qui n'existent pas sur le serveur
+        localArray.forEach(localItem => {
+            if (!serverMap.has(localItem[idKey]) && localItem.id && localItem.id.startsWith('local_')) {
+                // C'est un nouvel élément local pas encore synchronisé
+                const exists = merged.find(item => item[idKey] === localItem[idKey]);
+                if (!exists) {
+                    merged.push(localItem);
                 }
             }
         });
         
         return merged;
-    },
-
-    // Mettre à jour l'ID local d'un rendez-vous
-    updateLocalAppointmentId: function(localId, serverId) {
-        const appointments = JSON.parse(localStorage.getItem('lunagestio_appointments') || '[]');
-        const appointmentIndex = appointments.findIndex(apt => apt.localId === localId);
-        
-        if (appointmentIndex !== -1) {
-            appointments[appointmentIndex].id = serverId;
-            localStorage.setItem('lunagestio_appointments', JSON.stringify(appointments));
-        }
-    },
+    }
 
     // Vérifier la connexion internet
-    isOnline: function() {
+    isOnline() {
         return navigator.onLine;
-    },
+    }
 
     // Afficher le statut de synchronisation
-    showSyncStatus: function(message, type = 'info') {
+    showSyncStatus(message, type = 'info') {
         // Créer une notification
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 1rem;
+            padding: 1rem 1.5rem;
             border-radius: 8px;
             color: white;
             z-index: 10000;
             max-width: 300px;
+            font-weight: bold;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             ${type === 'success' ? 'background: #27ae60;' : 
               type === 'error' ? 'background: #e74c3c;' : 
               'background: #3498db;'}
         `;
-        notification.textContent = message;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+            ${message}
+        `;
         
         document.body.appendChild(notification);
         
@@ -253,27 +274,22 @@ const SyncManager = {
             if (notification.parentNode) {
                 notification.remove();
             }
-        }, 5000);
-    },
+        }, 4000);
+    }
 
     // Synchronisation manuelle
-    manualSync: async function() {
-        this.showSyncStatus('Synchronisation manuelle en cours...', 'info');
+    async manualSync() {
+        this.showSyncStatus('Synchronisation en cours...', 'info');
         const success = await this.syncData();
-        
-        if (success) {
-            this.showSyncStatus('Synchronisation terminée avec succès!', 'success');
-        } else {
-            this.showSyncStatus('Échec de la synchronisation', 'error');
-        }
-    },
+        return success;
+    }
 
     // Initialiser la synchronisation automatique
-    initAutoSync: function() {
+    initAutoSync() {
         // Synchroniser au chargement si en ligne
         window.addEventListener('load', () => {
             if (this.isOnline()) {
-                setTimeout(() => this.syncData(), 2000);
+                setTimeout(() => this.syncData(), 3000);
             }
         });
         
@@ -283,33 +299,35 @@ const SyncManager = {
             setTimeout(() => this.syncData(), 1000);
         });
         
+        // Afficher le statut hors ligne
+        window.addEventListener('offline', () => {
+            this.showSyncStatus('Hors ligne - Mode local activé', 'error');
+        });
+        
         // Synchroniser toutes les 2 minutes
         setInterval(() => {
             if (this.isOnline() && !this.isSyncing) {
                 this.syncData();
             }
         }, 2 * 60 * 1000);
-        
-        // Synchroniser avant de quitter la page
-        window.addEventListener('beforeunload', () => {
-            if (this.isOnline() && !this.isSyncing) {
-                // Sync rapide avant fermeture
-                navigator.sendBeacon && this.quickSync();
-            }
-        });
-    },
+    }
 
-    // Synchronisation rapide
-    quickSync: async function() {
+    // Synchronisation rapide avant déconnexion
+    async quickSync() {
+        if (!this.isOnline() || this.isSyncing) return false;
+        
         try {
-            const changes = this.getLocalChanges();
-            if (changes.hasChanges) {
-                await this.pushChangesToServer(changes);
-            }
+            const localData = this.getLocalData();
+            await this.pushToServer(localData);
+            return true;
         } catch (error) {
             console.error('Quick sync error:', error);
+            return false;
         }
     }
-};
+}
 
-export default SyncManager;
+// Créer une instance globale
+const syncManager = new SyncManager();
+window.SyncManager = syncManager;
+export default syncManager;
